@@ -125,8 +125,9 @@ const SignupScreen = () => {
         value={userInfo.username}
         onChangeText={(text) => setUserInfo({ ...userInfo, username: text })}
       />
+
       <TextInput
-        placeholder="Email"
+        placeholder="Email "
         placeholderTextColor={COLORS.Text}
         style={styles.input}
         value={userInfo.email}
@@ -134,6 +135,7 @@ const SignupScreen = () => {
         keyboardType="email-address"
         autoCapitalize="none"
       />
+
       <TextInput
         placeholder="Password"
         placeholderTextColor={COLORS.Text}
