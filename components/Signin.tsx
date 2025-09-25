@@ -1,6 +1,7 @@
 import { login } from "@/api/auth";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -91,7 +92,7 @@ const SigninScreen = () => {
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("./signup")}>
           <Text style={styles.linkText}>Create account</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.vendorContainer}>
