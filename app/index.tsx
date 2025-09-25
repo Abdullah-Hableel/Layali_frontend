@@ -1,5 +1,5 @@
-// import Signup from "@/components/Signup";
+import Signin from "@/components/Signin";
 
-// export default function Index() {
-//   return <Signup />;
-// }
+export default function Index() {
+  return <Signin />;
+}
