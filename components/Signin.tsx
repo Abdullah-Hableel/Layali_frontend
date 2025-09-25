@@ -1,6 +1,7 @@
 import { login } from "@/api/auth";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -24,6 +25,7 @@ const SigninScreen = () => {
     onSuccess: (data) => {
       Alert.alert("Success", "Account loggedin successfully!");
       console.log("Signin success:", data);
+      router.push("/(protect)/(tabs)");
     },
     onError: (err: any) => {
       const message = err.response?.data?.message || "Something went wrong";
@@ -31,9 +33,6 @@ const SigninScreen = () => {
       console.error(err);
     },
   });
-  const handleSignIn = () => {
-    mutate({ email, password });
-  };
 
   return (
     <KeyboardAvoidingView
@@ -87,11 +86,14 @@ const SigninScreen = () => {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => mutate({ email, password })}
+        >
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/signup")}>
           <Text style={styles.linkText}>Create account</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.vendorContainer}>

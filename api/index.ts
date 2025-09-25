@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
-const baseURL = "http://172.20.10.5:8000"; // put ur ip in between
+const baseURL = "http://192.168.14.27:8000"; // put ur ip in between
 export { baseURL };
 
 const instance = axios.create({
