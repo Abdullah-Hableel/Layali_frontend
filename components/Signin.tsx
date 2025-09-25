@@ -93,9 +93,6 @@ const SigninScreen = () => {
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
 
-
-        <TouchableOpacity onPress={() => router.push("/signup")}>
-
         <TouchableOpacity onPress={() => router.push("./signup")}>
           <Text style={styles.linkText}>Create account</Text>
         </TouchableOpacity>
