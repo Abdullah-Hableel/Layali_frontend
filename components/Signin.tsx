@@ -25,6 +25,7 @@ const SigninScreen = () => {
     onSuccess: (data) => {
       Alert.alert("Success", "Account loggedin successfully!");
       console.log("Signin success:", data);
+      router.push("/(protect)/(tabs)");
     },
     onError: (err: any) => {
       const message = err.response?.data?.message || "Something went wrong";
@@ -32,9 +33,6 @@ const SigninScreen = () => {
       console.error(err);
     },
   });
-  const handleSignIn = () => {
-    mutate({ email, password });
-  };
 
   return (
     <KeyboardAvoidingView
@@ -88,9 +86,15 @@ const SigninScreen = () => {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => mutate({ email, password })}
+        >
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
+
+
+        <TouchableOpacity onPress={() => router.push("/signup")}>
 
         <TouchableOpacity onPress={() => router.push("./signup")}>
           <Text style={styles.linkText}>Create account</Text>
