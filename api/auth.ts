@@ -7,8 +7,7 @@ interface UserInfo {
 const login = async (userInfo: UserInfo) => {
   const response = await instance.post("/api/auth/signin", userInfo);
   await storeToken(response.data.token);
-
-  console.log("🚀 ~ login ~ response:", response.data.token);
+  console.log(response.data.token);
 
   return response.data;
 };
