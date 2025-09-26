@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Layali_frontend",
+    "name": "Layali",
     "slug": "Layali_frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/Layali-Logo.jpg",
     "scheme": "layalifrontend",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -39,7 +39,8 @@
           }
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,

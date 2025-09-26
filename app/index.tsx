@@ -1,6 +1,6 @@
-import Signin from "@/components/Signin";
+import Landing from "@/components/Landing";
 import React from "react";
 
 export default function Index() {
-  return <Signin />;
+  return <Landing />;
 }
