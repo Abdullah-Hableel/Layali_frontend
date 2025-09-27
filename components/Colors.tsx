@@ -16,6 +16,7 @@ const colors = {
   neutral: "#E9E5E6",
 
   danger: "#D32F2F",
+  text: "#9D8189",
 };
 
 export default colors;
