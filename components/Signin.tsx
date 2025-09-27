@@ -25,7 +25,7 @@ const SigninScreen = () => {
     onSuccess: (data) => {
       Alert.alert("Success", "Account loggedin successfully!");
       console.log("Signin success:", data);
-      router.push("/(protect)/(tabs)");
+      router.push("/app/(protect)/(tabs)");
     },
     onError: (err: any) => {
       const message = err.response?.data?.message || "Something went wrong";
