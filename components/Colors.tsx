@@ -1,12 +1,21 @@
-export const COLORS = {
-  Background: "#F9C9D3",
+const colors = {
+  // Primary brand colors
+  primary: "#F4ACB7", // Soft rose pink
+  secondary: "#9D8189", // Muted mauve
 
-  Primary: "#C7657A",
+  // Supporting / Backgrounds
+  backgroundLight: "#FFE5D9", // Champagne pink
+  backgroundMuted: "#D8E2DC", // Platinum greenish tint
 
-  Secondary: "#F492A9",
+  // Accents
+  accent: "#FFCAD4", // Cherry blossom pink
 
-  Accent: "#FEEBE8",
+  // Neutrals
+  white: "#FFFFFF",
+  black: "#000000",
+  neutral: "#E9E5E6",
 
-  Text: "#6B2B3C",
-  Buttons: "#9d0a31ff",
+  danger: "#D32F2F",
 };
+
+export default colors;
