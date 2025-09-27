@@ -1,9 +1,11 @@
 // app/screens/SignupScreen.tsx
+import AuthContext from "@/app/context/AuthContext";
 import { Role } from "@/data/role";
 import { useMutation } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
 import { Formik } from "formik";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Alert,
   Image,
@@ -16,6 +18,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import * as Yup from "yup";
 import { register } from "../api/auth";
 import colors from "./Colors";
@@ -46,14 +49,36 @@ const RegisterSchema = Yup.object().shape({
 const roles = ["Normal", "Vendor"] as const;
 
 const SignupScreen = () => {
+  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending, data } = useMutation({
     mutationFn: register,
-    onSuccess: (data) => console.log("Signup success:", data),
-    onError: (err: any) =>
-      console.error(err?.response?.data?.message || "Something went wrong"),
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Account created 🎉",
+        text2: "Welcome aboard! Setting things up...",
+        position: "top",
+        visibilityTime: 4000,
+      });
+      setIsAuthenticated(true);
+      router.dismissTo("/(protect)/(tabs)");
+      console.log("Signup success:", data);
+    },
+    onError: (err: any) => {
+      const message =
+        err?.response?.data?.message || "Signup failed. Please try again.";
+      Toast.show({
+        type: "error",
+        text1: "Signup failed ❌",
+        text2: message,
+        position: "bottom",
+        visibilityTime: 5000,
+      });
+    },
   });
 
   const pickImage = async (setFieldValue: (f: string, v: any) => void) => {

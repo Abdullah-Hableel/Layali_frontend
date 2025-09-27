@@ -1,180 +1,248 @@
 import { login } from "@/api/auth";
+import AuthContext from "@/app/context/AuthContext";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import { Formik } from "formik";
+import React, { useContext, useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-// signin
+import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
+import * as Yup from "yup";
+import colors from "./Colors";
+import CustomButton from "./customButton";
+
+const SignInSchema = Yup.object().shape({
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  password: Yup.string().required("Password is required"),
+});
 
 const SigninScreen = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { setIsAuthenticated } = useContext(AuthContext);
+
   const [showPassword, setShowPassword] = useState(false);
 
   const { mutate, isPending } = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
-      Alert.alert("Success", "Account loggedin successfully!");
+      setIsAuthenticated(true);
+      Toast.show({
+        type: "success",
+        text1: "Welcome back 👋",
+        text2: "You signed in successfully.",
+        visibilityTime: 3500,
+      });
       console.log("Signin success:", data);
       router.push("/(protect)/(tabs)");
     },
     onError: (err: any) => {
-      const message = err.response?.data?.message || "Something went wrong";
-      Alert.alert("Error", message);
-      console.error(err);
+      const message =
+        err?.response?.data?.message || "Network error. Please try again.";
+      Toast.show({
+        type: "error",
+        text1: "Sign in failed",
+        text2: message,
+        position: "bottom",
+        visibilityTime: 4500,
+      });
     },
   });
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <View style={styles.container}>
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>
-          Sign in to continue planning your special day
-        </Text>
-
-        {/* Email Input */}
-        <Text style={{ color: "#9d8189dd", fontWeight: "bold" }}>Email</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
-            placeholderTextColor="#aaa"
-            underlineColorAndroid="transparent"
-          />
-          <MaterialIcons
-            name="email"
-            size={20}
-            color="#9D8189"
-            style={styles.icon}
-          />
-        </View>
-
-        {/* Password Input */}
-        <Text style={{ color: "#9d8189dd", fontWeight: "bold" }}>Password</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your password"
-            secureTextEntry={!showPassword}
-            value={password}
-            onChangeText={setPassword}
-            placeholderTextColor="#aaa"
-            underlineColorAndroid="transparent"
-          />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <MaterialIcons
-              name={showPassword ? "visibility" : "visibility-off"}
-              size={20}
-              color="#9D8189"
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => mutate({ email, password })}
+    <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          validationSchema={SignInSchema}
+          onSubmit={(values) => {
+            mutate(values);
+          }}
         >
-          <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
+          {({
+            handleChange,
+            handleSubmit,
+            handleBlur,
+            values,
+            errors,
+            touched,
+            submitCount,
+          }) => (
+            <View style={styles.container}>
+              <Text style={styles.title}>Welcome Back</Text>
+              <Text style={styles.subtitle}>
+                Sign in to continue planning your special day
+              </Text>
 
-        <TouchableOpacity onPress={() => router.push("./signup")}>
-          <Text style={styles.linkText}>Create account</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.vendorContainer}>
-          <MaterialIcons
-            name="store"
-            size={20}
-            color="#9D8189"
-            style={{ marginRight: 6 }}
-          />
-          <Text style={styles.vendorText}>Sign-in as a vendor</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+              <Text style={styles.fieldLabel}>Email</Text>
+              <View style={styles.inputContainer}>
+                <MaterialIcons
+                  name="email"
+                  size={20}
+                  color={colors.secondary}
+                  style={styles.leftIcon}
+                />
+                <TextInput
+                  style={[styles.input, { paddingLeft: 32 }]}
+                  placeholder="Enter your email"
+                  value={values.email}
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                  placeholderTextColor={colors.secondary + "99"}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                />
+              </View>
+              {(touched.email || submitCount > 0) && errors.email && (
+                <Text
+                  style={{
+                    color: colors.danger,
+                    fontSize: 12,
+                    marginBottom: 4,
+                  }}
+                >
+                  {errors.email}
+                </Text>
+              )}
+
+              <Text style={styles.fieldLabel}>Password</Text>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={[styles.input, { paddingRight: 60 }]}
+                  placeholder="Enter your password"
+                  secureTextEntry={!showPassword}
+                  value={values.password}
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  placeholderTextColor={colors.secondary + "99"}
+                />
+                <Pressable
+                  onPress={() => setShowPassword((s) => !s)}
+                  style={styles.toggleWrap}
+                  hitSlop={8}
+                >
+                  <Text style={styles.toggleText}>
+                    {showPassword ? "Hide" : "Show"}
+                  </Text>
+                </Pressable>
+              </View>
+              {(touched.password || submitCount > 0) && errors.password && (
+                <Text
+                  style={{
+                    color: colors.danger,
+                    fontSize: 12,
+                    marginBottom: 4,
+                  }}
+                >
+                  {errors.password}
+                </Text>
+              )}
+
+              <View
+                style={{ width: "100%", marginTop: 16, alignItems: "center" }}
+              >
+                <CustomButton
+                  text={isPending ? "Signing In..." : "Sign In"}
+                  onPress={handleSubmit as any}
+                  disabled={!values.email || !values.password}
+                />
+              </View>
+
+              <TouchableOpacity onPress={() => router.push("./signup")}>
+                <Text style={styles.linkText}>Create account</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </Formik>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
+
 export default SigninScreen;
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.backgroundMuted,
+  },
   container: {
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "#FFE5D9",
+    backgroundColor: colors.backgroundMuted,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#9D8189",
+    fontWeight: "800",
+    marginBottom: 6,
+    color: colors.secondary,
     textAlign: "center",
   },
   subtitle: {
     fontSize: 14,
-    color: "#9D8189",
+    color: colors.secondary + "CC",
     marginBottom: 20,
     textAlign: "center",
   },
+  fieldLabel: {
+    width: "100%",
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.secondary,
+    marginTop: 10,
+    marginBottom: 6,
+  },
   inputContainer: {
+    position: "relative",
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 8,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#ccc", //here also
-    marginBottom: 15,
-    paddingHorizontal: 10,
+    borderColor: colors.neutral,
+    marginBottom: 14,
+    height: 48,
   },
   input: {
     flex: 1,
-    padding: 12,
-    color: "#333",
-    borderWidth: 0, //here
+    color: colors.secondary,
+    paddingVertical: 0,
+    paddingHorizontal: 14,
   },
-  icon: {
-    marginLeft: 0,
+  leftIcon: {
+    position: "absolute",
+    left: 10,
+    zIndex: 1,
   },
-  button: {
-    backgroundColor: "#f48fb1",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  vendorContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+  toggleWrap: {
+    position: "absolute",
+    right: 12,
+    top: 0,
+    bottom: 0,
     justifyContent: "center",
-    marginTop: 15,
   },
-  vendorText: {
-    color: "#9D8189",
-    fontSize: 14,
+  toggleText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: colors.secondary,
   },
   linkText: {
-    color: "#9D8189",
+    color: colors.secondary,
     fontSize: 14,
     textAlign: "center",
-    marginTop: 10,
+    marginTop: 12,
+    fontWeight: "600",
   },
 });
