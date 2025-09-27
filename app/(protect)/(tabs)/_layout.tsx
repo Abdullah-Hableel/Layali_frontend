@@ -45,6 +45,20 @@ export default function RootLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="guest"
+        options={{
+          title: "Guest",
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons
+              name="people-alt"
+              size={24}
+              color={colors.secondary}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
