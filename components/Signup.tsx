@@ -78,6 +78,7 @@ const SignupScreen = () => {
         position: "bottom",
         visibilityTime: 5000,
       });
+      console.log("Signup Error:", data);
     },
   });
 
