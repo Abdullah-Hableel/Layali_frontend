@@ -42,7 +42,7 @@ const SigninScreen = () => {
         visibilityTime: 3500,
       });
       console.log("Signin success:", data);
-      router.push("/app/(protect)/(tabs)");
+      router.push("/(protect)/(tabs)");
     },
     onError: (err: any) => {
       const message =
