@@ -2,10 +2,11 @@ import { deleteToken, getToken } from "@/api/storage";
 import AuthContext from "@/app/context/AuthContext";
 import colors from "@/components/Colors";
 import { MaterialIcons } from "@expo/vector-icons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { router, Tabs } from "expo-router";
 import React, { useContext } from "react";
 import { TouchableOpacity } from "react-native";
-
 export default function RootLayout() {
   const { setIsAuthenticated } = useContext(AuthContext);
 
@@ -56,6 +57,29 @@ export default function RootLayout() {
               size={24}
               color={colors.secondary}
             />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="Events"
+        options={{
+          title: "My Events",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name="party-popper"
+              size={24}
+              color={colors.secondary}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="pprofile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="user" size={24} color={colors.secondary} />
           ),
         }}
       />

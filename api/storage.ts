@@ -44,18 +44,8 @@ const getUser = async () => {
     return null;
   }
 };
-const deleteUser = async () => {
-  try {
-    await SecureStore.deleteItemAsync("user");
-  } catch (err) {
-    console.error("Error deleting user:", err);
-  }
-};
-const clearAll = async () => {
-  await Promise.all([deleteUser(), deleteToken()]);
-};
+
 export {
-  clearAll,
   deleteItemAsync,
   deleteToken,
   getToken,

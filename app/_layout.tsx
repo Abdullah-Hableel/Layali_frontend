@@ -71,6 +71,12 @@ export default function RootLayout() {
               headerBackButtonDisplayMode: "minimal",
             }}
           />
+          <Stack.Screen
+            name="(personal)/(protect)/(tabs)"
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack>
       </AuthContext.Provider>
       <Toast position="bottom" />
