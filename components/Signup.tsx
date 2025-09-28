@@ -50,13 +50,16 @@ const roles = ["Normal", "Vendor"] as const;
 
 const SignupScreen = () => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext);
 
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const { mutate, isPending, data } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: register,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      setIsAuthenticated(true);
+      setUser(data.user);
       Toast.show({
         type: "success",
         text1: "Account created 🎉",
@@ -64,8 +67,7 @@ const SignupScreen = () => {
         position: "top",
         visibilityTime: 4000,
       });
-      setIsAuthenticated(true);
-      router.dismissTo("/(protect)/(tabs)");
+      router.dismissTo("/");
       console.log("Signup success:", data);
     },
     onError: (err: any) => {
@@ -78,7 +80,7 @@ const SignupScreen = () => {
         position: "bottom",
         visibilityTime: 5000,
       });
-      console.log("Signup Error:", data);
+      console.log("Signup Error:", err);
     },
   });
 

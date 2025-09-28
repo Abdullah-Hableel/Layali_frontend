@@ -28,4 +28,38 @@ const deleteToken = async () => {
   }
 };
 
-export { deleteToken, getToken, storeToken };
+const storeUser = async (user: object) => {
+  try {
+    await SecureStore.setItemAsync("user", JSON.stringify(user));
+  } catch (err) {
+    console.log("Error storing user:", err);
+  }
+};
+const getUser = async () => {
+  try {
+    const raw = await SecureStore.getItemAsync("user");
+    return raw ? JSON.parse(raw) : null;
+  } catch (err) {
+    console.log("Error reading user:", err);
+    return null;
+  }
+};
+const deleteUser = async () => {
+  try {
+    await SecureStore.deleteItemAsync("user");
+  } catch (err) {
+    console.error("Error deleting user:", err);
+  }
+};
+const clearAll = async () => {
+  await Promise.all([deleteUser(), deleteToken()]);
+};
+export {
+  clearAll,
+  deleteItemAsync,
+  deleteToken,
+  getToken,
+  getUser,
+  storeToken,
+  storeUser,
+};

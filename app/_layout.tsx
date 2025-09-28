@@ -1,30 +1,49 @@
-import { getToken } from "@/api/storage";
+import { getToken, getUser } from "@/api/storage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
 import colors from "../components/Colors";
-import AuthContext from "./context/AuthContext";
+import AuthContext, { User } from "./context/AuthContext";
 
 export default function RootLayout() {
   const queryClient = new QueryClient();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
   console.log(isAuthenticated);
 
-  const checkToken = async () => {
+  const checkSession = async () => {
     const token = await getToken();
-    if (token) {
-      setIsAuthenticated(!!token);
-      console.log(token);
+    const storedUser = await getUser();
+    if (!token || !storedUser || !storedUser.role) {
+      setIsAuthenticated(false);
+      setUser(null);
+      router.replace("/landingPage");
+      return;
     }
+
+    setIsAuthenticated(true);
+    setUser(storedUser);
   };
+
   useEffect(() => {
-    checkToken();
-  }),
-    [];
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    if (!user?.role) return;
+
+    if (user.role === "Admin") router.replace("/(admin)");
+    else if (user.role === "Vendor") router.replace("/(vendor)");
+    else router.replace("/(personal)/(protect)/(tabs)");
+  }, [user]);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+      <AuthContext.Provider
+        value={{ isAuthenticated, setIsAuthenticated, user, setUser }}
+      >
         <Stack
           screenOptions={{
             headerStyle: {
@@ -52,12 +71,6 @@ export default function RootLayout() {
               headerBackButtonDisplayMode: "minimal",
             }}
           />
-          <Stack.Protected guard={isAuthenticated}>
-            <Stack.Screen
-              name="(protect)/(tabs)"
-              options={{ headerShown: false }}
-            />
-          </Stack.Protected>
         </Stack>
       </AuthContext.Provider>
       <Toast position="bottom" />
