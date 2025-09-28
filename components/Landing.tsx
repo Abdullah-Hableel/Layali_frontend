@@ -1,11 +1,23 @@
 // app/index.tsx
-import { router } from "expo-router";
-import React from "react";
+import AuthContext from "@/app/context/AuthContext";
+import { Redirect, router } from "expo-router";
+import React, { useContext } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import colors from "./Colors";
 import CustomButton from "./customButton";
 
 export default function Landing() {
+  const { isAuthenticated, user } = useContext(AuthContext);
+
+  if (isAuthenticated && user?.role === "Admin") {
+    return <Redirect href="/(admin)" />;
+  }
+  if (isAuthenticated && user?.role === "Vendor") {
+    return <Redirect href="/(vendor)" />;
+  }
+  if (isAuthenticated && user?.role === "Normal") {
+    return <Redirect href="/(personal)/(protect)/(tabs)" />;
+  }
   const year = new Date().getFullYear();
   return (
     <View style={styles.container}>

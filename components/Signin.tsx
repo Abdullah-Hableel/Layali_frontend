@@ -27,22 +27,25 @@ const SignInSchema = Yup.object().shape({
 });
 
 const SigninScreen = () => {
-  const { setIsAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending, data } = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
       setIsAuthenticated(true);
+      setUser(data.user);
       Toast.show({
         type: "success",
         text1: "Welcome back 👋",
         text2: "You signed in successfully.",
         visibilityTime: 3500,
       });
-      console.log("Signin success:", data);
-      router.push("/(protect)/(tabs)");
+      router.replace("/");
+
+      console.log("Signin success:", data, data.user);
     },
     onError: (err: any) => {
       const message =
