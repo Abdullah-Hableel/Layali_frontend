@@ -19,7 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getServices } from "../api/service";
 import colors from "../components/Colors";
 
-const SERVER_URL = "http://172.20.10.5:8000/uploads/"; // put ur ip
+const SERVER_URL = "http://192.168.14.27:8000/uploads/"; // put ur ip
 
 const buildImageUrl = (img?: string) =>
   img ? `${SERVER_URL}${img}` : undefined;
@@ -38,9 +38,9 @@ const contactInfo = [
   {
     id: "1",
     label: "Phone",
-    value: "+965 9999 8888",
+    value: "+965 94977560",
     icon: "phone",
-    onPress: () => Linking.openURL("tel:+96599998888"),
+    onPress: () => Linking.openURL("tel:+96594977560"),
   },
   {
     id: "2",

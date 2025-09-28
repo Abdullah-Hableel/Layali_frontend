@@ -1,8 +1,8 @@
-import VendorHome from "@/components/(vendor)/home";
+import HomePage from "@/components/HomePage";
 import React from "react";
 
 const index = () => {
-  return <VendorHome />;
+  return <HomePage />;
 };
 
 export default index;

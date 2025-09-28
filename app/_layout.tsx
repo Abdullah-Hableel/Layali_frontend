@@ -77,6 +77,7 @@ export default function RootLayout() {
               headerShown: false,
             }}
           />
+          <Stack.Screen name="(vendor)" options={{ headerShown: false }} />
         </Stack>
       </AuthContext.Provider>
       <Toast position="bottom" />

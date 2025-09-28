@@ -9,6 +9,8 @@ import React, { useContext, useState } from "react";
 import {
   Alert,
   Image,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -143,159 +145,165 @@ const SignupScreen = () => {
         setFieldValue,
       }) => (
         <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
-          <ScrollView
-            contentContainerStyle={styles.container}
-            keyboardShouldPersistTaps="handled"
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            keyboardVerticalOffset={120} // adjust depending on your header height
           >
-            <Pressable
-              style={styles.avatarWrap}
-              onPress={() => pickImage(setFieldValue)}
+            <ScrollView
+              contentContainerStyle={styles.container}
+              keyboardShouldPersistTaps="handled"
             >
-              <Image
-                source={
-                  values.image
-                    ? { uri: values.image }
-                    : require("../assets/images/avatar-placeholder.png")
-                }
-                style={styles.avatar}
-              />
-              <Text style={styles.avatarHint}>
-                {values.image ? "Edit photo" : "Add a photo"}
-              </Text>
-            </Pressable>
-            {touched.image && errors.image ? (
-              <Text style={styles.error}>{errors.image}</Text>
-            ) : null}
-            <Text style={styles.fieldLabel}>Username</Text>
-            <View style={styles.inputRow}>
-              <TextInput
-                placeholder="Enter your username"
-                placeholderTextColor={colors.secondary + "99"}
-                style={styles.input}
-                value={values.username}
-                onChangeText={handleChange("username")}
-                onBlur={handleBlur("username")}
-                autoCapitalize="words"
-              />
-            </View>
-            {touched.username && errors.username ? (
-              <Text style={styles.error}>{errors.username}</Text>
-            ) : null}
-
-            <Text style={styles.fieldLabel}>Email</Text>
-            <View style={styles.inputRow}>
-              <TextInput
-                placeholder="name@example.com"
-                placeholderTextColor={colors.secondary + "99"}
-                style={styles.input}
-                value={values.email}
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
-            {touched.email && errors.email ? (
-              <Text style={styles.error}>{errors.email}</Text>
-            ) : null}
-
-            <Text style={styles.fieldLabel}>Password</Text>
-            <View style={styles.inputRow}>
-              <TextInput
-                placeholder="••••••••"
-                placeholderTextColor={colors.secondary + "99"}
-                style={[styles.input, styles.inputWithToggle]}
-                value={values.password}
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-                secureTextEntry={!showPass}
-              />
               <Pressable
-                onPress={() => setShowPass((s) => !s)}
-                style={styles.toggleBtn}
-                hitSlop={8}
+                style={styles.avatarWrap}
+                onPress={() => pickImage(setFieldValue)}
               >
-                <Text style={styles.toggleText}>
-                  {showPass ? "Hide" : "Show"}
+                <Image
+                  source={
+                    values.image
+                      ? { uri: values.image }
+                      : require("../assets/images/avatar-placeholder.png")
+                  }
+                  style={styles.avatar}
+                />
+                <Text style={styles.avatarHint}>
+                  {values.image ? "Edit photo" : "Add a photo"}
                 </Text>
               </Pressable>
-            </View>
-            {touched.password && errors.password ? (
-              <Text style={styles.error}>{errors.password}</Text>
-            ) : null}
+              {touched.image && errors.image ? (
+                <Text style={styles.error}>{errors.image}</Text>
+              ) : null}
+              <Text style={styles.fieldLabel}>Username</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  placeholder="Enter your username"
+                  placeholderTextColor={colors.secondary + "99"}
+                  style={styles.input}
+                  value={values.username}
+                  onChangeText={handleChange("username")}
+                  onBlur={handleBlur("username")}
+                  autoCapitalize="words"
+                />
+              </View>
+              {touched.username && errors.username ? (
+                <Text style={styles.error}>{errors.username}</Text>
+              ) : null}
 
-            <Text style={styles.fieldLabel}>Confirm Password</Text>
-            <View style={styles.inputRow}>
-              <TextInput
-                placeholder="Repeat your password"
-                placeholderTextColor={colors.secondary + "99"}
-                style={[styles.input, styles.inputWithToggle]}
-                value={values.confirmPassword}
-                onChangeText={handleChange("confirmPassword")}
-                onBlur={handleBlur("confirmPassword")}
-                secureTextEntry={!showConfirm}
-              />
-              <Pressable
-                onPress={() => setShowConfirm((s) => !s)}
-                style={styles.toggleBtn}
-                hitSlop={8}
-              >
-                <Text style={styles.toggleText}>
-                  {showConfirm ? "Hide" : "Show"}
-                </Text>
-              </Pressable>
-            </View>
-            {touched.confirmPassword && errors.confirmPassword ? (
-              <Text style={styles.error}>{errors.confirmPassword}</Text>
-            ) : null}
+              <Text style={styles.fieldLabel}>Email</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  placeholder="name@example.com"
+                  placeholderTextColor={colors.secondary + "99"}
+                  style={styles.input}
+                  value={values.email}
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+              {touched.email && errors.email ? (
+                <Text style={styles.error}>{errors.email}</Text>
+              ) : null}
 
-            <Text style={styles.fieldLabel}>Role</Text>
-            <View style={styles.roleContainer}>
-              {roles.map((r) => {
-                const selected = values.role === r;
-                return (
-                  <TouchableOpacity
-                    key={r}
-                    style={[
-                      styles.roleButton,
-                      selected && {
-                        backgroundColor: colors.primary,
-                        borderColor: colors.primary,
-                      },
-                    ]}
-                    onPress={() => setFieldValue("role", r)}
-                  >
-                    <Text
-                      style={[styles.roleText, selected && { color: "#fff" }]}
+              <Text style={styles.fieldLabel}>Password</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  placeholder="••••••••"
+                  placeholderTextColor={colors.secondary + "99"}
+                  style={[styles.input, styles.inputWithToggle]}
+                  value={values.password}
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  secureTextEntry={!showPass}
+                />
+                <Pressable
+                  onPress={() => setShowPass((s) => !s)}
+                  style={styles.toggleBtn}
+                  hitSlop={8}
+                >
+                  <Text style={styles.toggleText}>
+                    {showPass ? "Hide" : "Show"}
+                  </Text>
+                </Pressable>
+              </View>
+              {touched.password && errors.password ? (
+                <Text style={styles.error}>{errors.password}</Text>
+              ) : null}
+
+              <Text style={styles.fieldLabel}>Confirm Password</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  placeholder="Repeat your password"
+                  placeholderTextColor={colors.secondary + "99"}
+                  style={[styles.input, styles.inputWithToggle]}
+                  value={values.confirmPassword}
+                  onChangeText={handleChange("confirmPassword")}
+                  onBlur={handleBlur("confirmPassword")}
+                  secureTextEntry={!showConfirm}
+                />
+                <Pressable
+                  onPress={() => setShowConfirm((s) => !s)}
+                  style={styles.toggleBtn}
+                  hitSlop={8}
+                >
+                  <Text style={styles.toggleText}>
+                    {showConfirm ? "Hide" : "Show"}
+                  </Text>
+                </Pressable>
+              </View>
+              {touched.confirmPassword && errors.confirmPassword ? (
+                <Text style={styles.error}>{errors.confirmPassword}</Text>
+              ) : null}
+
+              <Text style={styles.fieldLabel}>Role</Text>
+              <View style={styles.roleContainer}>
+                {roles.map((r) => {
+                  const selected = values.role === r;
+                  return (
+                    <TouchableOpacity
+                      key={r}
+                      style={[
+                        styles.roleButton,
+                        selected && {
+                          backgroundColor: colors.primary,
+                          borderColor: colors.primary,
+                        },
+                      ]}
+                      onPress={() => setFieldValue("role", r)}
                     >
-                      {r}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-            {touched.role && errors.role ? (
-              <Text style={styles.error}>{errors.role}</Text>
-            ) : null}
+                      <Text
+                        style={[styles.roleText, selected && { color: "#fff" }]}
+                      >
+                        {r}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+              {touched.role && errors.role ? (
+                <Text style={styles.error}>{errors.role}</Text>
+              ) : null}
 
-            <View
-              style={{ width: "100%", marginTop: 16, alignItems: "center" }}
-            >
-              <CustomButton
-                text={isPending ? "Signing Up..." : "Sign Up"}
-                onPress={() => handleSubmit()}
-                disabled={
-                  !values.username ||
-                  !values.email ||
-                  !values.password ||
-                  !values.confirmPassword ||
-                  !values.role ||
-                  !values.image ||
-                  Object.keys(errors).length > 0
-                }
-              />
-            </View>
-          </ScrollView>
+              <View
+                style={{ width: "100%", marginTop: 16, alignItems: "center" }}
+              >
+                <CustomButton
+                  text={isPending ? "Signing Up..." : "Sign Up"}
+                  onPress={() => handleSubmit()}
+                  disabled={
+                    !values.username ||
+                    !values.email ||
+                    !values.password ||
+                    !values.confirmPassword ||
+                    !values.role ||
+                    !values.image ||
+                    Object.keys(errors).length > 0
+                  }
+                />
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
         </SafeAreaView>
       )}
     </Formik>
