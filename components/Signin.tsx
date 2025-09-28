@@ -90,12 +90,6 @@ const SigninScreen = () => {
 
               <Text style={styles.fieldLabel}>Email</Text>
               <View style={styles.inputContainer}>
-                <MaterialIcons
-                  name="email"
-                  size={20}
-                  color={colors.secondary}
-                  style={styles.leftIcon}
-                />
                 <TextInput
                   style={[styles.input, { paddingLeft: 32 }]}
                   placeholder="Enter your email"
@@ -105,6 +99,12 @@ const SigninScreen = () => {
                   placeholderTextColor={colors.secondary + "99"}
                   autoCapitalize="none"
                   keyboardType="email-address"
+                />
+                <MaterialIcons
+                  name="email"
+                  size={20}
+                  color={colors.secondary}
+                  style={styles.leftIcon}
                 />
               </View>
               {(touched.email || submitCount > 0) && errors.email && (

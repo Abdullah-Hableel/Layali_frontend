@@ -27,6 +27,21 @@ export const getAllInvites = async () => {
   return res.data;
 };
 
+export const getInvitesByEvent = async (eventId: string) => {
+  try {
+    const res = await instance.get(
+      `${baseURL}/api/invite/getInvitesByEvent/${eventId}`
+    );
+    return res.data;
+  } catch (err: any) {
+    console.error(
+      "getInvitesByEvent error:",
+      err.response?.data || err.message
+    );
+    throw err;
+  }
+};
+
 export const updateRSVP = async (token: string, rsvpStatus: string) => {
   const res = await instance.post(`${baseURL}/api/invite/rsvp/${token}`, {
     rsvpStatus,
