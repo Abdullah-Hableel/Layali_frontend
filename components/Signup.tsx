@@ -48,8 +48,10 @@ const RegisterSchema = Yup.object().shape({
   image: Yup.string().required("Image is required"),
 });
 
-const roles = ["Normal", "Vendor"] as const;
-
+const roles = [
+  { value: "Normal", label: "Personal" },
+  { value: "Vendor", label: "Business" },
+] as const;
 const SignupScreen = () => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
   const { setUser } = useContext(AuthContext);
@@ -304,6 +306,53 @@ const SignupScreen = () => {
               </View>
             </ScrollView>
           </KeyboardAvoidingView>
+
+            <Text style={styles.fieldLabel}>Role</Text>
+            <View style={styles.roleContainer}>
+              {roles.map((r) => {
+                const selected = values.role === r.value;
+                return (
+                  <TouchableOpacity
+                    key={r.value}
+                    style={[
+                      styles.roleButton,
+                      selected && {
+                        backgroundColor: colors.primary,
+                        borderColor: colors.primary,
+                      },
+                    ]}
+                    onPress={() => setFieldValue("role", r.value)}
+                  >
+                    <Text
+                      style={[styles.roleText, selected && { color: "#fff" }]}
+                    >
+                      {r.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            {touched.role && errors.role ? (
+              <Text style={styles.error}>{errors.role}</Text>
+            ) : null}
+            <View
+              style={{ width: "100%", marginTop: 16, alignItems: "center" }}
+            >
+              <CustomButton
+                text={isPending ? "Signing Up..." : "Sign Up"}
+                onPress={() => handleSubmit()}
+                disabled={
+                  !values.username ||
+                  !values.email ||
+                  !values.password ||
+                  !values.confirmPassword ||
+                  !values.role ||
+                  !values.image ||
+                  Object.keys(errors).length > 0
+                }
+              />
+            </View>
+          </ScrollView>
         </SafeAreaView>
       )}
     </Formik>

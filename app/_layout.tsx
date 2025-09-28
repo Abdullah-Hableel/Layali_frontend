@@ -78,6 +78,12 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen name="(vendor)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="(personal)/createEvents"
+            options={{
+              title: "Create Event",
+            }}
+          />
         </Stack>
       </AuthContext.Provider>
       <Toast position="bottom" />
