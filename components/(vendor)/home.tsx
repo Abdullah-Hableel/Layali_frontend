@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 const VendorHome = () => {
   return (
@@ -8,7 +8,3 @@ const VendorHome = () => {
     </View>
   );
 };
-
-export default VendorHome;
-
-const styles = StyleSheet.create({});

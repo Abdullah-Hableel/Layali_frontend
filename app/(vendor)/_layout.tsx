@@ -1,7 +1,7 @@
 import { deleteToken, getToken } from "@/api/storage";
 import AuthContext from "@/app/context/AuthContext";
 import colors from "@/components/Colors";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { router, Tabs } from "expo-router";
 import React, { useContext } from "react";
 import { TouchableOpacity } from "react-native";
@@ -42,6 +42,19 @@ export default function RootLayout() {
                 <MaterialIcons name="logout" size={20} color={colors.danger} />
               </TouchableOpacity>
             </React.Fragment>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="services"
+        options={{
+          title: "Services",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name="room-service"
+              size={24}
+              color={colors.secondary}
+            />
           ),
         }}
       />

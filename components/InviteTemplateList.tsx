@@ -74,7 +74,7 @@ const InviteTemplateListScreen = () => {
             () => {
               if (!selectedTemplate) return;
               router.push({
-                pathname: "/customizeinvitation",
+                pathname: "/",
                 params: {
                   templateId: selectedTemplate._id,
                   background: selectedTemplate.background,
