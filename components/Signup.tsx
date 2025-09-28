@@ -48,10 +48,12 @@ const RegisterSchema = Yup.object().shape({
   image: Yup.string().required("Image is required"),
 });
 
+// UI labels ↔ backend values
 const roles = [
   { value: "Normal", label: "Personal" },
   { value: "Vendor", label: "Business" },
 ] as const;
+
 const SignupScreen = () => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
   const { setUser } = useContext(AuthContext);
@@ -150,7 +152,7 @@ const SignupScreen = () => {
           <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === "ios" ? "padding" : undefined}
-            keyboardVerticalOffset={120} // adjust depending on your header height
+            keyboardVerticalOffset={120}
           >
             <ScrollView
               contentContainerStyle={styles.container}
@@ -175,6 +177,7 @@ const SignupScreen = () => {
               {touched.image && errors.image ? (
                 <Text style={styles.error}>{errors.image}</Text>
               ) : null}
+
               <Text style={styles.fieldLabel}>Username</Text>
               <View style={styles.inputRow}>
                 <TextInput
@@ -261,10 +264,10 @@ const SignupScreen = () => {
               <Text style={styles.fieldLabel}>Role</Text>
               <View style={styles.roleContainer}>
                 {roles.map((r) => {
-                  const selected = values.role === r;
+                  const selected = values.role === r.value;
                   return (
                     <TouchableOpacity
-                      key={r}
+                      key={r.value}
                       style={[
                         styles.roleButton,
                         selected && {
@@ -272,12 +275,13 @@ const SignupScreen = () => {
                           borderColor: colors.primary,
                         },
                       ]}
-                      onPress={() => setFieldValue("role", r)}
+                      onPress={() => setFieldValue("role", r.value)}
+                      activeOpacity={0.85}
                     >
                       <Text
                         style={[styles.roleText, selected && { color: "#fff" }]}
                       >
-                        {r}
+                        {r.label}
                       </Text>
                     </TouchableOpacity>
                   );
@@ -294,6 +298,7 @@ const SignupScreen = () => {
                   text={isPending ? "Signing Up..." : "Sign Up"}
                   onPress={() => handleSubmit()}
                   disabled={
+                    isPending ||
                     !values.username ||
                     !values.email ||
                     !values.password ||
@@ -306,53 +311,6 @@ const SignupScreen = () => {
               </View>
             </ScrollView>
           </KeyboardAvoidingView>
-
-            <Text style={styles.fieldLabel}>Role</Text>
-            <View style={styles.roleContainer}>
-              {roles.map((r) => {
-                const selected = values.role === r.value;
-                return (
-                  <TouchableOpacity
-                    key={r.value}
-                    style={[
-                      styles.roleButton,
-                      selected && {
-                        backgroundColor: colors.primary,
-                        borderColor: colors.primary,
-                      },
-                    ]}
-                    onPress={() => setFieldValue("role", r.value)}
-                  >
-                    <Text
-                      style={[styles.roleText, selected && { color: "#fff" }]}
-                    >
-                      {r.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-            {touched.role && errors.role ? (
-              <Text style={styles.error}>{errors.role}</Text>
-            ) : null}
-            <View
-              style={{ width: "100%", marginTop: 16, alignItems: "center" }}
-            >
-              <CustomButton
-                text={isPending ? "Signing Up..." : "Sign Up"}
-                onPress={() => handleSubmit()}
-                disabled={
-                  !values.username ||
-                  !values.email ||
-                  !values.password ||
-                  !values.confirmPassword ||
-                  !values.role ||
-                  !values.image ||
-                  Object.keys(errors).length > 0
-                }
-              />
-            </View>
-          </ScrollView>
         </SafeAreaView>
       )}
     </Formik>
@@ -392,7 +350,6 @@ const styles = StyleSheet.create({
     color: colors.secondary + "CC",
     fontWeight: "600",
   },
-
   fieldLabel: {
     width: "100%",
     fontSize: 14,
@@ -401,7 +358,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 6,
   },
-
   inputRow: {
     width: "100%",
     position: "relative",
@@ -431,7 +387,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: colors.secondary,
   },
-
   roleContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -451,7 +406,6 @@ const styles = StyleSheet.create({
     color: colors.secondary,
     fontWeight: "700",
   },
-
   error: {
     alignSelf: "flex-start",
     marginBottom: 6,
