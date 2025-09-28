@@ -32,7 +32,7 @@ const SigninScreen = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const { mutate, isPending, data } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
       setIsAuthenticated(true);

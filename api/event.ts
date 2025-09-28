@@ -7,7 +7,11 @@ export const createEvent = async (eventData: {
   date: string;
   location: string;
 }) => {
-  const res = await instance.post(`${baseURL}/api/event`, eventData);
+  const token = await getToken();
+  console.log(token);
+  const res = await instance.post(`${baseURL}/api/event`, eventData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return res.data.event;
 };
 

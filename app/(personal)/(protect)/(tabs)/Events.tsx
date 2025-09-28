@@ -1,7 +1,7 @@
 import Events from "@/components/Events";
 import React from "react";
 
-const createEvents = () => {
+const myEvents = () => {
   return <Events />;
 };
-export default createEvents;
+export default myEvents;

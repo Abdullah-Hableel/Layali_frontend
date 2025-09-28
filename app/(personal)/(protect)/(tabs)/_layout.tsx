@@ -62,7 +62,7 @@ export default function RootLayout() {
       />
 
       <Tabs.Screen
-        name="Events"
+        name="events"
         options={{
           title: "My Events",
           tabBarIcon: ({ color }) => (
