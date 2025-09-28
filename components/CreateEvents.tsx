@@ -1,34 +1,45 @@
 import { createEvent } from "@/api/event";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { Formik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 import * as Yup from "yup";
 import colors from "./Colors";
 import CustomButton from "./customButton";
 
+const formatMMDDYYYY = (d: Date) =>
+  `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(
+    2,
+    "0"
+  )}-${d.getFullYear()}`;
+
 const EventSchema = Yup.object({
   budget: Yup.number()
     .typeError("Budget must be a number")
-    .min(1, "Budget must be at least 1")
+    .min(100, "Budget must be at least 100")
     .required("Budget is required"),
-  date: Yup.string()
-    .matches(/^\d{4}-\d{2}-\d{2}$/, "Use format YYYY-MM-DD")
-    .required("Date is required"),
-  location: Yup.string()
-    .min(2, "Location is too short")
-    .required("Location is required"),
+  date: Yup.string().required("Date is required"),
+  address1: Yup.string()
+    .min(4, "Address Line 1 is too short")
+    .required("Address Line 1 is required"),
+  address2: Yup.string().max(120, "Address Line 2 is too long").optional(),
 });
 
 const CreateEvents = () => {
+  const [show, setShow] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
@@ -39,6 +50,8 @@ const CreateEvents = () => {
       router.dismissTo("/events");
     },
   });
+  const joinLocation = (address1: string, address2?: string) =>
+    [address1?.trim(), address2?.trim()].filter(Boolean).join(", ");
 
   return (
     <KeyboardAvoidingView
@@ -46,13 +59,13 @@ const CreateEvents = () => {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <Formik
-        initialValues={{ budget: "", date: "", location: "" }}
+        initialValues={{ budget: "", date: "", address1: "", address2: "" }}
         validationSchema={EventSchema}
         onSubmit={(vals) =>
           mutate({
             budget: Number(vals.budget),
             date: vals.date,
-            location: vals.location.trim(),
+            location: joinLocation(vals.address1, vals.address2),
           })
         }
       >
@@ -63,10 +76,10 @@ const CreateEvents = () => {
           values,
           errors,
           touched,
+          setFieldValue,
         }) => (
           <View style={styles.container}>
             <Text style={styles.title}>Create Event</Text>
-
             <Text style={styles.label}>Budget (KD)</Text>
             <TextInput
               style={styles.input}
@@ -79,31 +92,56 @@ const CreateEvents = () => {
             {touched.budget && errors.budget && (
               <Text style={styles.error}>{errors.budget}</Text>
             )}
-
             <Text style={styles.label}>Date</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="YYYY-MM-DD"
-              value={values.date}
-              onChangeText={handleChange("date")}
-              onBlur={handleBlur("date")}
-            />
-            {touched.date && errors.date && (
-              <Text style={styles.error}>{errors.date}</Text>
-            )}
+            <TouchableOpacity
+              onPress={() => setShow(true)}
+              activeOpacity={0.85}
+            >
+              <TextInput
+                style={styles.input}
+                placeholder="MM-DD-YYYY"
+                value={values.date}
+                editable={false}
+                pointerEvents="none"
+              />
+            </TouchableOpacity>
 
-            <Text style={styles.label}>Location</Text>
+            {show && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                minimumDate={today}
+                textColor={colors.secondary}
+                onChange={(_, selected) => {
+                  if (Platform.OS === "android") setShow(false);
+                  if (selected) {
+                    setDate(selected);
+                    setFieldValue("date", formatMMDDYYYY(selected));
+                  }
+                  setShow(false);
+                }}
+              />
+            )}
+            <Text style={styles.label}>Address 1</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g. Kuwait City"
-              value={values.location}
-              onChangeText={handleChange("location")}
-              onBlur={handleBlur("location")}
-              autoCapitalize="words"
+              placeholder="e.g. Block 5, Street 12"
+              value={values.address1}
+              onChangeText={handleChange("address1")}
+              onBlur={handleBlur("address1")}
             />
-            {touched.location && errors.location && (
-              <Text style={styles.error}>{errors.location}</Text>
+            {touched.address1 && errors.address1 && (
+              <Text style={styles.error}>{errors.address1}</Text>
             )}
+            <Text style={styles.label}>Address 2</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. Apartment 10"
+              value={values.address2}
+              onChangeText={handleChange("address2")}
+              onBlur={handleBlur("address2")}
+            />
             <View style={{ alignItems: "center", padding: 30 }}>
               <CustomButton
                 text={isPending ? "Saving..." : "Save"}
