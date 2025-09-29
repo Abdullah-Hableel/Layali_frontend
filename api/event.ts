@@ -26,7 +26,11 @@ export const updateEvent = async (id: string, updateData: any) => {
 };
 
 export const deleteEvent = async (id: string) => {
-  const res = await instance.delete(`${baseURL}/api/event/${id}`);
+  const token = await getToken();
+  console.log(token);
+  const res = await instance.delete(`${baseURL}/api/event/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return res.data;
 };
 

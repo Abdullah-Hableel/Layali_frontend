@@ -36,12 +36,16 @@ const Events = () => {
   const data = events ?? [];
 
   return (
-    <>
+    <View style={styles.root}>
       <FlatList
         data={data}
         keyExtractor={(item) => item._id}
-        renderItem={({ item }) => <EventCard item={item} />}
-        ItemSeparatorComponent={() => <View style={{ height: 0 }} />}
+        renderItem={({ item }) => (
+          <EventCard
+            item={item}
+            onPress={() => router.push(`/(personal)/(events)/${item._id}`)}
+          />
+        )}
         contentContainerStyle={[
           styles.listContent,
           data.length === 0 && styles.listEmptyContent,
@@ -66,7 +70,6 @@ const Events = () => {
           </View>
         }
       />
-
       <TouchableOpacity
         style={styles.fab}
         onPress={() => router.push("/createEvents")}
@@ -74,21 +77,25 @@ const Events = () => {
       >
         <MaterialIcons name="add" size={28} color="#fff" />
       </TouchableOpacity>
-    </>
+    </View>
   );
 };
 
 export default Events;
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: colors.backgroundMuted,
+  },
   listContent: {
     padding: 16,
-    backgroundColor: colors.backgroundMuted,
     flexGrow: 1,
   },
   listEmptyContent: {
     justifyContent: "center",
     alignItems: "center",
+    flexGrow: 1,
   },
   emptyWrap: {
     alignItems: "center",
@@ -107,6 +114,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 4,
+    elevation: 6,
+    zIndex: 10,
   },
 });

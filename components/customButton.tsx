@@ -41,7 +41,7 @@ const CustomButton = ({
         style={[
           styles.text,
           variant === "secondary" && { color: colors.white },
-          variant === "outline" && { color: colors.secondary }, // 👆 text purple
+          variant === "outline" && { color: colors.secondary },
         ]}
       >
         {text}

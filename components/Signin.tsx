@@ -1,6 +1,5 @@
 import { login } from "@/api/auth";
 import AuthContext from "@/app/context/AuthContext";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { Formik } from "formik";
@@ -91,7 +90,7 @@ const SigninScreen = () => {
               <Text style={styles.fieldLabel}>Email</Text>
               <View style={styles.inputContainer}>
                 <TextInput
-                  style={[styles.input, { paddingLeft: 32 }]}
+                  style={[styles.input, {}]}
                   placeholder="Enter your email"
                   value={values.email}
                   onChangeText={handleChange("email")}
@@ -100,12 +99,12 @@ const SigninScreen = () => {
                   autoCapitalize="none"
                   keyboardType="email-address"
                 />
-                <MaterialIcons
+                {/* <MaterialIcons
                   name="email"
                   size={20}
                   color={colors.secondary}
                   style={styles.leftIcon}
-                />
+                /> */}
               </View>
               {(touched.email || submitCount > 0) && errors.email && (
                 <Text
