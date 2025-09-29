@@ -1,7 +1,7 @@
 import { getMyEvents } from "@/api/event";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
+import { router, useFocusEffect } from "expo-router";
 import React, { useCallback } from "react";
 import {
   ActivityIndicator,
@@ -25,7 +25,6 @@ const Events = () => {
   } = useQuery({
     queryKey: ["Myevents"],
     queryFn: getMyEvents,
-    enabled: false,
   });
 
   useFocusEffect(
@@ -63,7 +62,7 @@ const Events = () => {
       />
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => {}}
+        onPress={() => router.push("/createEvents")}
         activeOpacity={0.85}
       >
         <MaterialIcons name="add" size={28} color="#fff" />

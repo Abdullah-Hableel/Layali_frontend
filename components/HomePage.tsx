@@ -38,9 +38,9 @@ const contactInfo = [
   {
     id: "1",
     label: "Phone",
-    value: "+965 9999 8888",
+    value: "+965 94977560",
     icon: "phone",
-    onPress: () => Linking.openURL("tel:+96599998888"),
+    onPress: () => Linking.openURL("tel:+96594977560"),
   },
   {
     id: "2",
