@@ -47,7 +47,7 @@ const CreateEvents = () => {
     mutationFn: createEvent,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["Myevents"] });
-      router.dismissTo("/events");
+      router.dismissTo("/Events");
     },
   });
   const joinLocation = (address1: string, address2?: string) =>
