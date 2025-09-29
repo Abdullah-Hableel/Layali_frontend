@@ -1,9 +1,10 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import colors from "./Colors";
 
 type ButtonProps = {
   text: string;
+  children?: ReactNode;
   onPress: () => void;
   variant?: "primary" | "secondary" | "outline";
   disabled?: boolean;
