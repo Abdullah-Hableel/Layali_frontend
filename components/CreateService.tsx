@@ -20,6 +20,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { createService } from "../api/service";
 import { getUserById } from "../api/users";
 import colors from "../components/Colors";
+import CustomButton from "./customButton";
+// ✅ import your button
 
 // Enable LayoutAnimation on Android
 if (
@@ -177,21 +179,28 @@ export default function CreateService() {
         />
 
         {/* Vendor selector */}
-        <TouchableOpacity
-          style={[
-            styles.toggleButton,
-            { flexDirection: "row", alignItems: "center" },
-          ]}
-          onPress={toggleVendorList}
-        >
-          <Text style={styles.toggleButtonText}>Choose Vendor</Text>
-          <Feather
-            name={vendorListOpen ? "chevron-up" : "chevron-down"} // arrow direction
-            size={20}
-            color={colors.secondary} // from your Colors.tsx
-            style={{ marginLeft: 8 }} // spacing between text and icon
-          />
-        </TouchableOpacity>
+        <View style={{ alignItems: "center", marginBottom: 4 }}>
+          <TouchableOpacity
+            style={[
+              styles.toggleButton,
+              styles.base, // 👈 reuse the CustomButton style
+              {
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }, // center content
+            ]}
+            onPress={toggleVendorList}
+          >
+            <Text style={styles.toggleButtonText}>Buisness name</Text>
+            <Feather
+              name={vendorListOpen ? "chevron-up" : "chevron-down"} // arrow direction
+              size={20}
+              color={colors.secondary} // from your Colors.tsx
+              style={{ marginLeft: 8 }} // spacing between text and icon
+            />
+          </TouchableOpacity>
+        </View>
 
         {vendorListOpen && (
           <View style={styles.vendorList}>
@@ -228,9 +237,15 @@ export default function CreateService() {
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Create Service</Text>
-        </TouchableOpacity>
+        {/* ✅ Use CustomButton instead of TouchableOpacity */}
+        <View style={{ alignItems: "center", marginTop: 20 }}>
+          <CustomButton
+            text="Create Service"
+            onPress={handleSubmit}
+            variant="primary"
+            disabled={mutation.isPending}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -246,14 +261,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: "#fff",
   },
-  button: {
-    backgroundColor: colors.primary,
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 15,
-  },
-  buttonText: { color: "#fff", fontWeight: "bold" },
   imagePicker: {
     backgroundColor: "#eee",
     height: 180,
@@ -273,6 +280,16 @@ const styles = StyleSheet.create({
   toggleButtonText: { color: "#fff", fontWeight: "bold" },
   vendorList: {
     paddingVertical: 10,
+  },
+  base: {
+    paddingVertical: 14,
+    borderRadius: 30,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 4 },
+    width: 350,
   },
   vendorButton: {
     padding: 10,

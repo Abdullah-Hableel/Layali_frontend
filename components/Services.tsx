@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { baseURL } from "@/api";
 import { router } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
@@ -7,6 +8,7 @@ import {
   FlatList,
   Image,
   Modal,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,13 +19,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getUserById, UserAttrs } from "../api/users";
 import colors from "../components/Colors";
 
-const SERVER_URL = "http://172.20.10.5:8000/uploads/";
+const SERVER_URL = `${baseURL}/uploads/`;
 
 const buildImageUrl = (img?: string) =>
   img ? `${SERVER_URL}${img}` : "https://via.placeholder.com/300x180";
 
 export default function TestUser() {
-  const queryClient = useQueryClient(); // ✅ access the client here
+  const queryClient = useQueryClient();
 
   const [selectedService, setSelectedService] = useState<any | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -110,6 +112,14 @@ export default function TestUser() {
         }
         refreshing={refreshing}
         onRefresh={handleRefresh}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={[colors.primary]} // <-- Android spinner color
+            tintColor={colors.primary} // <-- iOS spinner color
+          />
+        }
       />
 
       {/* Modal for service details */}

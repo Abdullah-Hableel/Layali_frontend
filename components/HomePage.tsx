@@ -1,3 +1,4 @@
+import { baseURL } from "@/api";
 import { Feather } from "@expo/vector-icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useCallback, useState } from "react";
@@ -19,7 +20,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getServices } from "../api/service";
 import colors from "../components/Colors";
 
-const SERVER_URL = "http://172.20.10.5:8000/uploads/"; // put ur ip
+const SERVER_URL = `${baseURL}/uploads/`; // put ur ip
 
 const buildImageUrl = (img?: string) =>
   img ? `${SERVER_URL}${img}` : undefined;
@@ -178,7 +179,12 @@ const HomePage = () => {
         renderItem={renderService}
         contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20 }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={[colors.primary]} // <-- Android spinner
+            tintColor={colors.primary} // <-- IOS spinner
+          />
         }
         ListEmptyComponent={
           <Text style={styles.emptyText}>No services found 🔍</Text>
