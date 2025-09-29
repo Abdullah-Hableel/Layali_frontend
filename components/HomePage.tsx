@@ -19,7 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getServices } from "../api/service";
 import colors from "../components/Colors";
 
-const SERVER_URL = "http://192.168.14.27:8000/uploads/"; // put ur ip
+const SERVER_URL = "http://172.20.10.5:8000/uploads/"; // put ur ip
 
 const buildImageUrl = (img?: string) =>
   img ? `${SERVER_URL}${img}` : undefined;

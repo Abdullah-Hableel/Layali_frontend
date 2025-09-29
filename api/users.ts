@@ -7,6 +7,19 @@ export interface TokenPayload {
   exp?: number;
   iat?: number;
 }
+export type Service = {
+  _id: string;
+  name: string;
+  price: number;
+  image?: string;
+};
+
+export type Vendor = {
+  _id: string;
+  business_name: string;
+  logo?: string;
+  services: Service[];
+};
 export type UserAttrs = {
   _id: string;
 
@@ -15,7 +28,14 @@ export type UserAttrs = {
   email: string;
   password: string;
   image: string;
-  vendors: string[];
+  vendors: (
+    | string
+    | {
+        services: never[];
+        _id: string;
+        business_name: string;
+      }
+  )[];
   events: string[];
 };
 
