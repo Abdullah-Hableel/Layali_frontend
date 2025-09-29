@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { getAllInviteTemplates } from "../api/inviteTemplate";
+import colors from "./Colors";
 
 const InviteTemplateListScreen = () => {
   const router = useRouter();
@@ -27,7 +28,7 @@ const InviteTemplateListScreen = () => {
   if (isLoading) return <Text>Loading templates...</Text>;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.backgroundMuted }}>
       <FlatList
         data={data}
         keyExtractor={(item) => item._id}
@@ -148,40 +149,3 @@ const styles = StyleSheet.create({
 });
 
 export default InviteTemplateListScreen;
-
-// import { baseURL } from "@/api";
-// import { useQuery } from "@tanstack/react-query";
-// import React from "react";
-// import { FlatList, Image, Text, TouchableOpacity } from "react-native";
-// import { getAllInviteTemplates } from "../api/inviteTemplate";
-
-// const InviteTemplateListScreen = ({ navigation }: any) => {
-//   const { data, isLoading } = useQuery({
-//     queryKey: ["inviteTemplates"],
-//     queryFn: getAllInviteTemplates,
-//   });
-
-//   if (isLoading) return <Text>Loading templates...</Text>;
-
-//   return (
-//     <FlatList
-//       data={data}
-//       keyExtractor={(item) => item._id}
-//       renderItem={({ item }) => (
-//         <TouchableOpacity
-//           onPress={() =>
-//             navigation.navigate("CreateInvite", { templateId: item._id })
-//           }
-//         >
-//           <Image
-//             source={{ uri: `${baseURL}${item.background}` }}
-//             style={{ width: 200, height: 120, margin: 10 }}
-//           />
-//           <Text>{item._id}</Text>
-//         </TouchableOpacity>
-//       )}
-//     />
-//   );
-// };
-
-// export default InviteTemplateListScreen;
