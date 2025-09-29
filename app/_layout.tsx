@@ -84,6 +84,12 @@ export default function RootLayout() {
               title: "Create Event",
             }}
           />
+          <Stack.Screen
+            name="(personal)/(events)/[id]"
+            options={{
+              title: "My Event",
+            }}
+          />
         </Stack>
       </AuthContext.Provider>
       <Toast position="bottom" />

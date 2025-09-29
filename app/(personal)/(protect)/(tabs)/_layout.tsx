@@ -58,6 +58,13 @@ export default function RootLayout() {
               color={colors.secondary}
             />
           ),
+          headerRight: () => (
+            <React.Fragment>
+              <TouchableOpacity onPress={handleLogOut}>
+                <MaterialIcons name="logout" size={20} color={colors.danger} />
+              </TouchableOpacity>
+            </React.Fragment>
+          ),
         }}
       />
 
@@ -72,6 +79,13 @@ export default function RootLayout() {
               color={colors.secondary}
             />
           ),
+          headerRight: () => (
+            <React.Fragment>
+              <TouchableOpacity onPress={handleLogOut}>
+                <MaterialIcons name="logout" size={20} color={colors.danger} />
+              </TouchableOpacity>
+            </React.Fragment>
+          ),
         }}
       />
       <Tabs.Screen
@@ -80,6 +94,13 @@ export default function RootLayout() {
           title: "Profile",
           tabBarIcon: ({ color }) => (
             <FontAwesome name="user" size={24} color={colors.secondary} />
+          ),
+          headerRight: () => (
+            <React.Fragment>
+              <TouchableOpacity onPress={handleLogOut}>
+                <MaterialIcons name="logout" size={20} color={colors.danger} />
+              </TouchableOpacity>
+            </React.Fragment>
           ),
         }}
       />
