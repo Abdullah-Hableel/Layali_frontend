@@ -1,3 +1,4 @@
+import { baseURL } from "@/api";
 import { getAllEvents } from "@/api/event";
 import { getInvitesByEvent } from "@/api/invite";
 import colors from "@/components/Colors";
@@ -8,6 +9,8 @@ import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
+  Image,
+  Modal,
   StyleSheet,
   Text,
   TextInput,
@@ -26,7 +29,15 @@ interface Guest {
   guestName: string;
   guestEmail: string;
   rsvpStatus: RSVPStatus;
-  event?: { _id: string };
+  qrCodeImage?: string;
+  inviteTemplate?: {
+    background?: string;
+  };
+  event?: {
+    _id: string;
+    location?: string;
+    date?: string;
+  };
 }
 
 interface DecodedToken {
@@ -42,6 +53,8 @@ const Guest = () => {
   const [activeFilter, setActiveFilter] = useState<
     "All" | "Attending" | "Pending" | "Declined"
   >("All");
+  const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -125,7 +138,13 @@ const Guest = () => {
   }, [search, activeFilter, guests]);
 
   const renderGuest = ({ item }: { item: Guest }) => (
-    <View style={styles.guestCard}>
+    <TouchableOpacity
+      onPress={() => {
+        setSelectedGuest(item);
+        setModalVisible(true);
+      }}
+      style={styles.guestCard}
+    >
       <View>
         <Text style={styles.guestName}>{item.guestName}</Text>
         <Text style={styles.guestEmail}>{item.guestEmail}</Text>
@@ -146,7 +165,7 @@ const Guest = () => {
             : item.rsvpStatus}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -220,6 +239,7 @@ const Guest = () => {
           ) : null
         }
       />
+
       <View style={{ alignItems: "center", marginVertical: 20 }}>
         <CustomButton
           text="+ Add Guest"
@@ -227,6 +247,117 @@ const Guest = () => {
           variant="primary"
         />
       </View>
+
+      {/* Modal*/}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              width: 350,
+              borderRadius: 16,
+              overflow: "hidden",
+              alignItems: "center",
+            }}
+          >
+            {selectedGuest?.inviteTemplate?.background && (
+              <Image
+                source={{
+                  uri: `${baseURL}${selectedGuest.inviteTemplate.background}`,
+                }}
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                }}
+                resizeMode="cover"
+              />
+            )}
+
+            <View
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(0,0,0,0.4)",
+              }}
+            />
+
+            <View
+              style={{
+                padding: 20,
+                alignItems: "center",
+                zIndex: 1,
+              }}
+            >
+              {/* <Text style={{ fontSize: 18, fontWeight: "bold", color: "#fff" }}>
+                You're Cordially Invited
+              </Text> */}
+
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: "#fff",
+                  marginVertical: 8,
+                }}
+              >
+                {selectedGuest?.guestName}
+              </Text>
+
+              <Text style={{ color: "#fff" }}>
+                {selectedGuest?.event?.location || "Unknown"} •{" "}
+                {selectedGuest?.event?.date
+                  ? new Date(selectedGuest.event.date).toLocaleDateString()
+                  : ""}
+              </Text>
+
+              {/* QR Code */}
+              {selectedGuest?.qrCodeImage && (
+                <Image
+                  source={{ uri: selectedGuest.qrCodeImage }}
+                  style={{
+                    width: 150,
+                    height: 150,
+                    backgroundColor: "#fff",
+                    padding: 8,
+                    borderRadius: 8,
+                    marginVertical: 12,
+                  }}
+                />
+              )}
+
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={{
+                  marginTop: 10,
+                  backgroundColor: "red",
+                  padding: 10,
+                  borderRadius: 8,
+                  width: "100%",
+                }}
+              >
+                <Text style={{ color: "#fff", textAlign: "center" }}>
+                  Close
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -234,7 +365,7 @@ const Guest = () => {
 export default Guest;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: colors.backgroundLight },
+  container: { flex: 1, padding: 16, backgroundColor: colors.backgroundMuted },
 
   search: {
     borderWidth: 1,

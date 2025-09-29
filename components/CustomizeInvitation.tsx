@@ -5,6 +5,8 @@ import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import {
   Image,
+  Linking,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,6 +16,7 @@ import {
 } from "react-native";
 import { getAllEvents } from "../api/event";
 import { createInvite } from "../api/invite";
+import colors from "./Colors";
 
 const CustomizeInvitationScreen = () => {
   const { templateId, background, title, subtitle } = useLocalSearchParams<{
@@ -26,10 +29,12 @@ const CustomizeInvitationScreen = () => {
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
-
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
   const [event, setEvent] = useState<any>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [hostName, setHostName] = useState<string>("");
+
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const loadUserFromToken = async () => {
@@ -73,6 +78,8 @@ const CustomizeInvitationScreen = () => {
         inviteTemplate: templateId,
       });
       setQrCodeImage(res.qrCodeImage);
+      setInviteLink(res.inviteLink);
+      setModalVisible(true);
     } catch (err) {
       console.log("Error generating QR preview:", err);
     }
@@ -96,38 +103,6 @@ const CustomizeInvitationScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Customize Invitation</Text>
-
-      {/* Event Details */}
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Event Details</Text>
-        <Text>Event ID: {event?._id || "Unknown"}</Text>
-        <Text>Host: {hostName || "Unknown"}</Text>
-        <Text>Location: {event?.location || "Unknown"}</Text>
-        <Text>
-          Date:{" "}
-          {event?.date ? new Date(event.date).toLocaleDateString() : "Unknown"}
-        </Text>
-      </View>
-
-      {/* Guest Input */}
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Guest Info</Text>
-        <TextInput
-          placeholder="Guest Name"
-          style={styles.input}
-          value={guestName}
-          onChangeText={setGuestName}
-          placeholderTextColor="#959393ff"
-        />
-        <TextInput
-          placeholder="Guest Email"
-          style={styles.input}
-          value={guestEmail}
-          onChangeText={setGuestEmail}
-          placeholderTextColor="#959393ff"
-        />
-      </View>
-
       {/* Invitation Preview */}
       <Text style={styles.sectionTitle}>Invitation Preview</Text>
       <View
@@ -168,23 +143,128 @@ const CustomizeInvitationScreen = () => {
           </View>
         )}
       </View>
-
+      {/* Guest Input */}
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>Guest Info</Text>
+        <TextInput
+          placeholder="Guest Name"
+          style={styles.input}
+          value={guestName}
+          onChangeText={setGuestName}
+          placeholderTextColor="#959393ff"
+        />
+        <TextInput
+          placeholder="Guest Email"
+          style={styles.input}
+          value={guestEmail}
+          onChangeText={setGuestEmail}
+          placeholderTextColor="#959393ff"
+        />
+      </View>
+      {/* Event Details */}
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>Event Details</Text>
+        <Text>Host: {hostName || "Unknown"}</Text>
+        <Text>Location: {event?.location || "Unknown"}</Text>
+        <Text>
+          Date:{" "}
+          {event?.date ? new Date(event.date).toLocaleDateString() : "Unknown"}
+        </Text>
+      </View>
       <TouchableOpacity
         style={styles.previewButton}
         onPress={generateQrPreview}
       >
-        <Text style={styles.previewButtonText}>Preview QR</Text>
+        <Text style={styles.previewButtonText}>Save & Generate QR</Text>
       </TouchableOpacity>
+      {/* <TouchableOpacity style={styles.button} onPress={handleCreateInvite}>
+        <Text style={styles.buttonText}>Share</Text>
+      </TouchableOpacity> */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.sectionTitle}>Invitation Preview</Text>
 
-      <TouchableOpacity style={styles.button} onPress={handleCreateInvite}>
-        <Text style={styles.buttonText}>Save & Generate QR</Text>
-      </TouchableOpacity>
+            {/* Modal template card*/}
+            <View style={styles.previewCard}>
+              {background ? (
+                <>
+                  <Image
+                    source={{ uri: `${baseURL}${background}` }}
+                    style={styles.previewBackground}
+                    resizeMode="cover"
+                  />
+                  <View style={styles.previewOverlay} />
+                </>
+              ) : null}
+
+              <Text style={styles.inviteTitle}>
+                {title || "You're Cordially Invited"}
+              </Text>
+
+              <Text style={styles.inviteName}>{guestName || "Guest Name"}</Text>
+
+              <Text style={styles.inviteSubtitle}>
+                {event?.location || "Event Location"} •{" "}
+                {event?.date
+                  ? new Date(event.date).toLocaleDateString()
+                  : "Event Date"}
+              </Text>
+
+              {qrCodeImage ? (
+                <Image source={{ uri: qrCodeImage }} style={styles.qrImage} />
+              ) : (
+                <View style={styles.qrPlaceholder}>
+                  <Text>QR Code Here</Text>
+                </View>
+              )}
+            </View>
+
+            <TouchableOpacity
+              style={[styles.button, { marginTop: 20 }]}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.buttonText}>Close</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.button,
+                { marginTop: 10, backgroundColor: "#25D366" },
+              ]}
+              onPress={() => {
+                if (qrCodeImage && inviteLink) {
+                  const message = `You're invited!\n\nEvent: ${
+                    title || "My Event"
+                  }\nLocation: ${event?.location || "Unknown"}\nDate: ${
+                    event?.date
+                      ? new Date(event.date).toLocaleDateString()
+                      : "Unknown"
+                  }\n\nClick here for your invitation: ${inviteLink}`;
+
+                  Linking.openURL(
+                    `whatsapp://send?text=${encodeURIComponent(message)}`
+                  );
+                } else {
+                  alert("Generate QR first!");
+                }
+              }}
+            >
+              <Text style={styles.buttonText}>Share to WhatsApp</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+  container: { flex: 1, padding: 16, backgroundColor: colors.backgroundMuted },
   header: {
     fontSize: 22,
     fontWeight: "bold",
@@ -211,6 +291,7 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: "center",
     marginBottom: 20,
+    width: "100%",
   },
   inviteTitle: { color: "#fff", fontSize: 16, marginBottom: 6 },
   inviteName: { color: "#fff", fontSize: 20, fontWeight: "bold" },
@@ -232,15 +313,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  previewBackground: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 16,
-  },
-  previewOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    borderRadius: 16,
-  },
   previewButton: {
     backgroundColor: "#f28b82",
     padding: 12,
@@ -253,227 +325,29 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+    alignItems: "center",
+  },
+  previewBackground: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 16,
+  },
+
+  previewOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    borderRadius: 16,
+  },
 });
 
 export default CustomizeInvitationScreen;
-
-// import { baseURL } from "@/api";
-// import { useLocalSearchParams } from "expo-router";
-// import React, { useEffect, useState } from "react";
-// import {
-//   Image,
-//   ScrollView,
-//   StyleSheet,
-//   Text,
-//   TextInput,
-//   TouchableOpacity,
-//   View,
-// } from "react-native";
-// import { createInvite } from "../api/invite";
-
-// const CustomizeInvitationScreen = () => {
-//   const { templateId, eventId, background, title, subtitle } =
-//     useLocalSearchParams<{
-//       templateId?: string;
-//       eventId?: string;
-//       background?: string;
-//       title?: string;
-//       subtitle?: string;
-//     }>();
-
-//   useEffect(() => {
-//     console.log("Selected Template:", templateId);
-//     console.log("eventId =>", eventId);
-//   }, []);
-
-//   const [guestName, setGuestName] = useState("");
-//   const [guestEmail, setGuestEmail] = useState("");
-//   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
-
-//   const generateQrPreview = async () => {
-//     try {
-//       const res = await createInvite({
-//         event: eventId,
-//         guestName,
-//         guestEmail,
-//         inviteTemplate: templateId,
-//       });
-//       setQrCodeImage(res.qrCodeImage);
-//     } catch (err) {
-//       console.log("Error generating QR preview:", err);
-//     }
-//   };
-
-//   const handleCreateInvite = async () => {
-//     try {
-//       await createInvite({
-//         event: eventId,
-//         guestName,
-//         guestEmail,
-//         inviteTemplate: templateId,
-//       });
-//       // setQrCodeImage(res.qrCodeImage);
-//       alert("Guest saved successfully");
-//     } catch (err) {
-//       console.log("Error saving invite:", err);
-//       alert("Failed to save invite");
-//     }
-//   };
-
-//   return (
-//     <ScrollView style={styles.container}>
-//       <Text style={styles.header}>Customize Invitation</Text>
-
-//       {/* Event Details Section */}
-//       <View style={styles.card}>
-//         <Text style={styles.sectionTitle}>Event Details</Text>
-//         <Text> Event ID: {eventId}</Text>
-//         {/* <Text> Template: {title || "background theme" || templateId}</Text> */}
-//       </View>
-
-//       {/* Guest Input */}
-//       <View style={styles.card}>
-//         <Text style={styles.sectionTitle}>Guest Info</Text>
-//         <TextInput
-//           placeholder="Guest Name"
-//           style={styles.input}
-//           value={guestName}
-//           onChangeText={setGuestName}
-//           placeholderTextColor="#959393ff"
-//         />
-//         <TextInput
-//           placeholder="Guest Email"
-//           style={styles.input}
-//           value={guestEmail}
-//           onChangeText={setGuestEmail}
-//           placeholderTextColor="#959393ff"
-//         />
-//       </View>
-
-//       {/* Preview */}
-//       <Text style={styles.sectionTitle}>Invitation Preview</Text>
-//       <View
-//         style={[
-//           styles.previewCard,
-//           background ? { backgroundColor: "transparent" } : {},
-//         ]}
-//       >
-//         {/* background template */}
-//         {background ? (
-//           <>
-//             <Image
-//               source={{ uri: `${baseURL}${background}` }}
-//               style={styles.previewBackground}
-//               resizeMode="cover"
-//             />
-//             <View style={styles.previewOverlay} />
-//           </>
-//         ) : null}
-
-//         <Text style={styles.inviteTitle}>
-//           {title || "You're Cordially Invited"}
-//         </Text>
-//         <Text style={styles.inviteName}>{guestName || "Guest Name"}</Text>
-//         <Text style={styles.inviteSubtitle}>
-//           {subtitle || "Wedding Celebration"}
-//         </Text>
-
-//         {/* QR Preview */}
-//         {qrCodeImage ? (
-//           <Image source={{ uri: qrCodeImage }} style={styles.qrImage} />
-//         ) : (
-//           <View style={styles.qrPlaceholder}>
-//             <Text>QR Code Here</Text>
-//           </View>
-//         )}
-//       </View>
-
-//       {/* preview QR */}
-//       <TouchableOpacity
-//         style={styles.previewButton}
-//         onPress={generateQrPreview}
-//       >
-//         <Text style={styles.previewButtonText}>Preview QR</Text>
-//       </TouchableOpacity>
-
-//       {/* preview Button */}
-//       <TouchableOpacity style={styles.button} onPress={handleCreateInvite}>
-//         <Text style={styles.buttonText}>Save & Generate QR</Text>
-//       </TouchableOpacity>
-//     </ScrollView>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, padding: 16, backgroundColor: "#fff" },
-//   header: {
-//     fontSize: 22,
-//     fontWeight: "bold",
-//     marginBottom: 16,
-//     color: "#7a1c1c",
-//   },
-//   card: {
-//     backgroundColor: "#f9f9f9",
-//     padding: 16,
-//     borderRadius: 12,
-//     marginBottom: 16,
-//   },
-//   sectionTitle: { fontWeight: "bold", marginBottom: 8, fontSize: 16 },
-//   input: {
-//     borderWidth: 1,
-//     borderColor: "#000000ff",
-//     borderRadius: 8,
-//     padding: 10,
-//     marginBottom: 12,
-//   },
-//   previewCard: {
-//     backgroundColor: "#b23a48",
-//     borderRadius: 16,
-//     padding: 24,
-//     alignItems: "center",
-//     marginBottom: 20,
-//   },
-//   inviteTitle: { color: "#fff", fontSize: 16, marginBottom: 6 },
-//   inviteName: { color: "#fff", fontSize: 20, fontWeight: "bold" },
-//   inviteSubtitle: { color: "#eee", fontSize: 14, marginBottom: 16 },
-//   qrImage: { width: 120, height: 120, marginTop: 10 },
-//   qrPlaceholder: {
-//     width: 120,
-//     height: 120,
-//     backgroundColor: "#fff",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     borderRadius: 8,
-//   },
-//   button: {
-//     backgroundColor: "#f28b82",
-//     padding: 16,
-//     borderRadius: 12,
-//     alignItems: "center",
-//     marginTop: 10,
-//   },
-//   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-//   previewBackground: {
-//     ...StyleSheet.absoluteFillObject,
-//     borderRadius: 16,
-//   },
-//   previewOverlay: {
-//     ...StyleSheet.absoluteFillObject,
-//     backgroundColor: "rgba(0,0,0,0.3)",
-//     borderRadius: 16,
-//   },
-//   previewButton: {
-//     backgroundColor: "#f28b82",
-//     padding: 12,
-//     borderRadius: 10,
-//     alignItems: "center",
-//     marginTop: 10,
-//   },
-//   previewButtonText: {
-//     color: "#fff",
-//     fontWeight: "bold",
-//     fontSize: 16,
-//   },
-// });
-
-// export default CustomizeInvitationScreen;
