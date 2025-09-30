@@ -1,3 +1,4 @@
+import { Entypo } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
@@ -59,11 +60,6 @@ export default function CreateService() {
       try {
         const user = await getUserById();
         console.log("Logged-in user:", user);
-
-        if (!user.vendors || user.vendors.length === 0) {
-          Alert.alert("Error", "You must be a vendor to create services.");
-          return;
-        }
 
         const vendorObjects: Vendor[] = user.vendors.map((v: any) => ({
           _id: v._id,
@@ -200,7 +196,8 @@ export default function CreateService() {
               >
                 <Text
                   style={{
-                    color: selectedVendorId === v._id ? "#fff" : "#000",
+                    color:
+                      selectedVendorId === v._id ? "#fff" : colors.secondary,
                     fontWeight: "bold",
                   }}
                 >
@@ -239,7 +236,9 @@ export default function CreateService() {
                 >
                   <Text
                     style={{
-                      color: categories.includes(cat._id) ? "#fff" : "#000",
+                      color: categories.includes(cat._id)
+                        ? "#fff"
+                        : colors.secondary,
                       fontWeight: "bold",
                     }}
                   >
@@ -256,7 +255,7 @@ export default function CreateService() {
           {image ? (
             <Image source={{ uri: image.uri }} style={styles.imagePreview} />
           ) : (
-            <Text>Select Image</Text>
+            <Entypo name="image" size={50} color="black" />
           )}
         </TouchableOpacity>
 
@@ -275,7 +274,7 @@ export default function CreateService() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: colors.backgroundLight },
+  container: { flex: 1, padding: 20, backgroundColor: colors.backgroundMuted },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -295,12 +294,12 @@ const styles = StyleSheet.create({
   imagePreview: { width: "100%", height: "100%", borderRadius: 10 },
   vendorButton: {
     padding: 10,
-    borderRadius: 8,
-    backgroundColor: "#ddd",
+    borderRadius: 100,
+    backgroundColor: colors.accent,
     marginRight: 10,
   },
   vendorButtonSelected: {
     backgroundColor: colors.primary,
   },
-  toggleButtonText: { color: "#000", fontWeight: "bold" },
+  toggleButtonText: { color: colors.secondary, fontWeight: "bold" },
 });
