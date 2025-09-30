@@ -4,7 +4,7 @@ import { formatMMDDYYYY, todayAtMidnight } from "@/Utils/date";
 import { UpdateEventSchema } from "@/Utils/eventSchema";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import React, { useState } from "react";
 import {
@@ -43,6 +43,7 @@ const EventDetails = () => {
         text1: "Event deleted 🎉",
         visibilityTime: 3000,
       });
+      router.replace("/(personal)/(protect)/(tabs)/events");
     },
     onError: () => {
       Toast.show({

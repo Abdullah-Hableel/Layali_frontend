@@ -1,4 +1,4 @@
-import { Event } from "@/data/events";
+import { Event, EventStats } from "@/data/events";
 import instance, { baseURL } from "./index";
 import { getToken } from "./storage";
 
@@ -51,4 +51,13 @@ export const getMyEvents = async () => {
   });
   console.log(res.data.events as Event[]);
   return res.data.events as Event[];
+};
+
+export const getMyEventStats = async () => {
+  const token = await getToken();
+  const res = await instance.get("/api/event/stats", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  return res.data.stats as EventStats;
 };
