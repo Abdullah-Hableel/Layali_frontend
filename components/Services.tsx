@@ -100,73 +100,79 @@ export default function Service() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Welcome {data.username}</Text>
-      <FlatList
-        data={services}
-        keyExtractor={(item) => item._id}
-        renderItem={renderService}
-        contentContainerStyle={{ padding: 20 }}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No services found 🔍</Text>
-        }
-        refreshing={refreshing}
-        onRefresh={handleRefresh}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            colors={[colors.primary]} // <-- Android spinner color
-            tintColor={colors.primary} // <-- iOS spinner color
-          />
-        }
-      />
+    <SafeAreaView style={[styles.container, { paddingTop: -100 }]}>
+      <View style={{ justifyContent: "flex-start" }}>
+        <Text style={styles.title}>
+          🛎️ number of your services: {services.length}
+        </Text>
+        <FlatList
+          data={services}
+          keyExtractor={(item) => item._id}
+          renderItem={renderService}
+          contentContainerStyle={{ padding: 20 }}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>No services found 🔍</Text>
+          }
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              colors={[colors.primary]} // <-- Android spinner color
+              tintColor={colors.primary} // <-- iOS spinner color
+            />
+          }
+        />
 
-      {/* Modal for service details */}
-      {selectedService && (
-        <Modal
-          visible={!!selectedService}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={() => setSelectedService(null)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <ScrollView>
-                <Text style={styles.modalTitle}>{selectedService.name}</Text>
-                <Image
-                  source={{ uri: buildImageUrl(selectedService.image) }}
-                  style={styles.modalImage}
-                />
-                <Text style={styles.modalText}>
-                  Price: {selectedService.price} KD
-                </Text>
-                <View style={styles.modalVendorRow}>
+        {/* Modal for service details */}
+        {selectedService && (
+          <Modal
+            visible={!!selectedService}
+            animationType="slide"
+            transparent={true}
+            onRequestClose={() => setSelectedService(null)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <ScrollView>
+                  <Text style={styles.modalTitle}>{selectedService.name}</Text>
                   <Image
-                    source={{ uri: buildImageUrl(selectedService.vendorLogo) }}
-                    style={styles.modalVendorLogo}
+                    source={{ uri: buildImageUrl(selectedService.image) }}
+                    style={styles.modalImage}
                   />
-                  <Text style={styles.modalVendorName}>
-                    {selectedService.vendorName}
+                  <Text style={styles.modalText}>
+                    Price: {selectedService.price} KD
                   </Text>
-                </View>
-              </ScrollView>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setSelectedService(null)}
-              >
-                <Text style={styles.closeButtonText}>Close</Text>
-              </TouchableOpacity>
+                  <View style={styles.modalVendorRow}>
+                    <Image
+                      source={{
+                        uri: buildImageUrl(selectedService.vendorLogo),
+                      }}
+                      style={styles.modalVendorLogo}
+                    />
+                    <Text style={styles.modalVendorName}>
+                      {selectedService.vendorName}
+                    </Text>
+                  </View>
+                </ScrollView>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setSelectedService(null)}
+                >
+                  <Text style={styles.closeButtonText}>Close</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </Modal>
-      )}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => router.push("/createService")} // navigate to your create service screen
-      >
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
+          </Modal>
+        )}
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => router.push("/createService")} // navigate to your create service screen
+        >
+          <Text style={styles.fabText}>+</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -175,7 +181,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.backgroundMuted,
-    marginBottom: 50,
   },
   center: {
     flex: 1,

@@ -1,7 +1,8 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
-const baseURL = "http://192.168.15.28:8000"; // put ur ip in between
+const baseURL = "http://192.168.14.27:8000"; // put ur ip in between
+
 
 export { baseURL };
 
