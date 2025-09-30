@@ -24,7 +24,7 @@ const SERVER_URL = `${baseURL}/uploads/`;
 const buildImageUrl = (img?: string) =>
   img ? `${SERVER_URL}${img}` : "https://via.placeholder.com/300x180";
 
-export default function TestUser() {
+export default function Service() {
   const queryClient = useQueryClient();
 
   const [selectedService, setSelectedService] = useState<any | null>(null);
@@ -172,7 +172,11 @@ export default function TestUser() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.backgroundLight },
+  container: {
+    flex: 1,
+    backgroundColor: colors.backgroundMuted,
+    marginBottom: 50,
+  },
   center: {
     flex: 1,
     justifyContent: "center",
