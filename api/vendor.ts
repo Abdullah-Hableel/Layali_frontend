@@ -46,3 +46,27 @@ export const getVendorById = async (): Promise<Vendor> => {
 
   return res.data;
 };
+
+export const createVendor = async (formData: FormData) => {
+  const response = await instance.post(`/api/vendor`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+};
+
+export const updateVendor = async (id: string, data: FormData) => {
+  const response = await instance.put(`/api/vendor/${id}`, data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+};
+
+export const deleteVendor = async (id: string) => {
+  const response = await instance.delete(`/api/vendor/${id}`);
+  return response.data;
+};
+
+export const deleteAllVendors = async () => {
+  const response = await instance.delete(`/api/vendor/`);
+  return response.data;
+};

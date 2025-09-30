@@ -8,3 +8,4 @@ const VendorHome = () => {
     </View>
   );
 };
+export default VendorHome;
