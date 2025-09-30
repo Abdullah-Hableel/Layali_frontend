@@ -157,7 +157,12 @@ export default function CreateService() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+      <ScrollView
+        contentContainerStyle={{
+          paddingBottom: 30,
+          paddingTop: 0, // ⬅️ lift everything up by adding spacing
+        }}
+      >
         {/* Service name */}
         <TextInput
           style={styles.input}
@@ -166,7 +171,6 @@ export default function CreateService() {
           value={name}
           onChangeText={setName}
         />
-
         {/* Price */}
         <TextInput
           style={styles.input}
@@ -176,7 +180,6 @@ export default function CreateService() {
           onChangeText={setPrice}
           keyboardType="numeric"
         />
-
         {/* Vendor selector */}
         <View style={{ marginBottom: 15 }}>
           <Text
@@ -207,7 +210,6 @@ export default function CreateService() {
             ))}
           </ScrollView>
         </View>
-
         {/* Category selector */}
         <View style={{ marginBottom: 15 }}>
           <Text
@@ -249,7 +251,6 @@ export default function CreateService() {
             </ScrollView>
           )}
         </View>
-
         {/* Image picker */}
         <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
           {image ? (
@@ -258,7 +259,6 @@ export default function CreateService() {
             <Entypo name="image" size={50} color="black" />
           )}
         </TouchableOpacity>
-
         {/* Submit button */}
         <View style={{ alignItems: "center", marginTop: 20 }}>
           <CustomButton
@@ -274,7 +274,12 @@ export default function CreateService() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: colors.backgroundMuted },
+  container: {
+    flex: 1,
+    backgroundColor: colors.backgroundMuted,
+    paddingHorizontal: 20,
+    marginTop: -20,
+  },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
