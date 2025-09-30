@@ -93,7 +93,7 @@ export default function RootLayout() {
           <Stack.Screen
             name="(personal)/settings"
             options={{
-              title: "Settings",
+              title: "Contact us",
             }}
           />
           <Stack.Screen
