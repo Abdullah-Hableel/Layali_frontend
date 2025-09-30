@@ -251,7 +251,7 @@ const HomePage = () => {
 export default HomePage;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.backgroundLight },
+  container: { flex: 1, backgroundColor: colors.backgroundMuted },
   searchWrapper: {
     flexDirection: "row",
     alignItems: "center",
