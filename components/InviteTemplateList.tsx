@@ -75,7 +75,7 @@ const InviteTemplateListScreen = () => {
             () => {
               if (!selectedTemplate) return;
               router.push({
-                pathname: "/",
+                pathname: "/customizeinvitation",
                 params: {
                   templateId: selectedTemplate._id,
                   background: selectedTemplate.background,
@@ -93,6 +93,8 @@ const InviteTemplateListScreen = () => {
     </SafeAreaView>
   );
 };
+
+export default InviteTemplateListScreen;
 
 const styles = StyleSheet.create({
   card: {
@@ -147,5 +149,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-export default InviteTemplateListScreen;
