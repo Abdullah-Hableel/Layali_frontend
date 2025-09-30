@@ -90,6 +90,14 @@ export default function RootLayout() {
               title: "My Event",
             }}
           />
+          <Stack.Screen
+            name="createService"
+            options={{
+              title: "Post Your Service",
+              headerBackVisible: true, // keep the arrow
+              headerBackTitle: "Back",
+            }}
+          />
         </Stack>
       </AuthContext.Provider>
       <Toast position="bottom" />
