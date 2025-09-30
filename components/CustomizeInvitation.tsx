@@ -18,19 +18,29 @@ import { getAllEvents } from "../api/event";
 import { createInvite } from "../api/invite";
 import colors from "./Colors";
 
-const CustomizeInvitationScreen = () => {
-  const { templateId, background, title, subtitle } = useLocalSearchParams<{
-    templateId?: string;
-    background?: string;
-    title?: string;
-    subtitle?: string;
-  }>();
+interface Event {
+  _id: string;
+  user: string | { _id: string };
+  location?: string;
+  date?: string;
+}
 
+const CustomizeInvitationScreen = () => {
+  const { templateId, background, title, subtitle, eventId } =
+    useLocalSearchParams<{
+      templateId?: string;
+      background?: string;
+      title?: string;
+      subtitle?: string;
+      eventId?: string;
+    }>();
+
+  const [events, setEvents] = useState<Event[]>([]);
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
   const [inviteLink, setInviteLink] = useState<string | null>(null);
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<Event | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [hostName, setHostName] = useState<string>("");
 
@@ -52,22 +62,32 @@ const CustomizeInvitationScreen = () => {
     const fetchEvent = async () => {
       try {
         if (userId) {
-          const events = await getAllEvents();
-          const userEvents = events.filter(
-            (e: any) => String(e.user?._id || e.user) === userId
-          );
+          const allEvents: Event[] = await getAllEvents();
+          let selectedEvent: Event | null = null;
 
-          if (userEvents.length > 0) {
-            setEvent(userEvents[0]);
+          if (eventId) {
+            selectedEvent =
+              allEvents.find((e: Event) => e._id === eventId) || null;
+          }
+
+          if (!selectedEvent) {
+            selectedEvent =
+              allEvents.find(
+                (e: Event) =>
+                  (typeof e.user === "string" ? e.user : e.user._id) === userId
+              ) || null;
+          }
+
+          if (selectedEvent) {
+            setEvent(selectedEvent);
           }
         }
       } catch (err) {
         console.log("Error fetching events:", err);
       }
     };
-
     fetchEvent();
-  }, [userId]);
+  }, [userId, eventId]);
 
   const generateQrPreview = async () => {
     try {
@@ -103,6 +123,7 @@ const CustomizeInvitationScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Customize Invitation</Text>
+
       {/* Invitation Preview */}
       <Text style={styles.sectionTitle}>Invitation Preview</Text>
       <View
@@ -143,6 +164,7 @@ const CustomizeInvitationScreen = () => {
           </View>
         )}
       </View>
+
       {/* Guest Input */}
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Guest Info</Text>
@@ -161,6 +183,7 @@ const CustomizeInvitationScreen = () => {
           placeholderTextColor="#959393ff"
         />
       </View>
+
       {/* Event Details */}
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Event Details</Text>
@@ -171,15 +194,14 @@ const CustomizeInvitationScreen = () => {
           {event?.date ? new Date(event.date).toLocaleDateString() : "Unknown"}
         </Text>
       </View>
+
       <TouchableOpacity
         style={styles.previewButton}
         onPress={generateQrPreview}
       >
         <Text style={styles.previewButtonText}>Save & Generate QR</Text>
       </TouchableOpacity>
-      {/* <TouchableOpacity style={styles.button} onPress={handleCreateInvite}>
-        <Text style={styles.buttonText}>Share</Text>
-      </TouchableOpacity> */}
+
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -231,6 +253,7 @@ const CustomizeInvitationScreen = () => {
             >
               <Text style={styles.buttonText}>Close</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               style={[
                 styles.button,
@@ -262,6 +285,7 @@ const CustomizeInvitationScreen = () => {
     </ScrollView>
   );
 };
+export default CustomizeInvitationScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: colors.backgroundMuted },
@@ -349,5 +373,3 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
 });
-
-export default CustomizeInvitationScreen;
