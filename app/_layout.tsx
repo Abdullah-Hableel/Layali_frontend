@@ -100,7 +100,7 @@ export default function RootLayout() {
             name="createService"
             options={{
               title: "Post Your Service",
-              headerBackVisible: true, // keep the arrow
+              headerBackVisible: true,
               headerBackTitle: "Back",
             }}
           />
