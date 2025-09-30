@@ -91,6 +91,12 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="(personal)/settings"
+            options={{
+              title: "Settings",
+            }}
+          />
+          <Stack.Screen
             name="createService"
             options={{
               title: "Post Your Service",

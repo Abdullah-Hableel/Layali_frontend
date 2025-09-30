@@ -77,7 +77,11 @@ const PersonalProfile = () => {
           <Feather name="chevron-right" size={18} color="#9a9a9a" />
         </TouchableOpacity>
         <View style={styles.divider} />
-        <TouchableOpacity style={styles.actionItem} activeOpacity={0.85}>
+        <TouchableOpacity
+          style={styles.actionItem}
+          activeOpacity={0.85}
+          onPress={() => router.push("/(personal)/settings")}
+        >
           <Feather name="settings" size={18} color={colors.text || "#333"} />
           <Text style={styles.actionText}>Settings</Text>
           <Feather name="chevron-right" size={18} color="#9a9a9a" />
