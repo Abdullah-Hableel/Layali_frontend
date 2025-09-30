@@ -21,7 +21,11 @@ export const getEventById = async (id: string) => {
 };
 
 export const updateEvent = async (id: string, updateData: any) => {
-  const res = await instance.put(`${baseURL}/api/event/${id}`, updateData);
+  const token = await getToken();
+  console.log(token);
+  const res = await instance.put(`${baseURL}/api/event/${id}`, updateData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return res.data.event;
 };
 

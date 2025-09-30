@@ -1,29 +1,24 @@
-import { deleteEvent, getEventById } from "@/api/event";
+import { deleteEvent, getEventById, updateEvent } from "@/api/event";
 import colors from "@/components/Colors";
-import { MaterialIcons } from "@expo/vector-icons";
+import { formatMMDDYYYY, todayAtMidnight } from "@/Utils/date";
+import { UpdateEventSchema } from "@/Utils/eventSchema";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
+import { useLocalSearchParams } from "expo-router";
+import { Formik } from "formik";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-
-const formatDate = (dateString: string) => {
-  const d = new Date(dateString);
-  return d.toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
 
 const EventDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -38,6 +33,7 @@ const EventDetails = () => {
     queryFn: () => getEventById(id),
     enabled: !!id,
   });
+
   const { mutate: handleDelete, isPending: deleting } = useMutation({
     mutationFn: () => deleteEvent(id!),
     onSuccess: () => {
@@ -45,20 +41,35 @@ const EventDetails = () => {
       Toast.show({
         type: "success",
         text1: "Event deleted 🎉",
-        position: "top",
         visibilityTime: 3000,
       });
-      router.dismissTo("/(personal)/(protect)/(tabs)/events");
     },
     onError: () => {
       Toast.show({
         type: "error",
-        text1: "Failed to delete ❌",
-        text2: "Please try again later",
+        text1: "Failed to delete, please try again later.",
         visibilityTime: 4000,
       });
     },
   });
+
+  const { mutate: saveAll, isPending: saving } = useMutation({
+    mutationFn: (body: any) => updateEvent(id!, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["Myevents", id] });
+      queryClient.invalidateQueries({ queryKey: ["Myevents"] });
+      Toast.show({ type: "success", text1: "Saved ✅" });
+      setIsEditing(false);
+    },
+    onError: () =>
+      Toast.show({
+        type: "error",
+        text1: "Failed to update, please try again later.",
+      }),
+  });
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
 
   if (isLoading) {
     return (
@@ -80,16 +91,175 @@ const EventDetails = () => {
     <View style={styles.root}>
       <ScrollView style={styles.container}>
         <View style={styles.card}>
-          <Text style={styles.title}>Event Details</Text>
+          <View style={styles.rowBetween}>
+            <Text style={styles.title}>Event Details</Text>
+            {!isEditing && (
+              <TouchableOpacity onPress={() => setIsEditing(true)}>
+                <Text style={styles.addBtn}>Edit</Text>
+              </TouchableOpacity>
+            )}
+          </View>
 
-          <Text style={styles.label}>Location</Text>
-          <Text style={styles.value}>{event.location}</Text>
+          <Formik
+            enableReinitialize
+            initialValues={{
+              location: event.location ?? "",
+              budget: String(event.budget ?? ""),
+              date: new Date(event.date),
+            }}
+            validationSchema={UpdateEventSchema}
+            onSubmit={(vals) => {
+              const newEventDetails: any = {};
+              const addrNew = vals.location.trim().replace(/\s+/g, " ");
+              const addrOld = (event.location ?? "").trim();
+              if (addrNew && addrNew !== addrOld) {
+                newEventDetails.location = addrNew;
+              }
+              const budgetNew = Number(vals.budget);
+              if (vals.budget && budgetNew !== Number(event.budget)) {
+                newEventDetails.budget = budgetNew;
+              }
+              const oldDay = new Date(event.date);
+              oldDay.setHours(0, 0, 0, 0);
+              const newDay = new Date(vals.date);
+              newDay.setHours(0, 0, 0, 0);
 
-          <Text style={styles.label}>Date</Text>
-          <Text style={styles.value}>{formatDate(event.date)}</Text>
+              if (newDay.getTime() !== oldDay.getTime()) {
+                newEventDetails.date = newDay.toISOString();
+              }
+              if (Object.keys(newEventDetails).length === 0) {
+                return Toast.show({
+                  type: "info",
+                  text1: "No changes to save",
+                });
+              }
 
-          <Text style={styles.label}>Budget</Text>
-          <Text style={styles.value}>{event.budget} KD</Text>
+              saveAll(newEventDetails);
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              setFieldValue,
+              isSubmitting,
+            }) => (
+              <>
+                <Text style={styles.label}>Address</Text>
+                {isEditing ? (
+                  <>
+                    <TextInput
+                      style={styles.input}
+                      value={values.location}
+                      onChangeText={handleChange("location")}
+                      onBlur={handleBlur("location")}
+                      placeholder="Enter address"
+                    />
+                    {touched.location && errors.location && (
+                      <Text style={styles.error}>
+                        {errors.location as string}
+                      </Text>
+                    )}
+                  </>
+                ) : (
+                  <Text style={styles.value}>{event.location}</Text>
+                )}
+                <Text style={styles.label}>Date</Text>
+                {isEditing ? (
+                  <>
+                    <TouchableOpacity
+                      style={[
+                        styles.input,
+                        { justifyContent: "center", height: 48 },
+                      ]}
+                      onPress={() => setShowPicker(true)}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.value}>
+                        {formatMMDDYYYY(values.date)}
+                      </Text>
+                    </TouchableOpacity>
+
+                    {showPicker && (
+                      <DateTimePicker
+                        value={values.date}
+                        mode="date"
+                        display={Platform.OS === "ios" ? "spinner" : "default"}
+                        minimumDate={todayAtMidnight()}
+                        textColor={colors.secondary}
+                        onChange={(_, selected) => {
+                          if (Platform.OS === "android") setShowPicker(false);
+                          if (selected) setFieldValue("date", selected);
+                        }}
+                      />
+                    )}
+
+                    {touched.date && typeof errors.date === "string" && (
+                      <Text style={styles.error}>{errors.date}</Text>
+                    )}
+                  </>
+                ) : (
+                  <Text style={styles.value}>
+                    {formatMMDDYYYY(new Date(event.date))}
+                  </Text>
+                )}
+
+                <Text style={styles.label}>Budget</Text>
+                {isEditing ? (
+                  <>
+                    <TextInput
+                      style={styles.input}
+                      value={values.budget}
+                      onChangeText={handleChange("budget")}
+                      onBlur={handleBlur("budget")}
+                      keyboardType="numeric"
+                      placeholder="e.g. 500"
+                    />
+                    {touched.budget && errors.budget && (
+                      <Text style={styles.error}>
+                        {errors.budget as string}
+                      </Text>
+                    )}
+                  </>
+                ) : (
+                  <Text style={styles.value}>{event.budget} KD</Text>
+                )}
+
+                {isEditing && (
+                  <View style={styles.rowRight}>
+                    <TouchableOpacity
+                      onPress={() => handleSubmit()}
+                      disabled={saving || isSubmitting}
+                    >
+                      <Text
+                        style={[
+                          styles.saveBtn,
+                          { opacity: saving || isSubmitting ? 0.5 : 1 },
+                        ]}
+                      >
+                        {saving || isSubmitting ? "Saving…" : "Save"}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setFieldValue("address1", event.location ?? "");
+                        setFieldValue("budget", String(event.budget ?? ""));
+                        setFieldValue("date", new Date(event.date));
+                        setIsEditing(false);
+                        setShowPicker(false);
+                      }}
+                      style={{ marginRight: 16 }}
+                    >
+                      <Text style={styles.cancelBtn}>Cancel</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </>
+            )}
+          </Formik>
         </View>
 
         <View style={styles.card}>
@@ -111,6 +281,7 @@ const EventDetails = () => {
           </View>
           <Text style={styles.placeholder}>No guest data</Text>
         </View>
+
         <View style={{ alignItems: "center" }}>
           <TouchableOpacity
             style={styles.deleteBtn}
@@ -136,13 +307,6 @@ const EventDetails = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => router.push(`/editEvent/${id}`)}
-      >
-        <MaterialIcons name="edit" size={24} color="#fff" />
-      </TouchableOpacity>
     </View>
   );
 };
@@ -150,30 +314,28 @@ const EventDetails = () => {
 export default EventDetails;
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.backgroundMuted,
+  rowRight: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 16,
   },
-  container: {
-    flex: 1,
-    padding: 16,
-  },
+
+  root: { flex: 1, backgroundColor: colors.backgroundMuted },
+  container: { flex: 1, padding: 16 },
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: colors.backgroundMuted,
   },
+
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
+
   title: {
     fontSize: 20,
     fontWeight: "700",
@@ -182,73 +344,45 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   label: {
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: "600",
     color: colors.secondary,
     marginTop: 8,
   },
-  value: {
-    fontSize: 15,
-    color: colors.text,
-    marginTop: 2,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: colors.text,
-  },
+  value: { fontSize: 15, color: colors.text, marginTop: 2 },
+
+  sectionTitle: { fontSize: 16, fontWeight: "700", color: colors.text },
   rowBetween: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
   },
-  addBtn: {
-    color: colors.primary,
-    fontWeight: "600",
-  },
-  manageBtn: {
-    color: colors.secondary,
-    fontWeight: "600",
-  },
-  placeholder: {
-    fontSize: 14,
-    color: "#999",
-  },
+
+  addBtn: { color: colors.primary, fontWeight: "600" },
+  manageBtn: { color: colors.secondary, fontWeight: "600" },
+  placeholder: { fontSize: 14, color: "#999" },
+
   deleteBtn: {
     backgroundColor: colors.danger,
     paddingVertical: 14,
     borderRadius: 30,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 4 },
     width: 350,
   },
-  deleteText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: colors.white,
-  },
-  error: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.danger,
-  },
-  fab: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: colors.primary,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
+  deleteText: { fontSize: 18, fontWeight: "bold", color: colors.white },
+  error: { color: colors.danger, fontSize: 12, fontWeight: "600" },
+
+  saveBtn: { color: colors.primary, fontWeight: "600" },
+  cancelBtn: { color: colors.danger, fontWeight: "600", marginLeft: 8 },
+
+  input: {
+    height: 48,
+    borderWidth: 1,
+    borderColor: colors.secondary,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    backgroundColor: "#fff",
+    color: colors.text,
   },
 });
