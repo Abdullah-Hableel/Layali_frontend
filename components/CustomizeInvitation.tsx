@@ -17,6 +17,7 @@ import {
 import { getAllEvents } from "../api/event";
 import { createInvite } from "../api/invite";
 import colors from "./Colors";
+import CustomButton from "./customButton";
 
 interface Event {
   _id: string;
@@ -125,7 +126,16 @@ const CustomizeInvitationScreen = () => {
       <Text style={styles.header}>Customize Invitation</Text>
 
       {/* Invitation Preview */}
-      <Text style={styles.sectionTitle}>Invitation Preview</Text>
+      <Text
+        style={{
+          color: colors.secondary,
+          fontWeight: "bold",
+          marginBottom: 8,
+          fontSize: 16,
+        }}
+      >
+        Invitation Preview
+      </Text>
       <View
         style={[
           styles.previewCard,
@@ -147,8 +157,8 @@ const CustomizeInvitationScreen = () => {
           {title || "You're Cordially Invited"}
         </Text>
 
-        <Text style={styles.inviteName}>{hostName || "Host Name"}</Text>
-
+        <Text style={styles.inviteName}>{"Guest Name"}</Text>
+        {/* {hostName || "Host Name"} */}
         <Text style={styles.inviteSubtitle}>
           {event?.location || "Event Location"} •{" "}
           {event?.date
@@ -167,7 +177,16 @@ const CustomizeInvitationScreen = () => {
 
       {/* Guest Input */}
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Guest Info</Text>
+        <Text
+          style={{
+            color: colors.secondary,
+            fontWeight: "bold",
+            marginBottom: 8,
+            fontSize: 16,
+          }}
+        >
+          Guest Info
+        </Text>
         <TextInput
           placeholder="Guest Name"
           style={styles.input}
@@ -186,8 +205,17 @@ const CustomizeInvitationScreen = () => {
 
       {/* Event Details */}
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Event Details</Text>
-        <Text>Host: {hostName || "Unknown"}</Text>
+        <Text
+          style={{
+            color: colors.secondary,
+            fontWeight: "bold",
+            marginBottom: 8,
+            fontSize: 16,
+          }}
+        >
+          Event Details
+        </Text>
+        {/* <Text>Host: {hostName || "Unknown"}</Text> */}
         <Text>Location: {event?.location || "Unknown"}</Text>
         <Text>
           Date:{" "}
@@ -195,12 +223,9 @@ const CustomizeInvitationScreen = () => {
         </Text>
       </View>
 
-      <TouchableOpacity
-        style={styles.previewButton}
-        onPress={generateQrPreview}
-      >
-        <Text style={styles.previewButtonText}>Save & Generate QR</Text>
-      </TouchableOpacity>
+      <View style={{ alignItems: "center", marginTop: 50 }}>
+        <CustomButton text="Save & Generate QR" onPress={generateQrPreview} />
+      </View>
 
       <Modal
         visible={modalVisible}
@@ -300,6 +325,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
+    color: colors.secondary,
   },
   sectionTitle: { fontWeight: "bold", marginBottom: 8, fontSize: 16 },
   input: {

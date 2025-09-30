@@ -185,11 +185,9 @@ const Guest = () => {
 
   return (
     <View style={styles.container}>
-      {/* Event Select Dropdown */}
+      {/* Event Select Dropdown//{ marginBottom: 4, fontWeight: "bold" } */}
       <View style={{ marginBottom: 12 }}>
-        <Text style={{ marginBottom: 4, fontWeight: "bold" }}>
-          Select Event:
-        </Text>
+        <Text style={{ color: colors.secondary }}>Select Event:</Text>
         <SelectList
           setSelected={(val: string) => {
             setSelectedEventId(val);
