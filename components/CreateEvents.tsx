@@ -1,4 +1,6 @@
 import { createEvent } from "@/api/event";
+import { formatMMDDYYYY, todayAtMidnight } from "@/Utils/date";
+import { EventSchema } from "@/Utils/eventSchema";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
@@ -13,33 +15,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import * as Yup from "yup";
+import Toast from "react-native-toast-message";
 import colors from "./Colors";
 import CustomButton from "./customButton";
-
-const formatMMDDYYYY = (d: Date) =>
-  `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(
-    2,
-    "0"
-  )}-${d.getFullYear()}`;
-
-const EventSchema = Yup.object({
-  budget: Yup.number()
-    .typeError("Budget must be a number")
-    .min(100, "Budget must be at least 100")
-    .required("Budget is required"),
-  date: Yup.string().required("Date is required"),
-  address1: Yup.string()
-    .min(4, "Address Line 1 is too short")
-    .required("Address Line 1 is required"),
-  address2: Yup.string().max(120, "Address Line 2 is too long").optional(),
-});
 
 const CreateEvents = () => {
   const [show, setShow] = useState(false);
   const [date, setDate] = useState(new Date());
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
@@ -47,7 +30,18 @@ const CreateEvents = () => {
     mutationFn: createEvent,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["Myevents"] });
-      router.dismissTo("/Events");
+      Toast.show({
+        type: "success",
+        text1: "Event saved",
+        text2: "Your event was created successfully.",
+      });
+      router.dismissTo("/(personal)/(protect)/(tabs)/events");
+    },
+    onError: (err: any) => {
+      Toast.show({
+        type: "error",
+        text1: "Failed to create event. Please try again",
+      });
     },
   });
   const joinLocation = (address1: string, address2?: string) =>
@@ -111,7 +105,7 @@ const CreateEvents = () => {
                 value={date}
                 mode="date"
                 display={Platform.OS === "ios" ? "spinner" : "default"}
-                minimumDate={today}
+                minimumDate={todayAtMidnight()}
                 textColor={colors.secondary}
                 onChange={(_, selected) => {
                   if (Platform.OS === "android") setShow(false);
