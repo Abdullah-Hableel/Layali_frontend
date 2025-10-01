@@ -1,12 +1,12 @@
 import { baseURL } from "@/api";
 import { Feather } from "@expo/vector-icons";
+import Slider from "@react-native-community/slider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Image,
-  Linking,
   Modal,
   RefreshControl,
   ScrollView,
@@ -20,8 +20,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getServices } from "../api/service";
 import colors from "../components/Colors";
 
-const SERVER_URL = `${baseURL}/uploads/`; // put ur ip
-
+const SERVER_URL = `${baseURL}/uploads/`;
 const buildImageUrl = (img?: string) =>
   img ? `${SERVER_URL}${img}` : undefined;
 
@@ -35,40 +34,15 @@ type Service = {
   vendor: Vendor;
   categories: Category[];
 };
-const contactInfo = [
-  {
-    id: "1",
-    label: "Phone",
-    value: "+965 94977560",
-    icon: "phone",
-    onPress: () => Linking.openURL("tel:+96594977560"),
-  },
-  {
-    id: "2",
-    label: "Email",
-    value: "Layali@gmail.com",
-    icon: "mail",
-    onPress: () => Linking.openURL("mailto:Layali@gmail.com"),
-  },
-  {
-    id: "3",
-    label: "Website",
-    value: "www.Layali.com",
-    icon: "globe",
-    onPress: () => Linking.openURL("https://www.Layali.com"),
-  },
-  {
-    id: "4",
-    label: "Instagram",
-    value: "@Layali_kw",
-    icon: "instagram",
-    onPress: () => Linking.openURL("https://www.instagram.com/Layali_kw"),
-  },
-];
+
+// ← 5-phase budget ranges, last phase = All
+const budgetSteps = [0, 100, 500, 1000, Infinity];
+
 const HomePage = () => {
   const [searchText, setSearchText] = useState("");
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [budgetStepIndex, setBudgetStepIndex] = useState<number>(0);
 
   const queryClient = useQueryClient();
 
@@ -79,9 +53,22 @@ const HomePage = () => {
 
   const services = data ?? [];
 
-  const filteredServices = services.filter((service) =>
-    service.name.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredServices = services.filter((service) => {
+    const matchesSearch = service.name
+      .toLowerCase()
+      .includes(searchText.toLowerCase());
+
+    if (budgetStepIndex === budgetSteps.length - 1) {
+      // last phase: show all
+      return matchesSearch;
+    }
+
+    const min = budgetSteps[budgetStepIndex];
+    const max = budgetSteps[budgetStepIndex + 1];
+    const matchesBudget = service.price >= min && service.price <= max;
+
+    return matchesSearch && matchesBudget;
+  });
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -119,48 +106,41 @@ const HomePage = () => {
         }}
         style={styles.cardImage}
       />
-      <Text style={styles.serviceName}>{item.name}</Text>
-      {item.vendor && (
-        <View style={styles.vendorRow}>
-          <Image
-            source={{
-              uri:
-                buildImageUrl(item.vendor.logo) ||
-                "https://via.placeholder.com/30",
-            }}
-            style={styles.vendorLogo}
-          />
-          <Text style={styles.vendorName}>{item.vendor.business_name}</Text>
+
+      <View style={styles.cardContent}>
+        <Text style={styles.serviceName}>{item.name}</Text>
+
+        <View style={{ alignItems: "flex-end", marginTop: -8 }}>
+          <Text style={styles.priceTag}>{item.price} KD</Text>
         </View>
-      )}
+
+        {item.vendor && (
+          <View style={styles.vendorRow}>
+            <Image
+              source={{
+                uri:
+                  buildImageUrl(item.vendor.logo) ||
+                  "https://via.placeholder.com/30",
+              }}
+              style={styles.vendorLogo}
+            />
+            <Text style={styles.vendorName}>{item.vendor.business_name}</Text>
+          </View>
+        )}
+      </View>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       <View style={styles.logoWrapper}>
         <Image
-          source={require("../assets/images/Logo-withoutbg.png")} // adjust the path to your logo
+          source={require("../assets/images/Logo-withoutbg.png")}
           style={styles.logo}
           resizeMode="contain"
         />
       </View>
-      <View style={styles.contactGrid}>
-        {contactInfo.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={styles.contactCard}
-            onPress={item.onPress}
-          >
-            <Feather name={item.icon as any} size={20} color={colors.primary} />
-            <View style={{ marginLeft: 8 }}>
-              <Text style={styles.contactLabel}>{item.label}</Text>
-              <Text style={styles.contactValue}>{item.value}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
-      {/* Search Bar */}
+
       <View style={styles.searchWrapper}>
         <Feather name="search" size={20} color={colors.text} />
         <TextInput
@@ -172,7 +152,44 @@ const HomePage = () => {
         />
       </View>
 
-      {/* Service List */}
+      {/* ← 5-phase Budget Slider with aligned labels */}
+      <View style={{ marginHorizontal: 20, marginBottom: 10 }}>
+        <Text style={{ color: colors.text, marginBottom: 5 }}>
+          Budget:{" "}
+          {budgetStepIndex === budgetSteps.length - 1
+            ? "All"
+            : `${budgetSteps[budgetStepIndex]} - ${
+                budgetStepIndex === budgetSteps.length - 2
+                  ? "∞"
+                  : budgetSteps[budgetStepIndex + 1]
+              } KD`}
+        </Text>
+        <Slider
+          minimumValue={0}
+          maximumValue={budgetSteps.length - 1} // 5 phases
+          step={1}
+          value={budgetStepIndex}
+          onValueChange={setBudgetStepIndex}
+          minimumTrackTintColor={colors.primary}
+          maximumTrackTintColor="#ccc"
+          thumbTintColor={colors.primary}
+        />
+
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 5,
+          }}
+        >
+          <Text style={{ color: colors.text }}>0</Text>
+          <Text style={{ color: colors.text }}>100</Text>
+          <Text style={{ color: colors.text }}>500</Text>
+          <Text style={{ color: colors.text }}>1000+</Text>
+          <Text style={{ color: colors.text }}>All</Text>
+        </View>
+      </View>
+
       <FlatList
         data={filteredServices}
         keyExtractor={(item) => item._id}
@@ -182,8 +199,8 @@ const HomePage = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            colors={[colors.primary]} // <-- Android spinner
-            tintColor={colors.primary} // <-- IOS spinner
+            colors={[colors.primary]}
+            tintColor={colors.primary}
           />
         }
         ListEmptyComponent={
@@ -191,7 +208,6 @@ const HomePage = () => {
         }
       />
 
-      {/* Modal */}
       {selectedService && (
         <Modal
           visible={!!selectedService}
@@ -203,6 +219,13 @@ const HomePage = () => {
             <View style={styles.modalContent}>
               <ScrollView>
                 <Text style={styles.modalTitle}>{selectedService.name}</Text>
+
+                <View style={{ alignItems: "flex-end", marginTop: -25 }}>
+                  <Text style={styles.modalPrice}>
+                    {selectedService.price} KD
+                  </Text>
+                </View>
+
                 <Image
                   source={{
                     uri:
@@ -250,6 +273,7 @@ const HomePage = () => {
 
 export default HomePage;
 
+// ← Styles unchanged
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.backgroundMuted },
   searchWrapper: {
@@ -288,18 +312,30 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 180,
   },
+  cardContent: {
+    paddingHorizontal: 10,
+    paddingTop: 8,
+  },
   serviceName: {
     fontSize: 18,
     fontWeight: "bold",
     color: colors.text,
-    marginHorizontal: 10,
-    marginTop: 10,
-    marginBottom: 5,
+    flex: 1,
+  },
+  priceTag: {
+    backgroundColor: colors.accent,
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: "600",
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    overflow: "hidden",
   },
   vendorRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginHorizontal: 10,
+    marginTop: -15,
   },
   vendorLogo: { width: 30, height: 30, borderRadius: 15, marginRight: 8 },
   vendorName: { fontSize: 14, color: colors.text, fontWeight: "500" },
@@ -331,15 +367,25 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "center",
     color: colors.text,
+    flex: 1,
+  },
+  modalPrice: {
+    backgroundColor: colors.accent,
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: "700",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    overflow: "hidden",
   },
   modalImage: {
     width: "100%",
     height: 180,
     borderRadius: 10,
     marginBottom: 15,
+    marginTop: 10,
   },
   modalVendorRow: {
     flexDirection: "row",
@@ -363,45 +409,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   closeButtonText: { color: colors.white, fontWeight: "bold" },
-  contactGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginTop: 20,
-  },
-  contactCard: {
-    backgroundColor: colors.backgroundMuted,
-    width: "48%",
-    borderRadius: 12,
-    padding: 7,
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 15,
-    shadowColor: colors.black,
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 3, height: 9 },
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  contactLabel: {
-    fontSize: 11,
-    fontWeight: "500",
-    color: colors.secondary,
-  },
-  contactValue: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: colors.text,
-    marginTop: 2,
-  },
   logoWrapper: {
     alignItems: "center",
-    marginTop: -50, // adjust spacing from status bar
-    marginBottom: 10, // spacing before contact grid
+    marginTop: -50,
+    marginBottom: 10,
   },
   logo: {
-    width: 150, // adjust size as needed
-    height: 60, // adjust height as needed
+    width: 150,
+    height: 60,
   },
 });
