@@ -104,6 +104,22 @@ export default function RootLayout() {
               headerBackTitle: "Back",
             }}
           />
+          <Stack.Screen
+            name="invitetemplate"
+            options={{
+              title: "Choose your Template",
+              headerBackVisible: true,
+              headerBackTitle: "Back",
+            }}
+          />
+          <Stack.Screen
+            name="customizeinvitation"
+            options={{
+              title: "Customize Invitation",
+              headerBackVisible: true,
+              headerBackTitle: "Back",
+            }}
+          />
         </Stack>
       </AuthContext.Provider>
       <Toast position="bottom" />

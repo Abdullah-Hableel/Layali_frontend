@@ -1,5 +1,6 @@
 import { baseURL } from "@/api";
-import { useLocalSearchParams } from "expo-router";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { router, useLocalSearchParams } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
@@ -123,19 +124,19 @@ const CustomizeInvitationScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Customize Invitation</Text>
+      {/* <Text style={styles.header}>Customize Invitation</Text> */}
 
       {/* Invitation Preview */}
-      <Text
+      {/* <Text
         style={{
           color: colors.secondary,
           fontWeight: "bold",
           marginBottom: 8,
-          fontSize: 16,
+          fontSize: 17,
         }}
       >
         Invitation Preview
-      </Text>
+      </Text> */}
       <View
         style={[
           styles.previewCard,
@@ -170,7 +171,7 @@ const CustomizeInvitationScreen = () => {
           <Image source={{ uri: qrCodeImage }} style={styles.qrImage} />
         ) : (
           <View style={styles.qrPlaceholder}>
-            <Text>QR Code Here</Text>
+            <Text style={{ color: colors.secondary }}>QR Code Here</Text>
           </View>
         )}
       </View>
@@ -192,14 +193,14 @@ const CustomizeInvitationScreen = () => {
           style={styles.input}
           value={guestName}
           onChangeText={setGuestName}
-          placeholderTextColor="#959393ff"
+          placeholderTextColor="#999999"
         />
         <TextInput
           placeholder="Guest Email"
           style={styles.input}
           value={guestEmail}
           onChangeText={setGuestEmail}
-          placeholderTextColor="#959393ff"
+          placeholderTextColor="#999999"
         />
       </View>
 
@@ -216,8 +217,24 @@ const CustomizeInvitationScreen = () => {
           Event Details
         </Text>
         {/* <Text>Host: {hostName || "Unknown"}</Text> */}
-        <Text>Location: {event?.location || "Unknown"}</Text>
-        <Text>
+        <Text
+          style={{
+            color: colors.text,
+            fontSize: 16,
+            fontWeight: "600",
+            marginBottom: 4,
+          }}
+        >
+          Location: {event?.location || "Unknown"}
+        </Text>
+        <Text
+          style={{
+            color: colors.text,
+            fontSize: 16,
+            fontWeight: "600",
+            marginBottom: 4,
+          }}
+        >
           Date:{" "}
           {event?.date ? new Date(event.date).toLocaleDateString() : "Unknown"}
         </Text>
@@ -273,8 +290,11 @@ const CustomizeInvitationScreen = () => {
             </View>
 
             <TouchableOpacity
-              style={[styles.button, { marginTop: 20 }]}
-              onPress={() => setModalVisible(false)}
+              style={[styles.button, { marginTop: 20, borderRadius: 30 }]}
+              onPress={() => {
+                setModalVisible(false);
+                router.push("/guest");
+              }}
             >
               <Text style={styles.buttonText}>Close</Text>
             </TouchableOpacity>
@@ -282,7 +302,14 @@ const CustomizeInvitationScreen = () => {
             <TouchableOpacity
               style={[
                 styles.button,
-                { marginTop: 10, backgroundColor: "#25D366" },
+                {
+                  marginTop: 10,
+                  backgroundColor: "#25D366",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 30,
+                },
               ]}
               onPress={() => {
                 if (qrCodeImage && inviteLink) {
@@ -303,6 +330,12 @@ const CustomizeInvitationScreen = () => {
               }}
             >
               <Text style={styles.buttonText}>Share to WhatsApp</Text>
+              <FontAwesome
+                name="whatsapp"
+                size={24}
+                color="white"
+                style={{ marginLeft: 8 }}
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -323,17 +356,23 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#f9f9f9",
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     marginBottom: 16,
     color: colors.secondary,
   },
-  sectionTitle: { fontWeight: "bold", marginBottom: 8, fontSize: 16 },
+  sectionTitle: {
+    fontWeight: "bold",
+    marginBottom: 8,
+    fontSize: 16,
+    color: colors.secondary,
+  },
   input: {
     borderWidth: 1,
-    borderColor: "#000000ff",
-    borderRadius: 8,
+    borderColor: "#E9E5E6",
+    borderRadius: 16,
     padding: 10,
     marginBottom: 12,
+    color: colors.placeholder,
   },
   previewCard: {
     backgroundColor: "#b23a48",
@@ -354,6 +393,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
+    color: colors.secondary,
   },
   button: {
     backgroundColor: "#f28b82",
@@ -366,7 +406,7 @@ const styles = StyleSheet.create({
   previewButton: {
     backgroundColor: "#f28b82",
     padding: 12,
-    borderRadius: 10,
+    borderRadius: 16,
     alignItems: "center",
     marginTop: 10,
   },
@@ -384,7 +424,7 @@ const styles = StyleSheet.create({
   modalContent: {
     width: "85%",
     backgroundColor: "#fff",
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 20,
     alignItems: "center",
   },
