@@ -477,10 +477,18 @@ const styles = StyleSheet.create({
   guestName: { fontWeight: "bold", fontSize: 16, color: colors.black },
   guestEmail: { color: colors.secondary },
 
-  status: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  statusText: { fontWeight: "bold", color: colors.black },
+  status: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    minWidth: 90,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
-  attending: { backgroundColor: colors.backgroundMuted },
+  statusText: { fontWeight: "bold", color: colors.white },
+
+  attending: { backgroundColor: colors.text },
   pending: { backgroundColor: colors.accent },
   declined: { backgroundColor: colors.danger },
 

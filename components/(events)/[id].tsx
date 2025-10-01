@@ -272,6 +272,7 @@ const EventDetails = () => {
           <Text style={styles.placeholder}>No services added yet</Text>
         </View>
 
+        {/* Guests */}
         <View style={styles.card}>
           <View style={styles.rowBetween}>
             <Text style={styles.sectionTitle}>Guests</Text>
@@ -281,6 +282,8 @@ const EventDetails = () => {
           </View>
           <Text style={styles.placeholder}>No guest data</Text>
         </View>
+
+        {/* here above  */}
 
         <View style={{ alignItems: "center" }}>
           <TouchableOpacity
@@ -384,5 +387,49 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     backgroundColor: "#fff",
     color: colors.text,
+  },
+  attending: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "green",
+  },
+  invited: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "red",
+  },
+  subLabel: {
+    fontSize: 14,
+    color: "#666",
+  },
+  progressBar: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#eee",
+    marginVertical: 8,
+  },
+  progressFill: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "green",
+  },
+  responseRate: {
+    fontSize: 14,
+    color: "red",
+  },
+  pending: {
+    fontSize: 14,
+    color: "red",
+  },
+  inviteBtn: {
+    marginTop: 12,
+    backgroundColor: "darkred",
+    paddingVertical: 10,
+    borderRadius: 6,
+    alignItems: "center",
+  },
+  inviteText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
