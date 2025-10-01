@@ -1,7 +1,8 @@
-// import React from "react";
+import BusinessProfile from "@/components/vprofile";
+import React from "react";
 
-// const vendor = () => {
-//   return <Vendor />;
-// };
+const vendor = () => {
+  return <BusinessProfile />;
+};
 
-// export default vendor;
+export default vendor;
