@@ -30,6 +30,8 @@ const CreateEvents = () => {
     mutationFn: createEvent,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["Myevents"] });
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      queryClient.invalidateQueries({ queryKey: ["eventStats"] });
       Toast.show({
         type: "success",
         text1: "Event saved",
@@ -78,6 +80,7 @@ const CreateEvents = () => {
             <TextInput
               style={styles.input}
               placeholder="e.g. 500"
+              placeholderTextColor={colors.placeholder}
               keyboardType="numeric"
               value={values.budget}
               onChangeText={handleChange("budget")}
@@ -93,7 +96,8 @@ const CreateEvents = () => {
             >
               <TextInput
                 style={styles.input}
-                placeholder="MM-DD-YYYY"
+                placeholder="MM-DD-Year"
+                placeholderTextColor={colors.placeholder}
                 value={values.date}
                 editable={false}
                 pointerEvents="none"
@@ -121,6 +125,7 @@ const CreateEvents = () => {
             <TextInput
               style={styles.input}
               placeholder="e.g. Block 5, Street 12"
+              placeholderTextColor={colors.placeholder}
               value={values.address1}
               onChangeText={handleChange("address1")}
               onBlur={handleBlur("address1")}
@@ -132,6 +137,7 @@ const CreateEvents = () => {
             <TextInput
               style={styles.input}
               placeholder="e.g. Apartment 10"
+              placeholderTextColor={colors.placeholder}
               value={values.address2}
               onChangeText={handleChange("address2")}
               onBlur={handleBlur("address2")}

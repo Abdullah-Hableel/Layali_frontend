@@ -91,10 +91,16 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="(personal)/settings"
+            options={{
+              title: "Contact us",
+            }}
+          />
+          <Stack.Screen
             name="createService"
             options={{
               title: "Post Your Service",
-              headerBackVisible: true, // keep the arrow
+              headerBackVisible: true,
               headerBackTitle: "Back",
             }}
           />

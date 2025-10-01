@@ -4,6 +4,7 @@ import instance from ".";
 const getServices = async () => {
   try {
     const res = await instance.get("/api/service");
+    console.log(res.data);
     return res.data || [];
   } catch (error) {
     console.log("🚀 ~ getServices  ~ error:", error);

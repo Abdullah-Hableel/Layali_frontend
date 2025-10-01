@@ -7,3 +7,9 @@ export interface Event {
   date: string;
   location: string;
 }
+
+export type EventStats = {
+  total: number;
+  upcoming: number;
+  old: number;
+};

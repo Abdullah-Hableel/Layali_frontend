@@ -1,6 +1,5 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-
 import { baseURL } from "@/api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
@@ -20,19 +19,19 @@ import { getUserById, UserAttrs } from "../api/users";
 import colors from "../components/Colors";
 
 const SERVER_URL = `${baseURL}/uploads/`;
-
 const buildImageUrl = (img?: string) =>
   img ? `${SERVER_URL}${img}` : "https://via.placeholder.com/300x180";
 
 export default function Service() {
   const queryClient = useQueryClient();
-
   const [selectedService, setSelectedService] = useState<any | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+
   const { data, isLoading, error } = useQuery<UserAttrs>({
     queryKey: ["user"],
     queryFn: getUserById,
   });
+
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     await queryClient.invalidateQueries({ queryKey: ["user"] });
@@ -87,21 +86,35 @@ export default function Service() {
         source={{ uri: buildImageUrl(item.image) }}
         style={styles.cardImage}
       />
-      <Text style={styles.serviceName}>{item.name}</Text>
-      <Text style={styles.price}> {item.price} KD</Text>
-      <View style={styles.vendorRow}>
-        <Image
-          source={{ uri: buildImageUrl(item.vendorLogo) }}
-          style={styles.vendorLogo}
-        />
-        <Text style={styles.vendorName}>{item.vendorName}</Text>
+
+      <View style={styles.cardContent}>
+        {/* Service Name */}
+        <Text style={styles.serviceName}>{item.name}</Text>
+
+        {/* Price below name, aligned right */}
+        <View style={{ alignItems: "flex-end", marginTop: -8 }}>
+          <Text style={styles.priceTag}>{item.price} KD</Text>
+        </View>
+
+        {/* Vendor row */}
+        {item.vendorName && (
+          <View style={styles.vendorRow}>
+            <Image
+              source={{ uri: buildImageUrl(item.vendorLogo) }}
+              style={styles.vendorLogo}
+            />
+            <Text style={styles.vendorName}>{item.vendorName}</Text>
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Welcome {data.username}</Text>
+    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+      <Text style={styles.title}>
+        🛎️ number of your services: {services.length}
+      </Text>
       <FlatList
         data={services}
         keyExtractor={(item) => item._id}
@@ -110,14 +123,12 @@ export default function Service() {
         ListEmptyComponent={
           <Text style={styles.emptyText}>No services found 🔍</Text>
         }
-        refreshing={refreshing}
-        onRefresh={handleRefresh}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            colors={[colors.primary]} // <-- Android spinner color
-            tintColor={colors.primary} // <-- iOS spinner color
+            colors={[colors.primary]}
+            tintColor={colors.primary}
           />
         }
       />
@@ -133,24 +144,36 @@ export default function Service() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <ScrollView>
+                {/* Service Name */}
                 <Text style={styles.modalTitle}>{selectedService.name}</Text>
+
+                {/* Price below name, aligned right */}
+                <View style={{ alignItems: "flex-end", marginTop: -25 }}>
+                  <Text style={styles.modalPrice}>
+                    {selectedService.price} KD
+                  </Text>
+                </View>
+
                 <Image
                   source={{ uri: buildImageUrl(selectedService.image) }}
                   style={styles.modalImage}
                 />
-                <Text style={styles.modalText}>
-                  Price: {selectedService.price} KD
-                </Text>
-                <View style={styles.modalVendorRow}>
-                  <Image
-                    source={{ uri: buildImageUrl(selectedService.vendorLogo) }}
-                    style={styles.modalVendorLogo}
-                  />
-                  <Text style={styles.modalVendorName}>
-                    {selectedService.vendorName}
-                  </Text>
-                </View>
+
+                {selectedService.vendorName && (
+                  <View style={styles.modalVendorRow}>
+                    <Image
+                      source={{
+                        uri: buildImageUrl(selectedService.vendorLogo),
+                      }}
+                      style={styles.modalVendorLogo}
+                    />
+                    <Text style={styles.modalVendorName}>
+                      {selectedService.vendorName}
+                    </Text>
+                  </View>
+                )}
               </ScrollView>
+
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => setSelectedService(null)}
@@ -161,9 +184,10 @@ export default function Service() {
           </View>
         </Modal>
       )}
+
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => router.push("/createService")} // navigate to your create service screen
+        onPress={() => router.push("/createService")}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
@@ -175,23 +199,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.backgroundMuted,
-    marginBottom: 50,
+    justifyContent: "flex-start",
   },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.backgroundLight,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    margin: 15,
-    color: colors.primary,
-  },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
   card: {
     backgroundColor: colors.white,
     borderRadius: 14,
+    marginBottom: 20,
     shadowColor: colors.black,
     shadowOpacity: 0.15,
     shadowOffset: { width: 0, height: 6 },
@@ -199,32 +213,27 @@ const styles = StyleSheet.create({
     elevation: 6,
     overflow: "hidden",
     paddingBottom: 10,
-    marginBottom: 20,
   },
-  cardImage: {
-    width: "100%",
-    height: 160,
-  },
+  cardImage: { width: "100%", height: 180 },
+  cardContent: { paddingHorizontal: 10, paddingTop: 8 },
   serviceName: {
     fontSize: 18,
     fontWeight: "bold",
     color: colors.text,
-    marginHorizontal: 10,
-    marginTop: 10,
+    flex: 1,
   },
-  price: {
+  priceTag: {
+    backgroundColor: colors.accent,
+    color: colors.white,
     fontSize: 14,
     fontWeight: "600",
-    color: colors.accent,
-    marginHorizontal: 10,
-    marginBottom: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    overflow: "hidden",
   },
-  vendorRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: 10,
-  },
-  vendorLogo: { width: 28, height: 28, borderRadius: 14, marginRight: 8 },
+  vendorRow: { flexDirection: "row", alignItems: "center", marginTop: -15 },
+  vendorLogo: { width: 30, height: 30, borderRadius: 15, marginRight: 8 },
   vendorName: { fontSize: 14, color: colors.text, fontWeight: "500" },
   emptyText: {
     color: colors.text,
@@ -232,6 +241,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: "center",
   },
+
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -249,24 +259,35 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 6,
   },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "center",
-    color: colors.text,
+  modalTitle: { fontSize: 22, fontWeight: "bold", color: colors.text, flex: 1 },
+  modalPrice: {
+    backgroundColor: colors.accent,
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: "700",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    overflow: "hidden",
   },
   modalImage: {
     width: "100%",
     height: 180,
     borderRadius: 10,
     marginBottom: 15,
+    marginTop: 10,
   },
-  modalText: { fontSize: 15, marginVertical: 5, color: colors.text },
   modalVendorRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: -30,
+    color: colors.primary,
+    marginLeft: 23,
   },
   modalVendorLogo: { width: 30, height: 30, borderRadius: 15, marginRight: 8 },
   modalVendorName: { fontSize: 16, fontWeight: "600", color: colors.text },
@@ -293,9 +314,5 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 6,
   },
-  fabText: {
-    fontSize: 32,
-    color: "#fff",
-    fontWeight: "bold",
-  },
+  fabText: { fontSize: 32, color: "#fff", fontWeight: "bold" },
 });
