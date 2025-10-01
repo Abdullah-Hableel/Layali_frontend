@@ -16,6 +16,7 @@ export interface Vendor {
 export const getVendor = async () => {
   try {
     const res = await instance.get("/api/vendor");
+    console.log(res.data);
     return res.data || [];
   } catch (error) {
     console.log("🚀 ~ getVendor  ~ error:", error);

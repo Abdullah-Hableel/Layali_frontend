@@ -1,3 +1,4 @@
+import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Event } from "../data/events";
@@ -12,9 +13,14 @@ export default function EventCard({ item, onPress }: Props) {
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.card}>
       <View style={styles.cardBody}>
-        <Text style={styles.cardTitle}>{item.location}</Text>
-        <Text style={styles.meta}>📅 {new Date(item.date).toDateString()}</Text>
-        <Text style={styles.meta}>💰 {item.budget ?? 0}</Text>
+        <View style={styles.info}>
+          <Text style={styles.cardTitle}>{item.location}</Text>
+          <Text style={styles.meta}>
+            📅 {new Date(item.date).toDateString()}
+          </Text>
+          <Text style={styles.meta}>💰 {item.budget ?? 0}</Text>
+        </View>
+        <Feather name="chevron-right" size={20} color={colors.secondary} />
       </View>
     </TouchableOpacity>
   );
@@ -35,7 +41,13 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   cardBody: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 13,
+  },
+  info: {
+    flex: 1,
   },
   cardTitle: {
     fontSize: 18,

@@ -2,6 +2,7 @@ import { deleteToken, getToken } from "@/api/storage";
 import AuthContext from "@/app/context/AuthContext";
 import colors from "@/components/Colors";
 import { MaterialIcons } from "@expo/vector-icons";
+import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { router, Tabs } from "expo-router";
@@ -29,14 +30,16 @@ export default function RootLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="events"
         options={{
-          title: "Home",
-
+          title: "My Events",
           tabBarIcon: ({ color }) => (
-            <MaterialIcons name="home" size={24} color={colors.secondary} />
+            <MaterialCommunityIcons
+              name="party-popper"
+              size={24}
+              color={colors.secondary}
+            />
           ),
-
           headerRight: () => (
             <React.Fragment>
               <TouchableOpacity onPress={handleLogOut}>
@@ -67,17 +70,30 @@ export default function RootLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
-        name="events"
+        name="index"
         options={{
-          title: "My Events",
+          title: "Home",
+
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="party-popper"
-              size={24}
-              color={colors.secondary}
-            />
+            <MaterialIcons name="home" size={24} color={colors.secondary} />
+          ),
+
+          headerRight: () => (
+            <React.Fragment>
+              <TouchableOpacity onPress={handleLogOut}>
+                <MaterialIcons name="logout" size={20} color={colors.danger} />
+              </TouchableOpacity>
+            </React.Fragment>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="vendor"
+        options={{
+          title: "Shop",
+          tabBarIcon: ({ color }) => (
+            <Entypo name="shop" size={24} color={colors.secondary} />
           ),
           headerRight: () => (
             <React.Fragment>
