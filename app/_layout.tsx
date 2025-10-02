@@ -104,6 +104,14 @@ export default function RootLayout() {
               headerBackTitle: "Back",
             }}
           />
+          <Stack.Screen
+            name="(vendorD)/[id]"
+            options={{
+              title: "VendorDetails",
+              headerBackVisible: true,
+              headerBackTitle: "Back",
+            }}
+          />
         </Stack>
       </AuthContext.Provider>
       <Toast position="bottom" />
