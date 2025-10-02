@@ -54,6 +54,7 @@ const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     "All"
   );
+  const [categorySearchText, setCategorySearchText] = useState(""); // For category search
   const [budgetStepIndex, setBudgetStepIndex] = useState<number>(
     budgetSteps.length - 1
   );
@@ -165,6 +166,13 @@ const HomePage = () => {
     </TouchableOpacity>
   );
 
+  // Filtered and unique categories for the filter modal
+  const uniqueCategories = Array.from(
+    new Set(services.flatMap((s) => s.categories.map((c) => c.name)))
+  ).filter((cat) =>
+    cat.toLowerCase().includes(categorySearchText.toLowerCase())
+  );
+
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       <View style={styles.logoWrapper}>
@@ -199,7 +207,7 @@ const HomePage = () => {
           Price:{" "}
           {budgetStepIndex === budgetSteps.length - 1
             ? "All"
-            : `${budgetSteps[budgetStepIndex]}+${
+            : `${budgetSteps[budgetStepIndex]}-${
                 budgetStepIndex === budgetSteps.length - 2
                   ? ""
                   : budgetSteps[budgetStepIndex + 1]
@@ -234,14 +242,12 @@ const HomePage = () => {
           onRequestClose={() => setSelectedService(null)}
         >
           <View style={styles.modalOverlay}>
-            {/* Spinner overlay */}
             {modalImageLoading && (
               <View style={styles.modalSpinnerOverlay}>
                 <ActivityIndicator size="large" color={colors.primary} />
               </View>
             )}
 
-            {/* Modal Content */}
             <View style={styles.modalContent}>
               <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 <View
@@ -336,7 +342,6 @@ const HomePage = () => {
                   </Text>
                 )}
 
-                {/* Close Button at the bottom */}
                 <TouchableOpacity
                   style={[
                     styles.closeButton,
@@ -365,6 +370,32 @@ const HomePage = () => {
               <Text style={{ fontWeight: "600", marginBottom: 5 }}>
                 Category
               </Text>
+
+              {/* Category search input */}
+              <TextInput
+                placeholder="Search category..."
+                placeholderTextColor="#888"
+                value={categorySearchText}
+                onChangeText={setCategorySearchText}
+                style={{
+                  backgroundColor: "#f0f0f0",
+                  padding: 8,
+                  borderRadius: 8,
+                  marginBottom: 8,
+                  color: colors.text,
+                }}
+              />
+
+              {/* Separator line */}
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: "#ccc",
+                  borderRadius: 0.5,
+                  marginBottom: 8,
+                }}
+              />
+
               <ScrollView style={{ maxHeight: 200 }}>
                 <TouchableOpacity
                   onPress={() => setSelectedCategory("All")}
@@ -385,11 +416,7 @@ const HomePage = () => {
                     All
                   </Text>
                 </TouchableOpacity>
-                {Array.from(
-                  new Set(
-                    services.flatMap((s) => s.categories.map((c) => c.name))
-                  )
-                ).map((cat) => (
+                {uniqueCategories.map((cat) => (
                   <TouchableOpacity
                     key={cat}
                     onPress={() => setSelectedCategory(cat)}
@@ -417,7 +444,7 @@ const HomePage = () => {
               <Text style={{ marginBottom: 5 }}>
                 {budgetStepIndex === budgetSteps.length - 1
                   ? "All"
-                  : `${budgetSteps[budgetStepIndex]}+${
+                  : `${budgetSteps[budgetStepIndex]}-${
                       budgetStepIndex === budgetSteps.length - 2
                         ? ""
                         : budgetSteps[budgetStepIndex + 1]

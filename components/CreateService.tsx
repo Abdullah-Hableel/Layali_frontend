@@ -1,4 +1,3 @@
-// app/screens/CreateService.tsx
 import { Entypo } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
@@ -78,6 +77,7 @@ const ServiceSchema = Yup.object().shape({
 export default function CreateService() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [selectedType, setSelectedType] = useState<string>("Standard");
+  const [categorySearch, setCategorySearch] = useState<string>(""); // new search state
   const serviceTypes = ["Standard", "Premium", "VIP"];
   const queryClient = useQueryClient();
 
@@ -145,7 +145,7 @@ export default function CreateService() {
         enableReinitialize
         validationSchema={ServiceSchema}
         onSubmit={(values) => {
-          if (!values.image) return; // guard against null
+          if (!values.image) return;
           const formData = new FormData();
           formData.append("name", values.name);
           formData.append("description", values.description);
@@ -161,7 +161,6 @@ export default function CreateService() {
             name: values.image.fileName || "photo.jpg",
             type: values.image.type || "image/jpeg",
           } as any);
-
           mutation.mutate(formData);
         }}
       >
@@ -174,9 +173,7 @@ export default function CreateService() {
           touched,
           setFieldValue,
         }) => (
-          <ScrollView
-            contentContainerStyle={{ paddingBottom: 30, paddingTop: 0 }}
-          >
+          <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
             {/* Service Name */}
             <TextInput
               style={styles.input}
@@ -275,37 +272,56 @@ export default function CreateService() {
             >
               Categories:
             </Text>
+
+            {/* Category Search Input */}
+            <TextInput
+              style={styles.categorySearchInput}
+              placeholder="Search category..."
+              placeholderTextColor="rgba(133, 133, 133, 0.3)"
+              value={categorySearch}
+              onChangeText={setCategorySearch}
+            />
+
+            {/* Separator Line */}
+            <View style={styles.categorySeparator} />
+
             {categoriesLoading ? (
               <Text>Loading categories...</Text>
             ) : (
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {allCategories.map((cat) => (
-                  <TouchableOpacity
-                    key={cat._id}
-                    style={[
-                      styles.vendorButton,
-                      values.categories.includes(cat._id) &&
-                        styles.vendorButtonSelected,
-                    ]}
-                    onPress={() => {
-                      const newCats = values.categories.includes(cat._id)
-                        ? values.categories.filter((id) => id !== cat._id)
-                        : [...values.categories, cat._id];
-                      setFieldValue("categories", newCats);
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: values.categories.includes(cat._id)
-                          ? "#fff"
-                          : colors.secondary,
-                        fontWeight: "bold",
+                {allCategories
+                  .filter((cat) =>
+                    cat.name
+                      .toLowerCase()
+                      .includes(categorySearch.toLowerCase())
+                  )
+                  .map((cat) => (
+                    <TouchableOpacity
+                      key={cat._id}
+                      style={[
+                        styles.vendorButton,
+                        values.categories.includes(cat._id) &&
+                          styles.vendorButtonSelected,
+                      ]}
+                      onPress={() => {
+                        const newCats = values.categories.includes(cat._id)
+                          ? values.categories.filter((id) => id !== cat._id)
+                          : [...values.categories, cat._id];
+                        setFieldValue("categories", newCats);
                       }}
                     >
-                      {cat.name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                      <Text
+                        style={{
+                          color: values.categories.includes(cat._id)
+                            ? "#fff"
+                            : colors.secondary,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {cat.name}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
               </ScrollView>
             )}
             {touched.categories && errors.categories && (
@@ -391,6 +407,19 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 5,
     backgroundColor: "#fff",
+  },
+  categorySearchInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 5,
+    backgroundColor: "#fff",
+  },
+  categorySeparator: {
+    height: 1,
+    backgroundColor: "#ccc",
+    marginBottom: 8,
   },
   vendorButton: {
     padding: 10,
