@@ -1,6 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
-import instance from ".";
+import instance, { baseURL } from ".";
 export interface Vendor {
   events: any;
   _id: string;
@@ -45,6 +45,13 @@ export const getVendorById = async (id: string): Promise<Vendor> => {
   const res = await instance.get<Vendor>(`/api/vendor/${vendorId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+
+  return res.data;
+};
+
+export const getVendorById2 = async (id: string) => {
+  const res = await instance.get(`${baseURL}/api/vendor/${id}`);
+  console.log(res.data);
 
   return res.data;
 };

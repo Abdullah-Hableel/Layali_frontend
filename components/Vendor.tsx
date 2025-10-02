@@ -2,7 +2,8 @@ import { getVendor } from "@/api/vendor";
 import { buildImageUrl } from "@/Utils/buildImage";
 import { capitalizeWords } from "@/Utils/capitalize";
 import { Feather } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { router } from "expo-router";
 import React from "react";
 import {
   ActivityIndicator,
@@ -10,11 +11,14 @@ import {
   Image,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import colors from "./Colors";
 
 const Vendor = () => {
+  const queryClient = useQueryClient();
+
   const {
     data: vendor,
     isLoading,
@@ -39,6 +43,7 @@ const Vendor = () => {
       </View>
     );
   }
+
   return (
     <View style={styles.root}>
       <FlatList
@@ -50,17 +55,27 @@ const Vendor = () => {
         }
         renderItem={({ item }) => {
           const uri = buildImageUrl(item.logo);
+
           return (
-            <View style={styles.row}>
+            <TouchableOpacity
+              style={styles.row}
+              activeOpacity={0.85}
+              onPress={() => router.push(`/(personal)/(shop)/${item._id}`)}
+            >
               <Image source={{ uri }} style={styles.logo} />
               <View style={styles.info}>
                 <Text style={styles.name}>
                   {capitalizeWords(item.business_name)}
                 </Text>
-                <Text style={styles.meta}> {capitalizeWords(item.bio)}</Text>
+                {!!item.bio && (
+                  <Text numberOfLines={3} style={styles.meta}>
+                    {capitalizeWords(item.bio)}
+                  </Text>
+                )}
               </View>
+
               <Feather name="chevron-right" size={18} color="#9a9a9a" />
-            </View>
+            </TouchableOpacity>
           );
         }}
       />
@@ -78,7 +93,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.backgroundMuted,
   },
-  error: { color: colors.danger, fontSize: 14, fontWeight: "600" },
+  error: { color: colors.danger, fontSize: 12, fontWeight: "600" },
   listContent: { padding: 16, backgroundColor: colors.backgroundMuted },
   row: {
     flexDirection: "row",
@@ -95,6 +110,7 @@ const styles = StyleSheet.create({
     height: 95,
   },
   logo: { width: 70, height: 70, borderRadius: 50, backgroundColor: "#eee" },
+
   info: { flex: 1 },
   name: {
     fontSize: 18,
