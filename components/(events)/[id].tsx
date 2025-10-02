@@ -294,7 +294,7 @@ const EventDetails = () => {
             <Text style={styles.sectionTitle}>Services</Text>
             <TouchableOpacity
               onPress={() =>
-                router.push("/(personal)/(serviceDetails)/myServices")
+                router.push(`/(personal)/(serviceDetails)/(viewDetails)/${id}`)
               }
             >
               <Text style={styles.manageBtn}>View</Text>

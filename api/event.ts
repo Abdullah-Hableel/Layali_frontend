@@ -94,3 +94,14 @@ export const addServiceToEvent = async (id: string, serviceId: string) => {
   );
   return data?.event ?? data;
 };
+
+export const deleteServiceFromEvent = async (params: {
+  eventId: string;
+  serviceId: string;
+}) => {
+  const { eventId, serviceId } = params;
+  const { data } = await instance.delete(
+    `api/event/${eventId}/services/${serviceId}`
+  );
+  return data;
+};

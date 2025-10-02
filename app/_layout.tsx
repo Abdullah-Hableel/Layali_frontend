@@ -116,6 +116,12 @@ export default function RootLayout() {
               title: "Shop Details",
             }}
           />
+          <Stack.Screen
+            name="(personal)/(serviceDetails)/(viewDetails)/[id]"
+            options={{
+              title: "My Services",
+            }}
+          />
         </Stack>
       </AuthContext.Provider>
       <Toast position="bottom" />

@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.backgroundMuted,
   },
-  error: { color: colors.danger, fontSize: 14, fontWeight: "600" },
+  error: { color: colors.danger, fontSize: 12, fontWeight: "600" },
   listContent: { padding: 16, backgroundColor: colors.backgroundMuted },
   row: {
     flexDirection: "row",
