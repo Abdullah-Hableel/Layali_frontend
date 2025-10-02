@@ -73,7 +73,10 @@ export default function BusinessProfile() {
   const vendors = Array.isArray(user?.vendors) ? user!.vendors : [];
 
   const renderItem = ({ item }: { item: any }) => (
-    <View style={styles.vendorCard}>
+    <TouchableOpacity
+      style={styles.vendorCard}
+      onPress={() => router.push(`/(vendorD)/${item._id}`)}
+    >
       <Image
         source={{ uri: buildImageUrl(item.logo) }}
         style={styles.vendorLogo}
@@ -86,7 +89,7 @@ export default function BusinessProfile() {
           {item.bio ?? "No bio provided"}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -185,6 +188,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 5,
     elevation: 2,
+    color: colors.backgroundMuted,
   },
   vendorLogo: {
     width: 60,

@@ -2,6 +2,7 @@ import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
 import instance, { baseURL } from ".";
 export interface Vendor {
+  events: any;
   _id: string;
   user: string;
   business_name: string;
@@ -30,7 +31,7 @@ interface TokenPayload {
   iat?: number;
 }
 
-export const getVendorById = async (): Promise<Vendor> => {
+export const getVendorById = async (id: string): Promise<Vendor> => {
   const token = await SecureStore.getItemAsync("token");
 
   if (!token) throw new Error("User not authenticated");
