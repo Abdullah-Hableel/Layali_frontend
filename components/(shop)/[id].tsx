@@ -55,11 +55,12 @@ const ShopDetails = () => {
       </View>
     );
   }
-
   if (isError || !vendor) {
     return (
       <View style={styles.center}>
-        <Text style={styles.error}>Vendor not found</Text>
+        <Text style={styles.error}>
+          {error instanceof Error ? error.message : "Vendor not found"}
+        </Text>
       </View>
     );
   }
@@ -70,34 +71,29 @@ const ShopDetails = () => {
   const logoUri = vendor.logo ? vendor.logo : undefined;
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+      <View style={styles.header}>
+        {logoUri ? (
+          <Image source={{ uri: buildImageUrl(logoUri) }} style={styles.logo} />
+        ) : (
+          <View style={[styles.logo, styles.logoFallback]}>
+            <Text style={{ color: colors.text, fontSize: 12 }}>No Logo</Text>
+          </View>
+        )}
+        <Text style={styles.title}>
+          {capitalizeWords(vendor.business_name)}
+        </Text>
+        {!!vendor.bio && (
+          <Text style={styles.desc} numberOfLines={2}>
+            {capitalizeWords(vendor.bio)}
+          </Text>
+        )}
+      </View>
+
       <FlatList
         data={services}
         keyExtractor={(s) => String(s._id)}
         renderItem={({ item }) => <ServiceCard item={item as any} />}
         contentContainerStyle={styles.listContent}
-        ListHeaderComponent={
-          <View style={styles.header}>
-            {logoUri ? (
-              <Image
-                source={{ uri: buildImageUrl(logoUri) }}
-                style={styles.logo}
-              />
-            ) : (
-              <View style={[styles.logo, styles.logoFallback]}>
-                <Text style={{ color: colors.text, fontSize: 12 }}>
-                  No Logo
-                </Text>
-              </View>
-            )}
-
-            <Text style={styles.title}>
-              {capitalizeWords(vendor.business_name)}
-            </Text>
-            {!!vendor.bio && (
-              <Text style={styles.desc}>{capitalizeWords(vendor.bio)}</Text>
-            )}
-          </View>
-        }
         ListEmptyComponent={
           <View style={styles.emptyWrap}>
             <Text style={styles.emptyText}>No services yet.</Text>
@@ -112,20 +108,15 @@ export default ShopDetails;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.backgroundMuted },
-  listContent: { paddingBottom: 24, gap: 12, alignItems: "center" },
+  listContent: { paddingBottom: 24, gap: 8, alignItems: "center" },
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: colors.backgroundMuted,
   },
-  error: {
-    color: colors.danger,
-    fontSize: 14,
-    fontWeight: "600",
-    textAlign: "center",
-    paddingHorizontal: 16,
-  },
+  error: { color: colors.danger, fontSize: 12, fontWeight: "600" },
+
   header: {
     alignItems: "center",
     paddingTop: 30,
@@ -146,7 +137,13 @@ const styles = StyleSheet.create({
     color: colors.secondary,
     textAlign: "center",
   },
-  desc: { fontSize: 14, color: colors.text, marginTop: 8, textAlign: "center" },
+  desc: {
+    fontSize: 14,
+    color: colors.text,
+    marginTop: 8,
+    textAlign: "center",
+    marginBottom: 10,
+  },
   emptyWrap: {
     flex: 1,
     justifyContent: "center",

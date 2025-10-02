@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
   },
   empty: { color: colors.secondary, fontSize: 16, fontWeight: "600" },
-  error: { color: colors.danger, fontSize: 14, fontWeight: "600" },
+  error: { color: colors.danger, fontSize: 12, fontWeight: "600" },
   fab: {
     position: "absolute",
     right: 20,
