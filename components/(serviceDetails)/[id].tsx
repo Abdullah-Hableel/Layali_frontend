@@ -26,7 +26,6 @@ const ServiceDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const queryClient = useQueryClient();
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-
   const {
     data: service,
     isLoading,
@@ -176,12 +175,12 @@ const ServiceDetails = () => {
                 maxHeight={260}
                 boxStyles={{
                   borderColor: colors.neutral,
-                  borderRadius: 8,
+                  borderRadius: 16,
                   backgroundColor: colors.white,
                 }}
                 dropdownStyles={{
                   borderColor: colors.neutral,
-                  borderRadius: 8,
+                  borderRadius: 16,
                   backgroundColor: colors.white,
                 }}
                 inputStyles={{ color: colors.black }}
