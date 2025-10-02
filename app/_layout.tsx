@@ -105,6 +105,9 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="(personal)/(shop)/[id]"
+            options={{
+              title: "Shop Details",
             name="invitetemplate"
             options={{
               title: "Choose your Template",
@@ -113,6 +116,9 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="(personal)/(serviceDetails)/[id]"
+            options={{
+              title: "Shop Details",
             name="customizeinvitation"
             options={{
               title: "Customize Invitation",

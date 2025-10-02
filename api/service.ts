@@ -21,4 +21,11 @@ const createService = async (formData: FormData) => {
   });
   return res.data;
 };
-export { createService, getServices };
+const getServiceById = async (id: string) => {
+  console.log(id);
+  const res = await instance.get(`/api/service/${id}`);
+  console.log(res.data);
+  return res.data;
+};
+
+export { createService, getServiceById, getServices };
