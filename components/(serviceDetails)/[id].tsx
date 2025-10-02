@@ -1,4 +1,9 @@
-import { getMyEvents, updateEvent } from "@/api/event";
+import {
+  addServiceToEvent,
+  getEventById,
+  getEventServices,
+  getMyEvents,
+} from "@/api/event";
 import { getServiceById } from "@/api/service";
 import { buildImageUrl } from "@/Utils/buildImage";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -19,11 +24,13 @@ import CustomButton from "../customButton";
 
 const ServiceDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const queryClient = useQueryClient();
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+
   const {
     data: service,
     isLoading,
     isError,
-    error,
   } = useQuery({
     queryKey: ["serviceById", id],
     queryFn: () => getServiceById(String(id)),
@@ -31,7 +38,7 @@ const ServiceDetails = () => {
   });
 
   const {
-    data: events,
+    data: events = [],
     isFetching: isFetchingEvents,
     isError: isErrorEvents,
     error: errorEvents,
@@ -40,28 +47,49 @@ const ServiceDetails = () => {
     queryFn: getMyEvents,
   });
 
-  const queryClient = useQueryClient();
+  const { data: selectedEvent } = useQuery({
+    queryKey: ["eventById", selectedEventId],
+    queryFn: () => getEventById(selectedEventId!),
+    enabled: !!selectedEventId,
+  });
+
+  const { data: selectedEventServices } = useQuery({
+    queryKey: ["eventServices", selectedEventId],
+    queryFn: () => getEventServices(selectedEventId!),
+    enabled: !!selectedEventId,
+  });
+
+  const currentTotal = (selectedEventServices?.services ?? []).reduce(
+    (sum, s) => sum + Number(s.price || 0),
+    0
+  );
+  const budget = Number(selectedEvent?.budget || 0);
+  const remainingBudget = Math.max(0, budget - currentTotal);
   const { mutate, isPending } = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
-      updateEvent(id, data),
+    mutationFn: ({
+      eventId,
+      serviceId,
+    }: {
+      eventId: string;
+      serviceId: string;
+    }) => addServiceToEvent(eventId, serviceId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["Myevents"] });
-
+      queryClient.invalidateQueries({ queryKey: ["eventServices"] });
       Toast.show({
         type: "success",
-        text1: "Event updated",
-        text2: "Your event was updated successfully.",
+        text1: "Service added",
+        text2: "Service has been added successfully",
       });
       router.dismissTo("/(personal)/(protect)/(tabs)/vendor");
     },
-    onError: (err: any) => {
+    onError: () => {
       Toast.show({
         type: "error",
-        text1: "Failed to update event. Please try again",
+        text1: "Failed to add service. Please try again",
       });
     },
   });
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   const formatEventLabel = (e?: { location?: string; date?: string }) =>
     e
@@ -95,9 +123,17 @@ const ServiceDetails = () => {
       Toast.show({ type: "info", text1: "Please select an event first" });
       return;
     }
+    if (Number(service.price || 0) > remainingBudget) {
+      Toast.show({
+        type: "error",
+        text1: "Over budget",
+        text2: "This service exceeds your remaining budget.",
+      });
+      return;
+    }
     mutate({
-      id: selectedEventId,
-      data: { services: [service._id] },
+      eventId: selectedEventId,
+      serviceId: service._id,
     });
   };
 
@@ -214,7 +250,7 @@ const ServiceDetails = () => {
             <Text style={styles.meta}>More Details: {service.description}</Text>
           )}
         </View>
-        <View style={{ alignItems: "center", marginTop: 180 }}>
+        <View style={{ alignItems: "center", marginTop: 120 }}>
           <CustomButton
             text={isPending ? "Saving..." : "Book Now"}
             disabled={isPending}

@@ -1,4 +1,9 @@
-import { deleteEvent, getEventById, updateEvent } from "@/api/event";
+import {
+  deleteEvent,
+  getEventById,
+  getEventServices,
+  updateEvent,
+} from "@/api/event";
 import colors from "@/components/Colors";
 import { formatMMDDYYYY, todayAtMidnight } from "@/Utils/date";
 import { UpdateEventSchema } from "@/Utils/eventSchema";
@@ -66,6 +71,16 @@ const EventDetails = () => {
         type: "error",
         text1: "Failed to update, please try again later.",
       }),
+  });
+
+  const {
+    data: eventServices,
+    isLoading: servicesLoading,
+    isError: servicesError,
+  } = useQuery({
+    queryKey: ["eventServices", id],
+    queryFn: () => getEventServices(id!),
+    enabled: !!id,
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -277,11 +292,58 @@ const EventDetails = () => {
         <View style={styles.card}>
           <View style={styles.rowBetween}>
             <Text style={styles.sectionTitle}>Services</Text>
-            <TouchableOpacity>
-              <Text style={styles.addBtn}>+ Add</Text>
+            <TouchableOpacity
+              onPress={() =>
+                router.push("/(personal)/(serviceDetails)/myServices")
+              }
+            >
+              <Text style={styles.manageBtn}>View</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.placeholder}>No services added yet</Text>
+
+          {servicesLoading && (
+            <Text style={styles.placeholder}>Loading services…</Text>
+          )}
+          {servicesError && (
+            <Text style={styles.error}>Failed to load services.</Text>
+          )}
+
+          {!servicesLoading && !servicesError && eventServices && (
+            <>
+              {eventServices.servicesCount === 0 ? (
+                <Text style={styles.placeholder}>No services added yet</Text>
+              ) : (
+                <>
+                  <View style={{ marginBottom: 8 }}>
+                    <Text style={styles.value}>
+                      Total services:{" "}
+                      <Text style={{ fontWeight: "700" }}>
+                        {eventServices.servicesCount}
+                      </Text>
+                    </Text>
+                    <Text style={styles.value}>
+                      Total price:{" "}
+                      <Text style={{ fontWeight: "700" }}>
+                        {eventServices.services
+                          .reduce((sum, s) => sum + Number(s.price || 0), 0)
+                          .toFixed(2)}{" "}
+                        KWD
+                      </Text>
+                    </Text>
+                  </View>
+
+                  {/* Names list */}
+                  <View style={{ gap: 6 }}>
+                    {eventServices.services.map((s) => (
+                      <Text key={s._id} style={styles.value}>
+                        • {s.name} — {Number(s.price).toFixed(2)} KWD
+                      </Text>
+                    ))}
+                  </View>
+                </>
+              )}
+            </>
+          )}
         </View>
 
         <View style={styles.card}>

@@ -1,4 +1,4 @@
-import { Event, EventStats } from "@/data/events";
+import { Event, EventStats, EventWithServiceCount } from "@/data/events";
 import instance, { baseURL } from "./index";
 import { getToken } from "./storage";
 
@@ -60,4 +60,37 @@ export const getMyEventStats = async () => {
   });
 
   return res.data.stats as EventStats;
+};
+
+export const listEventsWithServiceCount = async () => {
+  const token = await getToken();
+  const res = await instance.get("/api/event/list", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  return res.data.stats as EventWithServiceCount;
+};
+
+export const getEventServices = async (eventId: string) => {
+  const token = await getToken();
+  const { data } = await instance.get(`/api/event/services/${eventId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return data as {
+    _id: string;
+    servicesCount: number;
+    services: { _id: string; name: string; price: number }[];
+  };
+};
+
+export const addServiceToEvent = async (id: string, serviceId: string) => {
+  const token = await getToken();
+  const { data } = await instance.patch(
+    `/api/event/${id}/services`,
+    { serviceId },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return data?.event ?? data;
 };
