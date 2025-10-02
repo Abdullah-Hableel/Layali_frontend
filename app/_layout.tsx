@@ -112,7 +112,10 @@ export default function RootLayout() {
               headerBackTitle: "Back",
             }}
           />
-
+          <Stack.Screen
+            name="(vendorD)/(vendor)"
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="(personal)/(shop)/[id]"
             options={{
