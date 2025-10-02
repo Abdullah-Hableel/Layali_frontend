@@ -1,3 +1,4 @@
+import { Service } from "@/api/users";
 import { User } from "./user";
 
 export interface Event {
@@ -12,4 +13,21 @@ export type EventStats = {
   total: number;
   upcoming: number;
   old: number;
+};
+
+export type EventWithServiceCount = {
+  _id: string;
+  user: string;
+  budget: number;
+  date: Date;
+  location: string;
+  services: string[];
+  invites: string[];
+  servicesCount: number;
+};
+
+export type EventServices = {
+  _id: string;
+  servicesCount: number;
+  services: Service[];
 };

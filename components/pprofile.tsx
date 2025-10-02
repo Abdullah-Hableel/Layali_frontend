@@ -47,12 +47,13 @@ const PersonalProfile = () => {
   if (isError || statsError) {
     return (
       <View style={styles.center}>
-        <Text style={{ color: "red" }}>
+        <Text style={styles.errorText}>
           {(error as Error)?.message || "Failed to load stats"}
         </Text>
       </View>
     );
   }
+
   const displayRole =
     user?.role === "Normal" ? "Personal Account" : user?.role || "";
 
@@ -71,21 +72,25 @@ const PersonalProfile = () => {
             <Text style={styles.statValue}>
               {statsLoading ? "—" : stats?.total ?? 0}
             </Text>
-            <Text style={styles.statLabel}>Total</Text>
+            <Text style={styles.statLabel}>Total Events</Text>
           </View>
+
+          <View style={styles.verticalDivider} />
 
           <View style={styles.statBox}>
             <Text style={styles.statValue}>
               {statsLoading ? "—" : stats?.upcoming ?? 0}
             </Text>
-            <Text style={styles.statLabel}>Upcoming</Text>
+            <Text style={styles.statLabel}>Upcoming Events</Text>
           </View>
+
+          <View style={styles.verticalDivider} />
 
           <View style={styles.statBox}>
             <Text style={styles.statValue}>
               {statsLoading ? "—" : stats?.old ?? 0}
             </Text>
-            <Text style={styles.statLabel}>Old</Text>
+            <Text style={styles.statLabel}>Old Events</Text>
           </View>
         </View>
       </View>
@@ -100,7 +105,9 @@ const PersonalProfile = () => {
           <Text style={styles.actionText}>My Events</Text>
           <Feather name="chevron-right" size={18} color="#9a9a9a" />
         </TouchableOpacity>
+
         <View style={styles.divider} />
+
         <TouchableOpacity
           style={styles.actionItem}
           activeOpacity={0.85}
@@ -131,30 +138,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.backgroundMuted,
   },
+  errorText: { color: "red" },
+
   headerCard: {
-    backgroundColor: "#fff",
-    borderRadius: cardRadius,
     paddingVertical: 20,
     paddingHorizontal: 16,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    elevation: 2,
   },
-  editBtn: {
-    position: "absolute",
-    right: 12,
-    top: 12,
-    backgroundColor: "#f28b82",
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  editText: { color: "#fff", fontWeight: "700", fontSize: 12 },
+
   avatarWrapper: {
     width: 140,
     height: 140,
@@ -166,35 +157,37 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   avatar: { width: 130, height: 130, borderRadius: 65 },
+
   name: { fontSize: 20, fontWeight: "700", color: "#333" },
   role: { fontSize: 13, color: "#999", marginTop: 2 },
-  email: { fontSize: 14, color: "#777", marginTop: 4 },
+
   statsRow: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    alignItems: "center",
     width: "100%",
     marginTop: 16,
+    justifyContent: "space-around",
   },
   statBox: {
+    flex: 1,
     alignItems: "center",
-    backgroundColor: colors.backgroundLight,
-    borderRadius: 12,
     paddingVertical: 10,
-    paddingHorizontal: 16,
-    minWidth: 100,
+    paddingHorizontal: 6,
   },
   statValue: { fontSize: 18, fontWeight: "700", color: "#333" },
-  statLabel: { fontSize: 12, color: "#777" },
+  statLabel: { fontSize: 12, color: "#777", textAlign: "center" },
+  verticalDivider: {
+    width: StyleSheet.hairlineWidth,
+    backgroundColor: colors.secondary,
+    alignSelf: "stretch",
+  },
+
   actionsCard: {
     backgroundColor: "#fff",
     borderRadius: cardRadius,
     marginTop: 16,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 1,
   },
   actionItem: {
     flexDirection: "row",

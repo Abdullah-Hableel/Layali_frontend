@@ -6,7 +6,7 @@ type ButtonProps = {
   text: string;
   children?: ReactNode;
   onPress: () => void;
-  variant?: "primary" | "secondary" | "outline";
+  variant?: "primary" | "secondary" | "outline" | "whatsapp";
   disabled?: boolean;
 };
 
@@ -34,6 +34,13 @@ const CustomButton = ({
             backgroundColor: pressed ? colors.backgroundMuted : colors.white,
             borderWidth: 2,
             borderColor: colors.primary,
+          },
+        !disabled &&
+          variant === "whatsapp" && {
+            backgroundColor: "#25D366",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
           },
       ]}
       onPress={onPress}
