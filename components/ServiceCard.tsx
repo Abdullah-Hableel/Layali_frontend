@@ -1,25 +1,15 @@
-import { buildImageUrl } from "@/Utils/buildImage";
 import { capitalizeWords } from "@/Utils/capitalize";
 import { Service } from "@/api/users";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useState } from "react";
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "./Colors";
 
 export const ServiceCard = ({ item }: { item: Service }) => {
-  const [imgError, setImgError] = useState(false);
-
-  const uri = item?.image && !imgError ? buildImageUrl(item.image) : null;
   const goToDetails = () => {
     router.push(`/(personal)/(serviceDetails)/${item._id}`);
+    console.log(item._id);
   };
   return (
     <TouchableOpacity
@@ -35,41 +25,25 @@ export const ServiceCard = ({ item }: { item: Service }) => {
           style={styles.topIcon}
         />
 
-        {uri ? (
-          <Image
-            source={{ uri }}
-            style={styles.cardImage}
-            resizeMode="cover"
-            onError={() => setImgError(true)}
-            accessibilityRole="image"
-            accessibilityLabel={`${item.name} image`}
-          />
-        ) : (
-          <View style={[styles.cardImage, styles.imageFallback]}>
-            <Text style={styles.imageFallbackText}>No image</Text>
-          </View>
-        )}
-        <ScrollView>
-          <View style={styles.cardBody}>
-            <Text style={styles.cardTitle} numberOfLines={1}>
-              {item.name}
+        <View style={styles.cardBody}>
+          <Text style={styles.cardTitle} numberOfLines={1}>
+            {item.name}
+          </Text>
+          <Text style={styles.cardPrice}>
+            {Number(item.price).toFixed(2)} KWD
+          </Text>
+          {!!item.type && (
+            <Text style={styles.meta}>{capitalizeWords(item.type)}</Text>
+          )}
+          {!!item.time && (
+            <Text style={styles.meta}>{capitalizeWords(item.time)}</Text>
+          )}
+          {!!item.description && (
+            <Text style={styles.desc} numberOfLines={2}>
+              {capitalizeWords(item.description)}
             </Text>
-            <Text style={styles.cardPrice}>
-              {Number(item.price).toFixed(2)} KWD
-            </Text>
-            {!!item.type && (
-              <Text style={styles.meta}>{capitalizeWords(item.type)}</Text>
-            )}
-            {!!item.time && (
-              <Text style={styles.meta}>{capitalizeWords(item.time)}</Text>
-            )}
-            {!!item.description && (
-              <Text style={styles.desc} numberOfLines={2}>
-                {capitalizeWords(item.description)}
-              </Text>
-            )}
-          </View>
-        </ScrollView>
+          )}
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -78,7 +52,7 @@ export const ServiceCard = ({ item }: { item: Service }) => {
 const styles = StyleSheet.create({
   topIcon: {
     position: "absolute",
-    top: 8,
+    top: 55,
     right: 8,
     zIndex: 10,
   },
