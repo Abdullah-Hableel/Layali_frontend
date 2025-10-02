@@ -292,5 +292,5 @@ const styles = StyleSheet.create({
   section: { fontSize: 15, fontWeight: "700", color: colors.secondary },
   rowCenter: { flexDirection: "row", alignItems: "center" },
   muted: { color: colors.secondary, opacity: 0.8, marginTop: 4 },
-  error: { color: "#D32F2F" },
+  error: { color: colors.danger, fontSize: 12, fontWeight: "600" },
 });

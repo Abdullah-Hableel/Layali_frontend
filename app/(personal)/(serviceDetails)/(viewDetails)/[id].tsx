@@ -1,4 +1,4 @@
-import MyServices from "@/components/(serviceDetails)/myServices";
+import MyServices from "@/components/(serviceDetails)/(viewDetails)/[id]";
 import React from "react";
 import { StyleSheet } from "react-native";
 

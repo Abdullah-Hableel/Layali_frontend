@@ -116,13 +116,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.backgroundMuted,
   },
-  error: {
-    color: colors.danger,
-    fontSize: 14,
-    fontWeight: "600",
-    textAlign: "center",
-    paddingHorizontal: 16,
-  },
+  error: { color: colors.danger, fontSize: 12, fontWeight: "600" },
+
   header: {
     alignItems: "center",
     paddingTop: 30,
