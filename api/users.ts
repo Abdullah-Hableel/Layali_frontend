@@ -11,7 +11,10 @@ export type Service = {
   _id: string;
   name: string;
   price: number;
-  image?: string;
+  image: string;
+  description?: string;
+  type?: string;
+  time?: string;
 };
 
 export type Vendor = {
