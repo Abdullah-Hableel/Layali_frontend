@@ -122,6 +122,19 @@ export default function RootLayout() {
               title: "My Services",
             }}
           />
+          {/* invites */}
+          <Stack.Screen
+            name="customizeinvitation"
+            options={{
+              title: "Customize Invitation",
+            }}
+          />
+          <Stack.Screen
+            name="invitetemplate"
+            options={{
+              title: "Choose your Template",
+            }}
+          />
         </Stack>
       </AuthContext.Provider>
       <Toast position="bottom" />
