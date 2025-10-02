@@ -108,22 +108,12 @@ export default function RootLayout() {
             name="(personal)/(shop)/[id]"
             options={{
               title: "Shop Details",
-            name="invitetemplate"
-            options={{
-              title: "Choose your Template",
-              headerBackVisible: true,
-              headerBackTitle: "Back",
             }}
           />
           <Stack.Screen
             name="(personal)/(serviceDetails)/[id]"
             options={{
               title: "Shop Details",
-            name="customizeinvitation"
-            options={{
-              title: "Customize Invitation",
-              headerBackVisible: true,
-              headerBackTitle: "Back",
             }}
           />
         </Stack>

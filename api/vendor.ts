@@ -50,6 +50,7 @@ export const getVendorById = async (): Promise<Vendor> => {
 
 export const getVendorById2 = async (id: string) => {
   const res = await instance.get(`${baseURL}/api/vendor/${id}`);
+  console.log(res.data);
   return res.data;
 };
 
