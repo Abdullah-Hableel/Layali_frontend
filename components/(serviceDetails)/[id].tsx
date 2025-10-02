@@ -164,7 +164,6 @@ const ServiceDetails = () => {
               <Text style={{ color: colors.secondary, marginBottom: 6 }}>
                 Select Event {isFetchingEvents ? "…" : ""}
               </Text>
-
               <SelectList
                 setSelected={(id: string) => onSelect(id)}
                 data={options}
