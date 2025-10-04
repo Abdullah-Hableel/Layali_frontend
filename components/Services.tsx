@@ -1,4 +1,5 @@
 import { baseURL } from "@/api";
+import { deleteService } from "@/api/service";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -31,6 +32,11 @@ export default function Service() {
   const [loadingImages, setLoadingImages] = useState<{
     [key: string]: boolean;
   }>({});
+
+  // delete modal states
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState<any | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const { data, isLoading, error } = useQuery<UserAttrs>({
     queryKey: ["user"],
@@ -83,6 +89,10 @@ export default function Service() {
     <TouchableOpacity
       style={styles.card}
       onPress={() => setSelectedService(item)}
+      onLongPress={() => {
+        setServiceToDelete(item);
+        setDeleteModalVisible(true);
+      }}
     >
       <View>
         <Image
@@ -146,7 +156,7 @@ export default function Service() {
         }
       />
 
-      {/* Modal for service details */}
+      {/* Service Details Modal */}
       {selectedService && (
         <Modal
           visible={!!selectedService}
@@ -157,7 +167,6 @@ export default function Service() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                {/* Service Name + Type + Logo */}
                 <View
                   style={{
                     flexDirection: "row",
@@ -190,7 +199,6 @@ export default function Service() {
                   style={styles.modalImage}
                 />
 
-                {/* Vendor + Price */}
                 {selectedService.vendorName && (
                   <View style={styles.modalVendorRow}>
                     <Image
@@ -208,14 +216,12 @@ export default function Service() {
                   </View>
                 )}
 
-                {/* Duration */}
                 {selectedService.time && (
                   <Text style={styles.modalTimeRow}>
                     Duration: {selectedService.time}
                   </Text>
                 )}
 
-                {/* Divider */}
                 <View style={{ flex: 1 }} />
                 <View
                   style={{
@@ -228,7 +234,6 @@ export default function Service() {
                   }}
                 />
 
-                {/* Description */}
                 {selectedService.description && (
                   <Text style={styles.modalDescription}>
                     {selectedService.description}
@@ -236,13 +241,85 @@ export default function Service() {
                 )}
               </ScrollView>
 
-              {/* Close Button (now independent of image loading) */}
               <TouchableOpacity
                 style={styles.closeButtonWide}
                 onPress={() => setSelectedService(null)}
               >
                 <Text style={styles.closeButtonText}>Close</Text>
               </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* Delete Service Modal */}
+      {deleteModalVisible && serviceToDelete && (
+        <Modal
+          visible={deleteModalVisible}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setDeleteModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View
+              style={[
+                styles.modalContent,
+                { maxHeight: 200, justifyContent: "center" },
+              ]}
+            >
+              <Text
+                style={{ fontSize: 18, textAlign: "center", marginBottom: 20 }}
+              >
+                Are you sure you want to delete "{serviceToDelete.name}"?
+              </Text>
+
+              <View
+                style={{ flexDirection: "row", justifyContent: "space-around" }}
+              >
+                <TouchableOpacity
+                  style={[
+                    styles.closeButtonWide,
+                    { backgroundColor: colors.danger, width: "40%" },
+                  ]}
+                  onPress={async () => {
+                    setDeleting(true);
+                    try {
+                      // Call API to delete the service
+                      await deleteService(serviceToDelete._id);
+
+                      // Close modal
+                      setDeleteModalVisible(false);
+                      setServiceToDelete(null);
+
+                      // Refresh the services list
+                      await queryClient.invalidateQueries({
+                        queryKey: ["user"],
+                      });
+                    } catch (err: any) {
+                      console.error("Failed to delete service:", err.message);
+                      alert("Failed to delete service. Please try again.");
+                    } finally {
+                      setDeleting(false);
+                    }
+                  }}
+                >
+                  {deleting ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.closeButtonText}>Delete</Text>
+                  )}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.closeButtonWide, { width: "40%" }]}
+                  onPress={() => {
+                    setDeleteModalVisible(false);
+                    setServiceToDelete(null);
+                  }}
+                >
+                  <Text style={styles.closeButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </Modal>
