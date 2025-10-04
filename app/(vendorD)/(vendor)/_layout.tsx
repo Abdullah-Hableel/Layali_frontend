@@ -47,7 +47,6 @@ export default function RootLayout() {
           options={{
             title: "Home",
 
-            // ✅ commit: use `color` param from Expo Router
             tabBarIcon: ({ color }) => (
               <MaterialIcons name="home" size={24} color={color} />
             ),
@@ -65,7 +64,6 @@ export default function RootLayout() {
           options={{
             title: "Services",
 
-            // ✅ commit: use `color` instead of fixed color
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons
                 name="room-service"
@@ -77,7 +75,7 @@ export default function RootLayout() {
         />
 
         <Tabs.Screen
-          name="Vendor"
+          name="vendor"
           options={{
             title: "Business Profile",
 
