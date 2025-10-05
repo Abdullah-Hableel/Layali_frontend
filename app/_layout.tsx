@@ -147,6 +147,10 @@ export default function RootLayout() {
               title: "Choose your Template",
             }}
           />
+          <Stack.Screen
+            name="(vendorD)/(serviceInfo)/[id]"
+            options={{ title: "Service Info" }}
+          />
         </Stack>
       </AuthContext.Provider>
       <Toast position="bottom" />

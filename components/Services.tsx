@@ -84,11 +84,14 @@ export default function Service() {
         vendorLogo: vendor.logo,
       }))
     ) ?? [];
-
+  // setSelectedService(item)
   const renderService = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => setSelectedService(item)}
+      onPress={() => {
+        console.log("Service ID:", item._id);
+        router.push(`/(vendorD)/(serviceInfo)/${item._id}`);
+      }}
       onLongPress={() => {
         setServiceToDelete(item);
         setDeleteModalVisible(true);
