@@ -118,6 +118,13 @@ const Suggestions = () => {
       ? Math.max(budget - (totalPriceOfSuggestions || 0), 0)
       : null;
 
+  const categoryNameById: Record<string, string> = {};
+  allCategories.forEach((cat) => {
+    categoryNameById[cat._id] = cat.name;
+  });
+
+  const getCategoryNames = (ids?: string[]) =>
+    (ids || []).map((id) => categoryNameById[id] || "Unknown");
   return (
     <ScrollView
       style={styles.container}
@@ -281,27 +288,47 @@ const Suggestions = () => {
                     name?: string;
                     price?: number;
                     reason?: string;
+                    categories?: string[];
                   },
                   index: number
-                ) => (
-                  <View key={index} style={styles.resultItem}>
-                    <View style={styles.resultRow}>
-                      <Text style={styles.resultName}>
-                        {suggestionItem.name || `Service ${index + 1}`}
-                      </Text>
-                      <Text style={styles.resultPrice}>
-                        {suggestionItem.price != null
-                          ? fmtKWD(suggestionItem.price)
-                          : "—"}
-                      </Text>
+                ) => {
+                  const categoryNames = getCategoryNames(
+                    suggestionItem.categories
+                  );
+
+                  return (
+                    <View key={index} style={styles.resultItem}>
+                      <View style={styles.resultRow}>
+                        <Text style={styles.resultName}>
+                          {suggestionItem.name || `Service ${index + 1}`}
+                        </Text>
+                        <Text style={styles.resultPrice}>
+                          {suggestionItem.price != null
+                            ? fmtKWD(suggestionItem.price)
+                            : "—"}
+                        </Text>
+                      </View>
+
+                      {categoryNames.length > 0 && (
+                        <View style={styles.categoryChipsRow}>
+                          {categoryNames.map((name) => (
+                            <View key={name} style={styles.categoryChip}>
+                              <Text style={styles.categoryChipText}>
+                                {name}
+                              </Text>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+
+                      {!!suggestionItem.reason && (
+                        <Text style={styles.resultReason}>
+                          {suggestionItem.reason}
+                        </Text>
+                      )}
                     </View>
-                    {!!suggestionItem.reason && (
-                      <Text style={styles.resultReason}>
-                        {suggestionItem.reason}
-                      </Text>
-                    )}
-                  </View>
-                )
+                  );
+                }
               )}
             </View>
           ) : (
@@ -456,4 +483,23 @@ const styles = StyleSheet.create({
   },
   totalsLabel: { color: colors.secondary, fontWeight: "bold" },
   totalsValue: { color: colors.text, fontWeight: "bold" },
+  categoryChipsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+    marginTop: 6,
+  },
+  categoryChip: {
+    backgroundColor: colors.accent,
+    borderRadius: 999,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    marginRight: 6,
+    marginBottom: 6,
+  },
+  categoryChipText: {
+    color: colors.secondary,
+    fontWeight: "600",
+    fontSize: 12,
+  },
 });
