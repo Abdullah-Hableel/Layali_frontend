@@ -94,6 +94,11 @@ const PersonalProfile = () => {
           </View>
         </View>
       </View>
+      <TouchableOpacity onPress={() => router.push("/mygiftcards")}>
+        <Text style={{ color: colors.secondary, fontWeight: "bold" }}>
+          My Gift Cards
+        </Text>
+      </TouchableOpacity>
 
       <View style={styles.actionsCard}>
         <TouchableOpacity
