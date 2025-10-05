@@ -79,7 +79,6 @@ const ShopDetails = () => {
             <Text style={{ color: colors.text, fontSize: 12 }}>No Logo</Text>
           </View>
         )}
-
         <Text style={styles.title}>
           {capitalizeWords(vendor.business_name)}
         </Text>

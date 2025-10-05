@@ -1,16 +1,17 @@
-import * as SecureStore from "expo-secure-store";
-import { jwtDecode } from "jwt-decode";
 import instance, { baseURL } from ".";
 export interface Vendor {
+  events: any;
   _id: string;
   user: string;
   business_name: string;
   bio: string;
   logo: string;
   services: string[];
+  // services?: { name: string; price: number }[];
   categories: string[];
   createdAt?: string;
   updatedAt?: string;
+  status?: "active" | "pending" | "inactive";
 }
 
 export const getVendor = async () => {
@@ -30,21 +31,8 @@ interface TokenPayload {
   iat?: number;
 }
 
-export const getVendorById = async (): Promise<Vendor> => {
-  const token = await SecureStore.getItemAsync("token");
-
-  if (!token) throw new Error("User not authenticated");
-
-  // Decode the token to extract the ID
-  const decoded = jwtDecode<TokenPayload>(token);
-  const vendorId = decoded._id;
-
-  if (!vendorId) throw new Error("Invalid token: no ID found");
-
-  const res = await instance.get<Vendor>(`/api/vendor/${vendorId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
+export const getVendorById = async (id: string): Promise<Vendor> => {
+  const res = await instance.get<Vendor>(`/api/vendor/${id}`);
   return res.data;
 };
 

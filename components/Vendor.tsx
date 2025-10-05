@@ -4,13 +4,14 @@ import { capitalizeWords } from "@/Utils/capitalize";
 import { Feather } from "@expo/vector-icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Image,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -18,6 +19,7 @@ import colors from "./Colors";
 
 const Vendor = () => {
   const queryClient = useQueryClient();
+  const [search, setSearch] = useState("");
 
   const {
     data: vendor,
@@ -43,15 +45,29 @@ const Vendor = () => {
       </View>
     );
   }
+  const filtered = vendor.filter((v: any) =>
+    (v?.business_name || "").toLowerCase().includes(search.trim().toLowerCase())
+  );
 
   return (
     <View style={styles.root}>
+      <View style={styles.searchWrap}>
+        <TextInput
+          value={search}
+          onChangeText={setSearch}
+          placeholder="Search by shop name"
+          placeholderTextColor={colors.secondary}
+          style={styles.searchInput}
+        />
+      </View>
       <FlatList
         contentContainerStyle={styles.listContent}
-        data={vendor}
+        data={filtered}
         keyExtractor={(item) => item._id}
         ListEmptyComponent={
-          <Text style={styles.empty}>No vendors available</Text>
+          <Text style={styles.empty}>
+            {search ? "No matching vendors" : "No vendors available"}
+          </Text>
         }
         renderItem={({ item }) => {
           const uri = buildImageUrl(item.logo);
@@ -93,6 +109,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.backgroundMuted,
   },
+
   error: { color: colors.danger, fontSize: 12, fontWeight: "600" },
   listContent: { padding: 16, backgroundColor: colors.backgroundMuted },
   row: {
@@ -110,7 +127,20 @@ const styles = StyleSheet.create({
     height: 95,
   },
   logo: { width: 70, height: 70, borderRadius: 50, backgroundColor: "#eee" },
-
+  searchWrap: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 4,
+    backgroundColor: colors.backgroundMuted,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: colors.neutral,
+    borderRadius: 12,
+    padding: 10,
+    backgroundColor: colors.white,
+    color: colors.black,
+  },
   info: { flex: 1 },
   name: {
     fontSize: 18,
