@@ -2,6 +2,7 @@ import { baseURL } from "@/api";
 import { Feather } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { router } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -151,7 +152,12 @@ const HomePage = () => {
           style={styles.searchInput}
         />
       </View>
-
+      {/* router.push("/mygiftcards") */}
+      <TouchableOpacity onPress={() => router.push("/creategiftcard")}>
+        <Text style={{ color: colors.secondary, fontWeight: "bold" }}>
+          Send a Gift?
+        </Text>
+      </TouchableOpacity>
       {/* ← 5-phase Budget Slider with aligned labels */}
       <View style={{ marginHorizontal: 20, marginBottom: 10 }}>
         <Text style={{ color: colors.text, marginBottom: 5 }}>
