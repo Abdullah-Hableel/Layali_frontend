@@ -105,6 +105,22 @@ export default function RootLayout() {
         }}
       />
       <Tabs.Screen
+        name="suggestion"
+        options={{
+          title: "AI Suggestion",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="magic" size={24} color={colors.secondary} />
+          ),
+          headerRight: () => (
+            <React.Fragment>
+              <TouchableOpacity onPress={handleLogOut}>
+                <MaterialIcons name="logout" size={20} color={colors.danger} />
+              </TouchableOpacity>
+            </React.Fragment>
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="pprofile"
         options={{
           title: "Profile",
