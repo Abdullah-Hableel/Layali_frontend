@@ -107,7 +107,7 @@ export default function RootLayout() {
           <Stack.Screen
             name="(vendorD)/[id]"
             options={{
-              title: "VendorDetails",
+              title: "Vendor Details",
               headerBackVisible: true,
               headerBackTitle: "Back",
             }}

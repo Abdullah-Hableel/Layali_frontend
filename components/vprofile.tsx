@@ -75,7 +75,11 @@ export default function BusinessProfile() {
   const renderItem = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={styles.vendorCard}
-      onPress={() => router.push(`/(vendorD)/${item._id}`)}
+      onPress={() => {
+        router.push(`/(vendorD)/${item._id}`);
+        console.log(item._id, "nav clicked!!!!!!!!!!!");
+        console.log(item);
+      }}
     >
       <Image
         source={{ uri: buildImageUrl(item.logo) }}
