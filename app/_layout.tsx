@@ -72,6 +72,18 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="creategiftcard"
+            options={{
+              title: "Create Gift Card",
+            }}
+          />
+          <Stack.Screen
+            name="mygiftcards"
+            options={{
+              title: "My Gift Cards",
+            }}
+          />
+          <Stack.Screen
             name="(personal)/(protect)/(tabs)"
             options={{
               headerShown: false,
