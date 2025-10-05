@@ -1,8 +1,6 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
-const baseURL = "http://172.20.10.6:8000"; // put ur ip in between
-
 import BASE_URL from "./baseurl";
 
 const baseURL = `${BASE_URL}`; // put ur ip in between
