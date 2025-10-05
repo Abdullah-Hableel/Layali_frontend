@@ -1,4 +1,6 @@
 import { Event, EventStats, EventWithServiceCount } from "@/data/events";
+import { SuggestionRequest, SuggestionsResponse } from "@/data/gemini";
+import { AxiosError } from "axios";
 import instance, { baseURL } from "./index";
 import { getToken } from "./storage";
 
@@ -105,3 +107,24 @@ export const deleteServiceFromEvent = async (params: {
   );
   return data;
 };
+
+export async function getSuggestions(
+  eventId: string,
+  body: SuggestionRequest,
+  opts?: { signal?: AbortSignal }
+): Promise<SuggestionsResponse> {
+  try {
+    const res = await instance.post<SuggestionsResponse>(
+      `api/event/${eventId}/suggestions`,
+      body,
+      { signal: opts?.signal }
+    );
+    console.log("GEMINI DATA", res.data);
+    return res.data;
+  } catch (e) {
+    const ax = e as AxiosError<any>;
+    const msg =
+      ax.response?.data?.message || ax.message || "Failed to fetch suggestions";
+    throw new Error(msg);
+  }
+}

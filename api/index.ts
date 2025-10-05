@@ -8,7 +8,7 @@ export { baseURL };
 
 const instance = axios.create({
   baseURL: baseURL,
-  timeout: 10000,
+  timeout: 30000,
 });
 
 instance.interceptors.request.use(async (config) => {
