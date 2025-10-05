@@ -1,4 +1,5 @@
 import { baseURL } from "@/api";
+import { deleteService } from "@/api/service";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -27,6 +28,16 @@ export default function Service() {
   const [selectedService, setSelectedService] = useState<any | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
+  // track loading states
+  const [loadingImages, setLoadingImages] = useState<{
+    [key: string]: boolean;
+  }>({});
+
+  // delete modal states
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState<any | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   const { data, isLoading, error } = useQuery<UserAttrs>({
     queryKey: ["user"],
     queryFn: getUserById,
@@ -42,9 +53,7 @@ export default function Service() {
     return (
       <SafeAreaView style={styles.center}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={{ marginTop: 10, color: colors.text }}>
-          Loading user...
-        </Text>
+        <Text style={{ marginTop: 10, color: colors.text }}>Loading...</Text>
       </SafeAreaView>
     );
   }
@@ -67,7 +76,6 @@ export default function Service() {
     );
   }
 
-  // Flatten services from all vendors
   const services =
     (data.vendors as any)?.flatMap((vendor: any) =>
       vendor.services.map((service: any) => ({
@@ -81,22 +89,36 @@ export default function Service() {
     <TouchableOpacity
       style={styles.card}
       onPress={() => setSelectedService(item)}
+      onLongPress={() => {
+        setServiceToDelete(item);
+        setDeleteModalVisible(true);
+      }}
     >
-      <Image
-        source={{ uri: buildImageUrl(item.image) }}
-        style={styles.cardImage}
-      />
+      <View>
+        <Image
+          source={{ uri: buildImageUrl(item.image) }}
+          style={styles.cardImage}
+          onLoadStart={() =>
+            setLoadingImages((prev) => ({ ...prev, [item._id]: true }))
+          }
+          onLoadEnd={() =>
+            setLoadingImages((prev) => ({ ...prev, [item._id]: false }))
+          }
+        />
+        {loadingImages[item._id] && (
+          <View style={styles.imageSpinnerOverlay}>
+            <ActivityIndicator size="large" color={colors.primary} />
+          </View>
+        )}
+      </View>
 
       <View style={styles.cardContent}>
-        {/* Service Name */}
         <Text style={styles.serviceName}>{item.name}</Text>
 
-        {/* Price below name, aligned right */}
         <View style={{ alignItems: "flex-end", marginTop: -8 }}>
           <Text style={styles.priceTag}>{item.price} KD</Text>
         </View>
 
-        {/* Vendor row */}
         {item.vendorName && (
           <View style={styles.vendorRow}>
             <Image
@@ -115,6 +137,7 @@ export default function Service() {
       <Text style={styles.title}>
         🛎️ number of your services: {services.length}
       </Text>
+
       <FlatList
         data={services}
         keyExtractor={(item) => item._id}
@@ -133,7 +156,7 @@ export default function Service() {
         }
       />
 
-      {/* Modal for service details */}
+      {/* Service Details Modal */}
       {selectedService && (
         <Modal
           visible={!!selectedService}
@@ -143,15 +166,32 @@ export default function Service() {
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-              <ScrollView>
-                {/* Service Name */}
-                <Text style={styles.modalTitle}>{selectedService.name}</Text>
+              <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "flex-start",
+                    justifyContent: "space-between",
+                    marginBottom: 10,
+                  }}
+                >
+                  <View style={{ flexDirection: "column" }}>
+                    <Text style={styles.modalTitle}>
+                      {selectedService.name}
+                    </Text>
+                    {selectedService.type && (
+                      <Text style={styles.modalType}>
+                        Type: {selectedService.type}
+                      </Text>
+                    )}
+                  </View>
 
-                {/* Price below name, aligned right */}
-                <View style={{ alignItems: "flex-end", marginTop: -25 }}>
-                  <Text style={styles.modalPrice}>
-                    {selectedService.price} KD
-                  </Text>
+                  <View style={{ alignSelf: "flex-start", marginTop: 10 }}>
+                    <Image
+                      source={require("../assets/images/Logo-withoutbg.png")}
+                      style={{ width: 100, height: 40 }}
+                    />
+                  </View>
                 </View>
 
                 <Image
@@ -170,16 +210,116 @@ export default function Service() {
                     <Text style={styles.modalVendorName}>
                       {selectedService.vendorName}
                     </Text>
+                    <Text style={styles.modalPrice}>
+                      {selectedService.price} KD
+                    </Text>
                   </View>
+                )}
+
+                {selectedService.time && (
+                  <Text style={styles.modalTimeRow}>
+                    Duration: {selectedService.time}
+                  </Text>
+                )}
+
+                <View style={{ flex: 1 }} />
+                <View
+                  style={{
+                    width: 200,
+                    height: 2,
+                    backgroundColor: colors.accent,
+                    alignSelf: "center",
+                    marginVertical: 10,
+                    borderRadius: 1,
+                  }}
+                />
+
+                {selectedService.description && (
+                  <Text style={styles.modalDescription}>
+                    {selectedService.description}
+                  </Text>
                 )}
               </ScrollView>
 
               <TouchableOpacity
-                style={styles.closeButton}
+                style={styles.closeButtonWide}
                 onPress={() => setSelectedService(null)}
               >
                 <Text style={styles.closeButtonText}>Close</Text>
               </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* Delete Service Modal */}
+      {deleteModalVisible && serviceToDelete && (
+        <Modal
+          visible={deleteModalVisible}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setDeleteModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View
+              style={[
+                styles.modalContent,
+                { maxHeight: 200, justifyContent: "center" },
+              ]}
+            >
+              <Text
+                style={{ fontSize: 18, textAlign: "center", marginBottom: 20 }}
+              >
+                Are you sure you want to delete "{serviceToDelete.name}"?
+              </Text>
+
+              <View
+                style={{ flexDirection: "row", justifyContent: "space-around" }}
+              >
+                <TouchableOpacity
+                  style={[
+                    styles.closeButtonWide,
+                    { backgroundColor: colors.danger, width: "40%" },
+                  ]}
+                  onPress={async () => {
+                    setDeleting(true);
+                    try {
+                      // Call API to delete the service
+                      await deleteService(serviceToDelete._id);
+
+                      // Close modal
+                      setDeleteModalVisible(false);
+                      setServiceToDelete(null);
+
+                      // Refresh the services list
+                      await queryClient.invalidateQueries({
+                        queryKey: ["user"],
+                      });
+                    } catch (err: any) {
+                      console.error("Failed to delete service:", err.message);
+                      alert("Failed to delete service. Please try again.");
+                    } finally {
+                      setDeleting(false);
+                    }
+                  }}
+                >
+                  {deleting ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.closeButtonText}>Delete</Text>
+                  )}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.closeButtonWide, { width: "40%" }]}
+                  onPress={() => {
+                    setDeleteModalVisible(false);
+                    setServiceToDelete(null);
+                  }}
+                >
+                  <Text style={styles.closeButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </Modal>
@@ -216,12 +356,7 @@ const styles = StyleSheet.create({
   },
   cardImage: { width: "100%", height: 180 },
   cardContent: { paddingHorizontal: 10, paddingTop: 8 },
-  serviceName: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: colors.text,
-    flex: 1,
-  },
+  serviceName: { fontSize: 18, fontWeight: "bold", color: colors.text },
   priceTag: {
     backgroundColor: colors.accent,
     color: colors.white,
@@ -241,7 +376,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: "center",
   },
-
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -260,6 +394,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   modalTitle: { fontSize: 22, fontWeight: "bold", color: colors.text, flex: 1 },
+  modalType: { fontSize: 16, fontWeight: "600", color: colors.text },
   modalPrice: {
     backgroundColor: colors.accent,
     color: colors.white,
@@ -269,17 +404,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 10,
     overflow: "hidden",
+    marginLeft: "auto",
   },
   modalImage: {
     width: "100%",
     height: 180,
     borderRadius: 10,
-    marginBottom: 15,
-    marginTop: 10,
+    marginVertical: 10,
   },
   modalVendorRow: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 5,
+  },
+  modalVendorLogo: { width: 30, height: 30, borderRadius: 15, marginRight: 8 },
+  modalVendorName: { fontSize: 16, fontWeight: "600", color: colors.text },
+  modalTimeRow: {
+    fontSize: 14,
+    color: colors.text,
+    marginBottom: 10,
+    marginLeft: 38,
+  },
+  modalDescription: {
+    fontSize: 16,
+    color: colors.text,
+    textAlign: "center",
     marginBottom: 10,
   },
   title: {
@@ -289,16 +438,16 @@ const styles = StyleSheet.create({
     color: colors.primary,
     marginLeft: 23,
   },
-  modalVendorLogo: { width: 30, height: 30, borderRadius: 15, marginRight: 8 },
-  modalVendorName: { fontSize: 16, fontWeight: "600", color: colors.text },
-  closeButton: {
+  closeButtonWide: {
     backgroundColor: colors.accent,
-    paddingVertical: 12,
-    borderRadius: 10,
-    marginTop: 15,
+    paddingVertical: 8,
+    borderRadius: 12,
     alignItems: "center",
+    marginTop: 10,
+    width: "35%",
+    alignSelf: "center",
   },
-  closeButtonText: { color: colors.white, fontWeight: "bold" },
+  closeButtonText: { color: colors.white, fontWeight: "bold", fontSize: 18 },
   fab: {
     position: "absolute",
     bottom: 30,
@@ -315,4 +464,14 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   fabText: { fontSize: 32, color: "#fff", fontWeight: "bold" },
+  imageSpinnerOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(255,255,255,0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

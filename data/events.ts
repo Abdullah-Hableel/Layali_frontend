@@ -8,7 +8,12 @@ export interface Event {
   date: string;
   location: string;
 }
-
+export type EventLite = {
+  _id: string;
+  location?: string;
+  date?: string;
+  budget?: number;
+};
 export type EventStats = {
   total: number;
   upcoming: number;

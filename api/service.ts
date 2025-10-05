@@ -23,9 +23,28 @@ const createService = async (formData: FormData) => {
 };
 const getServiceById = async (id: string) => {
   console.log(id);
-  const res = await instance.get(`/api/service/${id}`);
+  try {
+    const res = await instance.get(`/api/service/${id}`);
+    console.log(res.data);
+    return res.data;
+  } catch (err) {
+    console.log("🚀 ~ getServiceById ~ err:", err);
+  }
+};
+const deleteService = async (id: string) => {
+  const res = await instance.delete(`/api/service/delete/${id}`);
   console.log(res.data);
   return res.data;
 };
+const updateService = async (id: string, data: any) => {
+  const res = await instance.put(`/api/service/update/${id}`, data);
+  return res.data;
+};
 
-export { createService, getServiceById, getServices };
+export {
+  createService,
+  deleteService,
+  getServiceById,
+  getServices,
+  updateService,
+};

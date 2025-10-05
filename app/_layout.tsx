@@ -113,6 +113,10 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="(vendorD)/(vendor)"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="(personal)/(shop)/[id]"
             options={{
               title: "Shop Details",
