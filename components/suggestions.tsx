@@ -23,7 +23,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 
-const Suggestions = () => {
+const SuggestionsScreen = () => {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<SuggestionsResponse | null>(
@@ -125,6 +125,7 @@ const Suggestions = () => {
 
   const getCategoryNames = (ids?: string[]) =>
     (ids || []).map((id) => categoryNameById[id] || "Unknown");
+
   return (
     <ScrollView
       style={styles.container}
@@ -165,7 +166,7 @@ const Suggestions = () => {
           <ActivityIndicator color={colors.secondary} />
         ) : categoriesError ? (
           <Text
-            /* inline error color kept simple */ style={{
+            style={{
               color: colors.danger,
               fontSize: 12,
               marginVertical: 10,
@@ -363,7 +364,7 @@ const Suggestions = () => {
   );
 };
 
-export default Suggestions;
+export default SuggestionsScreen;
 
 const styles = StyleSheet.create({
   container: {
