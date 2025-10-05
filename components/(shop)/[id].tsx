@@ -1,4 +1,5 @@
 import { getVendorById2 } from "@/api/vendor";
+import { Category } from "@/data/category";
 import { buildImageUrl } from "@/Utils/buildImage";
 import { capitalizeWords } from "@/Utils/capitalize";
 import { useQuery } from "@tanstack/react-query";
@@ -32,6 +33,7 @@ type Vendor = {
   bio?: string;
   logo?: string;
   services?: Service[];
+  categoris?: Category[];
 };
 
 const ShopDetails = () => {
