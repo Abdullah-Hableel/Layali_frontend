@@ -209,15 +209,6 @@ const HomePage = () => {
       <View style={{ marginHorizontal: 20, marginBottom: 10 }}>
         <Text style={{ color: colors.text, marginBottom: 5 }}>
           Budget:{" "}
-
-      {/* Applied Filters Display */}
-      <View style={styles.appliedFilters}>
-        <Text style={styles.appliedFilterText}>
-          Category: {selectedCategory || "All"}
-        </Text>
-        <Text style={styles.appliedFilterText}>
-          Price:{" "}
-
           {budgetStepIndex === budgetSteps.length - 1
             ? "All"
             : `${budgetSteps[budgetStepIndex]}-${
