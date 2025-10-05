@@ -205,6 +205,7 @@ const HomePage = () => {
           Send a Gift?
         </Text>
       </TouchableOpacity>
+
       {/* ← 5-phase Budget Slider with aligned labels */}
       <View style={{ marginHorizontal: 20, marginBottom: 10 }}>
         <Text style={{ color: colors.text, marginBottom: 5 }}>
