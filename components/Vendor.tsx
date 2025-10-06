@@ -144,7 +144,8 @@ const Vendor = () => {
         }
         renderItem={({ item }) => {
           const uri =
-            buildImageUrl(item.logo) || "https://via.placeholder.com/600x300";
+            buildImageUrl(item.logo) ||
+            require("../assets/images/NotFoundimg.png");
 
           const categories: string[] = Array.isArray(item.categories)
             ? item.categories

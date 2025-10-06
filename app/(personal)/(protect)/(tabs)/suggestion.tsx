@@ -1,4 +1,4 @@
-import SuggestionsScreen from "@/components/Suggestions";
+import SuggestionsScreen from "@/components/suggestions";
 import React from "react";
 import { StyleSheet } from "react-native";
 
