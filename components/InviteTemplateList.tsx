@@ -1,4 +1,5 @@
 import { baseURL } from "@/api";
+import { capitalizeWords } from "@/Utils/capitalize";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -29,7 +30,10 @@ const InviteTemplateListScreen = () => {
   if (isLoading) return <Text>Loading templates...</Text>;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.backgroundMuted }}>
+    <SafeAreaView
+      edges={["left", "right", "bottom"]}
+      style={{ flex: 1, backgroundColor: colors.backgroundMuted }}
+    >
       <FlatList
         data={data}
         keyExtractor={(item) => item._id}
@@ -56,20 +60,27 @@ const InviteTemplateListScreen = () => {
                 </Text>
 
                 <View style={styles.tags}>
-                  <Text style={[styles.tag, { backgroundColor: "#FDECEC" }]}>
-                    Premium
-                  </Text>
-                  <Text style={[styles.tag, { backgroundColor: "#E6F7EC" }]}>
-                    Popular
-                  </Text>
+                  {(item.tags || []).map((tag: string, index: number) => (
+                    <Text key={index} style={styles.tag}>
+                      {capitalizeWords(tag)}
+                    </Text>
+                  ))}
                 </View>
               </View>
             </TouchableOpacity>
           );
         }}
       />
-
-      <View style={{ alignItems: "center", marginBottom: 20 }}>
+      <View
+        style={{
+          position: "absolute",
+          bottom: 55,
+          left: 0,
+          right: 0,
+          alignItems: "center",
+          zIndex: 10,
+        }}
+      >
         <CustomButton
           text="Continue"
           disabled={!selectedTemplate}
@@ -133,10 +144,11 @@ const styles = StyleSheet.create({
   },
   tag: {
     fontSize: 12,
-    paddingHorizontal: 8,
+    paddingHorizontal: 9,
     paddingVertical: 4,
     borderRadius: 8,
-    marginRight: 8,
+    marginRight: 0.5,
     color: colors.placeholder,
+    backgroundColor: colors.backgroundLight,
   },
 });
