@@ -2,6 +2,7 @@ import { baseURL } from "@/api";
 import { deleteService, getServiceById, updateService } from "@/api/service";
 import colors from "@/components/Colors";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import * as ImagePicker from "expo-image-picker"; // add this at the top with other imports
 import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import React, { useState } from "react";
@@ -39,7 +40,7 @@ const ServiceInfo = () => {
   });
 
   const { mutate: saveAll, isPending: saving } = useMutation({
-    mutationFn: (body: any) => updateService(id!, body),
+    mutationFn: (formdata: FormData) => updateService(id!, formdata),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["service", id] });
       Toast.show({ type: "success", text1: "Service updated ✅" });
@@ -141,6 +142,38 @@ const ServiceInfo = () => {
           >
             {({ values, handleChange, handleSubmit }) => (
               <>
+                {isEditing && (
+                  <View style={{ alignItems: "center", marginVertical: 10 }}>
+                    <TouchableOpacity
+                      onPress={async () => {
+                        const result =
+                          await ImagePicker.launchImageLibraryAsync({
+                            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                            quality: 0.7,
+                          });
+                        if (!result.canceled) {
+                          const uri = result.assets[0].uri;
+                          values.image = uri; // update Formik value
+                        }
+                      }}
+                    >
+                      <Image
+                        source={{
+                          uri: values.image
+                            ? values.image.startsWith("http")
+                              ? values.image
+                              : buildImageUrl(values.image)
+                            : "https://via.placeholder.com/300x200",
+                        }}
+                        style={[styles.serviceImage, { marginBottom: 10 }]}
+                        resizeMode="cover"
+                      />
+                      <Text style={{ color: colors.primary, marginTop: 5 }}>
+                        Change Image
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
                 {/* Name */}
                 <Text style={styles.label}>Name</Text>
                 {isEditing ? (
