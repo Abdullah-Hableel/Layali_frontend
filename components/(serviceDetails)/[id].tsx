@@ -6,6 +6,7 @@ import {
 } from "@/api/event";
 import { getServiceById } from "@/api/service";
 import { buildImageUrl } from "@/Utils/buildImage";
+import { isTodayOrFuture } from "@/Utils/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -17,10 +18,10 @@ import {
   Text,
   View,
 } from "react-native";
-import { SelectList } from "react-native-dropdown-select-list";
 import Toast from "react-native-toast-message";
 import colors from "../Colors";
 import CustomButton from "../customButton";
+import EventDropdown from "../DropdownEvent";
 
 const ServiceDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -80,7 +81,7 @@ const ServiceDetails = () => {
         text1: "Service added",
         text2: "Service has been added successfully",
       });
-      router.dismissTo("/(personal)/(protect)/(tabs)/vendor");
+      router.dismissTo("/(personal)/(protect)/(tabs)/");
     },
     onError: () => {
       Toast.show({
@@ -97,17 +98,21 @@ const ServiceDetails = () => {
         }`
       : "Select an event";
 
-  const options = (events ?? []).map((e: any) => ({
+  const upcomingEvents = (events as any[]).filter((e) =>
+    isTodayOrFuture(e?.date)
+  );
+
+  const options = upcomingEvents.map((e: any) => ({
     key: e._id,
     value: formatEventLabel(e),
   }));
 
   const selectedDefault =
-    selectedEventId && events
+    selectedEventId && upcomingEvents.length
       ? {
           key: selectedEventId,
           value: formatEventLabel(
-            (events as any[]).find((e) => e._id === selectedEventId)
+            upcomingEvents.find((e: any) => e._id === selectedEventId)
           ),
         }
       : undefined;
@@ -164,32 +169,19 @@ const ServiceDetails = () => {
               <Text style={{ color: colors.secondary, marginBottom: 6 }}>
                 Select Event {isFetchingEvents ? "…" : ""}
               </Text>
-              <SelectList
-                setSelected={(id: string) => onSelect(id)}
+              <EventDropdown
                 data={options}
-                save="key"
-                defaultOption={selectedDefault}
+                isLoading={isFetchingEvents}
+                isError={!!isErrorEvents}
+                selectedKey={selectedEventId}
                 placeholder="Choose an event"
-                search
-                maxHeight={260}
-                boxStyles={{
-                  borderColor: colors.neutral,
-                  borderRadius: 16,
-                  backgroundColor: colors.white,
-                }}
-                dropdownStyles={{
-                  borderColor: colors.neutral,
-                  borderRadius: 16,
-                  backgroundColor: colors.white,
-                }}
-                inputStyles={{ color: colors.black }}
-                dropdownTextStyles={{ color: colors.black }}
+                onSelect={(id: string) => onSelect(id)}
               />
 
               {!!selectedEventId && (
                 <Text
                   style={{
-                    marginTop: 6,
+                    marginTop: 16,
                     color: colors.secondary,
                     opacity: 0.9,
                   }}

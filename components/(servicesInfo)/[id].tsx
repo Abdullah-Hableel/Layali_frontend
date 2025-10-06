@@ -2,7 +2,7 @@ import { baseURL } from "@/api";
 import { deleteService, getServiceById, updateService } from "@/api/service";
 import colors from "@/components/Colors";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import * as ImagePicker from "expo-image-picker"; // add this at the top with other imports
+import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import React, { useState } from "react";
@@ -28,6 +28,7 @@ const ServiceInfo = () => {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [loadingImage, setLoadingImage] = useState(true);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const {
     data: service,
@@ -40,11 +41,12 @@ const ServiceInfo = () => {
   });
 
   const { mutate: saveAll, isPending: saving } = useMutation({
-    mutationFn: (formdata: FormData) => updateService(id!, formdata),
+    mutationFn: (formData: FormData) => updateService(id!, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["service", id] });
       Toast.show({ type: "success", text1: "Service updated ✅" });
       setIsEditing(false);
+      setPreview(null);
     },
     onError: () =>
       Toast.show({ type: "error", text1: "Failed to update service" }),
@@ -83,12 +85,15 @@ const ServiceInfo = () => {
   return (
     <View style={styles.root}>
       <ScrollView style={styles.container}>
-        {/* 🖼 Service Image */}
+        {/* 🖼 Current service image */}
         <View style={styles.imageWrapper}>
           <Image
             source={{
               uri:
-                buildImageUrl(service.image) ||
+                preview ||
+                (typeof service.image === "string"
+                  ? buildImageUrl(service.image)
+                  : undefined) ||
                 "https://via.placeholder.com/300x200",
             }}
             style={styles.serviceImage}
@@ -103,7 +108,7 @@ const ServiceInfo = () => {
           )}
         </View>
 
-        {/* ✏️ Info */}
+        {/*  Service Info Form */}
         <View style={styles.card}>
           <View style={styles.rowBetween}>
             <Text style={styles.title}>Service Info</Text>
@@ -123,25 +128,24 @@ const ServiceInfo = () => {
               image: service.image ?? "",
             }}
             onSubmit={(vals) => {
-              const changes: any = {};
-              if (vals.name !== service.name) changes.name = vals.name;
-              if (vals.price !== String(service.price))
-                changes.price = Number(vals.price);
-              if (vals.description !== service.description)
-                changes.description = vals.description;
-              if (vals.image !== service.image) changes.image = vals.image;
+              const formData = new FormData();
+              formData.append("name", vals.name);
+              formData.append("price", vals.price.toString());
+              formData.append("description", vals.description);
 
-              if (Object.keys(changes).length === 0)
-                return Toast.show({
-                  type: "info",
-                  text1: "No changes to save",
-                });
+              // Append image
+              if (vals.image && typeof vals.image === "object") {
+                formData.append("image", vals.image as any);
+              } else if (typeof vals.image === "string") {
+                formData.append("image", vals.image);
+              }
 
-              saveAll(changes);
+              saveAll(formData);
             }}
           >
-            {({ values, handleChange, handleSubmit }) => (
+            {({ values, handleChange, handleSubmit, setFieldValue }) => (
               <>
+                {/* 🖼 Image Picker */}
                 {isEditing && (
                   <View style={{ alignItems: "center", marginVertical: 10 }}>
                     <TouchableOpacity
@@ -149,31 +153,36 @@ const ServiceInfo = () => {
                         const result =
                           await ImagePicker.launchImageLibraryAsync({
                             mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                            allowsEditing: true,
                             quality: 0.7,
                           });
-                        if (!result.canceled) {
-                          const uri = result.assets[0].uri;
-                          values.image = uri; // update Formik value
+
+                        if (!result.canceled && result.assets.length > 0) {
+                          const asset = result.assets[0];
+                          const pickedImage = {
+                            uri: asset.uri,
+                            name:
+                              asset.fileName ||
+                              `photo.${asset.uri.split(".").pop()}`,
+                            type:
+                              asset.type +
+                              "/" +
+                              (asset.uri.split(".").pop() || "jpeg"),
+                          };
+                          setFieldValue("image", pickedImage); // Formik
+                          setPreview(asset.uri); // show picked image in top
                         }
                       }}
                     >
-                      <Image
-                        source={{
-                          uri: values.image
-                            ? values.image.startsWith("http")
-                              ? values.image
-                              : buildImageUrl(values.image)
-                            : "https://via.placeholder.com/300x200",
-                        }}
-                        style={[styles.serviceImage, { marginBottom: 10 }]}
-                        resizeMode="cover"
-                      />
-                      <Text style={{ color: colors.primary, marginTop: 5 }}>
-                        Change Image
+                      <Text
+                        style={{ color: colors.primary, fontWeight: "600" }}
+                      >
+                        Upload Image
                       </Text>
                     </TouchableOpacity>
                   </View>
                 )}
+
                 {/* Name */}
                 <Text style={styles.label}>Name</Text>
                 {isEditing ? (
@@ -214,6 +223,7 @@ const ServiceInfo = () => {
                   <Text style={styles.value}>{service.description}</Text>
                 )}
 
+                {/* Save / Cancel */}
                 {isEditing && (
                   <View style={styles.editRow}>
                     <TouchableOpacity onPress={() => handleSubmit()}>
@@ -221,7 +231,12 @@ const ServiceInfo = () => {
                         {saving ? "Saving..." : "Save"}
                       </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setIsEditing(false)}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsEditing(false);
+                        setPreview(null);
+                      }}
+                    >
                       <Text style={styles.cancelBtn}>Cancel</Text>
                     </TouchableOpacity>
                   </View>
@@ -235,7 +250,6 @@ const ServiceInfo = () => {
         {service.vendor && (
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>Vendor Info</Text>
-
             <View style={styles.vendorRow}>
               <Image
                 source={{
@@ -290,11 +304,7 @@ const styles = StyleSheet.create({
   container: { padding: 16 },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
   imageWrapper: { position: "relative", alignItems: "center" },
-  serviceImage: {
-    width: "100%",
-    height: 220,
-    borderRadius: 14,
-  },
+  serviceImage: { width: "100%", height: 220, borderRadius: 14 },
   imageOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(255,255,255,0.5)",
@@ -306,11 +316,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 16,
     marginTop: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
   },
   rowBetween: {
     flexDirection: "row",
@@ -331,11 +336,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginTop: 5,
   },
-  editRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 16,
-  },
+  editRow: { flexDirection: "row", justifyContent: "flex-end", marginTop: 16 },
   saveBtn: { color: colors.primary, fontWeight: "600", marginRight: 20 },
   cancelBtn: { color: colors.danger, fontWeight: "600" },
   sectionTitle: { fontSize: 16, fontWeight: "700", marginBottom: 10 },

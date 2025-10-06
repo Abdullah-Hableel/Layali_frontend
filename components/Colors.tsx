@@ -6,7 +6,7 @@ const colors = {
   // Supporting / Backgrounds
   backgroundLight: "#FFE5D9", // Champagne pink
   backgroundMuted: "#D8E2DC", // Platinum greenish tint
-
+  backgroundPink: "#E08A98",
   // Accents
   accent: "#FFCAD4", // Cherry blossom pink
 

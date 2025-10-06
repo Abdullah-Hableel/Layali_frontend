@@ -7,8 +7,8 @@ import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
-import { SelectList } from "react-native-dropdown-select-list";
 
+import EventDropdown from "@/components/DropdownEvent";
 import {
   FlatList,
   Image,
@@ -196,8 +196,13 @@ const Guest = () => {
         >
           Select Event:
         </Text> */}
-        <SelectList
-          setSelected={(val: string) => {
+        <EventDropdown
+          data={eventOptions} // [{ key, value }]
+          isLoading={loading}
+          isError={false}
+          selectedKey={selectedEventId}
+          placeholder="Choose an event"
+          onSelect={(val: string) => {
             setSelectedEventId(val);
             (async () => {
               setLoading(true);
@@ -212,35 +217,6 @@ const Guest = () => {
               }
             })();
           }}
-          data={eventOptions}
-          save="key"
-          defaultOption={
-            selectedEventId
-              ? {
-                  key: selectedEventId,
-                  value: events.find((e) => e._id === selectedEventId)
-                    ? `${
-                        events.find((e) => e._id === selectedEventId)
-                          ?.location || "Unknown"
-                      } - ${new Date(
-                        events.find((e) => e._id === selectedEventId)?.date ||
-                          ""
-                      ).toLocaleDateString()}`
-                    : "Select an event",
-                }
-              : undefined
-          }
-          boxStyles={{
-            borderColor: colors.neutral,
-            borderRadius: 16,
-            backgroundColor: colors.white,
-          }}
-          dropdownStyles={{
-            borderColor: colors.neutral,
-            borderRadius: 16,
-          }}
-          inputStyles={{ color: colors.placeholder }}
-          dropdownTextStyles={{ color: colors.placeholder }}
         />
       </View>
 

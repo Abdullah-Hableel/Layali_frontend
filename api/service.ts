@@ -37,7 +37,18 @@ const deleteService = async (id: string) => {
   return res.data;
 };
 const updateService = async (id: string, data: any) => {
-  const res = await instance.put(`/api/service/update/${id}`, data);
+  const token = await SecureStore.getItemAsync("token");
+
+  // Check if we are sending a FormData (for image upload)
+  const isFormData = data instanceof FormData;
+
+  const res = await instance.put(`/api/service/update/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(isFormData ? { "Content-Type": "multipart/form-data" } : {}),
+    },
+  });
+
   return res.data;
 };
 

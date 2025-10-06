@@ -1,5 +1,4 @@
 import { baseURL } from "@/api";
-import { deleteService } from "@/api/service";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -93,8 +92,7 @@ export default function Service() {
         router.push(`/(vendorD)/(serviceInfo)/${item._id}`);
       }}
       onLongPress={() => {
-        setServiceToDelete(item);
-        setDeleteModalVisible(true);
+        setSelectedService(item);
       }}
     >
       <View>
@@ -256,77 +254,6 @@ export default function Service() {
       )}
 
       {/* Delete Service Modal */}
-      {deleteModalVisible && serviceToDelete && (
-        <Modal
-          visible={deleteModalVisible}
-          animationType="fade"
-          transparent={true}
-          onRequestClose={() => setDeleteModalVisible(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View
-              style={[
-                styles.modalContent,
-                { maxHeight: 200, justifyContent: "center" },
-              ]}
-            >
-              <Text
-                style={{ fontSize: 18, textAlign: "center", marginBottom: 20 }}
-              >
-                Are you sure you want to delete "{serviceToDelete.name}"?
-              </Text>
-
-              <View
-                style={{ flexDirection: "row", justifyContent: "space-around" }}
-              >
-                <TouchableOpacity
-                  style={[
-                    styles.closeButtonWide,
-                    { backgroundColor: colors.danger, width: "40%" },
-                  ]}
-                  onPress={async () => {
-                    setDeleting(true);
-                    try {
-                      // Call API to delete the service
-                      await deleteService(serviceToDelete._id);
-
-                      // Close modal
-                      setDeleteModalVisible(false);
-                      setServiceToDelete(null);
-
-                      // Refresh the services list
-                      await queryClient.invalidateQueries({
-                        queryKey: ["user"],
-                      });
-                    } catch (err: any) {
-                      console.error("Failed to delete service:", err.message);
-                      alert("Failed to delete service. Please try again.");
-                    } finally {
-                      setDeleting(false);
-                    }
-                  }}
-                >
-                  {deleting ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text style={styles.closeButtonText}>Delete</Text>
-                  )}
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[styles.closeButtonWide, { width: "40%" }]}
-                  onPress={() => {
-                    setDeleteModalVisible(false);
-                    setServiceToDelete(null);
-                  }}
-                >
-                  <Text style={styles.closeButtonText}>Cancel</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      )}
 
       <TouchableOpacity
         style={styles.fab}
