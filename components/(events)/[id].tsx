@@ -73,7 +73,7 @@ const EventDetails = () => {
       Toast.show({
         type: "success",
         text1: `Gift Card Redeemed 🎁`,
-        text2: `-${cardAmount} KWD deducted • New Budget: ${updatedBudget} KWD`,
+        // text2: `-${cardAmount} KWD deducted • New Budget: ${updatedBudget} KWD`,
         visibilityTime: 3500,
       });
     },
@@ -183,13 +183,36 @@ const EventDetails = () => {
         <View style={styles.card}>
           <View style={styles.rowBetween}>
             <Text style={styles.title}>Event Details</Text>
-            {!isEditing && (
-              <TouchableOpacity onPress={() => setIsEditing(true)}>
-                <Text style={styles.addBtn}>Edit</Text>
-              </TouchableOpacity>
-            )}
-          </View>
 
+            <View style={{ alignItems: "flex-end" }}>
+              {!isEditing && (
+                <>
+                  <TouchableOpacity onPress={() => setIsEditing(true)}>
+                    <Text style={styles.addBtn}>Edit</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => handleRedeem()}
+                    disabled={redeeming}
+                    style={{ marginTop: 4 }}
+                  >
+                    <Text
+                      style={[
+                        styles.redeemText,
+                        {
+                          color: colors.primary,
+                          backgroundColor: "transparent",
+                          fontSize: 14,
+                        },
+                      ]}
+                    >
+                      {redeeming ? "Redeeming..." : "Redeem Gift Card"}
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          </View>
           <Formik
             enableReinitialize
             initialValues={{
@@ -292,7 +315,7 @@ const EventDetails = () => {
                 <Text style={styles.label}>Budget</Text>
                 <Text style={styles.value}>{event.budget} KWD</Text>
 
-                {/* Redeem Gift Card Button */}
+                {/* Redeem Gift Card Button
                 <View style={{ marginTop: 12, alignItems: "center" }}>
                   <TouchableOpacity
                     onPress={() => handleRedeem()}
@@ -303,7 +326,7 @@ const EventDetails = () => {
                       {redeeming ? "Redeeming..." : "🎁 Redeem Gift Card"}
                     </Text>
                   </TouchableOpacity>
-                </View>
+                </View> */}
 
                 {/* Save & Cancel */}
                 {isEditing && (
