@@ -44,7 +44,7 @@ export default function CreateVendor() {
     mutationFn: createVendor,
     onSuccess: () => {
       Alert.alert("Success", "Vendor created successfully!");
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user", "vendor"] });
       router.back();
     },
     onError: (err: any) => {

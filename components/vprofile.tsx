@@ -16,6 +16,7 @@ import {
 
 import { baseURL } from "@/api";
 import { getUserById, UserAttrs } from "@/api/users";
+import { MaterialIcons } from "@expo/vector-icons";
 import colors from "./Colors";
 
 const SERVER_URL = `${baseURL}/uploads/`;
@@ -24,7 +25,7 @@ const buildImageUrl = (img?: string) =>
     ? img.startsWith("http")
       ? img
       : `${SERVER_URL}${img}`
-    : "https://via.placeholder.com/200x200";
+    : require("../assets/images/NotFoundimg.png");
 
 export default function BusinessProfile() {
   const queryClient = useQueryClient();
@@ -85,13 +86,18 @@ export default function BusinessProfile() {
         source={{ uri: buildImageUrl(item.logo) }}
         style={styles.vendorLogo}
       />
-      <View style={{ flex: 1, marginLeft: 12 }}>
-        <Text style={styles.vendorName}>
-          {item.business_name ?? "Untitled"}
-        </Text>
-        <Text style={styles.vendorBio} numberOfLines={2}>
-          {item.bio ?? "No bio provided"}
-        </Text>
+      <View style={styles.vendorInfo}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.vendorName}>
+            {item.business_name ?? "Untitled"}
+          </Text>
+          <Text style={styles.vendorBio} numberOfLines={2}>
+            {item.bio ?? "No bio provided"}
+          </Text>
+        </View>
+
+        {/* Chevron icon on the right */}
+        <MaterialIcons name="chevron-right" size={24} color="#888" />
       </View>
     </TouchableOpacity>
   );
@@ -108,7 +114,7 @@ export default function BusinessProfile() {
         </View>
         <Text style={styles.name}>{user?.username ?? "User"}</Text>
         <Text style={styles.role}>
-          {user?.role === "Vendor" ? "Vendor Account" : user?.role ?? ""}
+          {user?.role === "Vendor" ? "Buisness Account" : user?.role ?? ""}
         </Text>
       </View>
 
@@ -120,7 +126,8 @@ export default function BusinessProfile() {
         contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
         ListEmptyComponent={
           <Text style={styles.emptyText}>
-            No vendors yet. Tap + to create one.
+            Looks like you haven’t added your business yet. Tap + to get
+            started!{" "}
           </Text>
         }
         showsVerticalScrollIndicator={false}
@@ -135,11 +142,13 @@ export default function BusinessProfile() {
       />
 
       {/* Floating action button */}
+
       <TouchableOpacity
         style={styles.fab}
         onPress={() => router.push("/createVendor")}
+        activeOpacity={0.85}
       >
-        <Text style={styles.fabText}>+</Text>
+        <MaterialIcons name="add" size={28} color="#fff" />
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -156,7 +165,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundMuted,
   },
   headerCard: {
-    backgroundColor: "#fff",
     borderRadius: cardRadius,
     paddingVertical: 20,
     paddingHorizontal: 16,
@@ -206,18 +214,23 @@ const styles = StyleSheet.create({
 
   fab: {
     position: "absolute",
-    bottom: 30,
-    right: 30,
+    right: 20,
+    bottom: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: colors.primary,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    justifyContent: "center",
     elevation: 6,
+    zIndex: 10,
+  },
+  vendorInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flex: 1,
+    marginLeft: 12,
   },
   fabText: { fontSize: 32, color: "#fff", fontWeight: "bold", marginTop: -2 },
 });

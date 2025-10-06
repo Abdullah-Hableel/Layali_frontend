@@ -75,17 +75,27 @@ export default function RootLayout() {
                 color={color}
               />
             ),
+            headerRight: () => (
+              <TouchableOpacity onPress={handleLogOut}>
+                <MaterialIcons name="logout" size={20} color={colors.danger} />
+              </TouchableOpacity>
+            ),
           }}
         />
 
         <Tabs.Screen
-          name="vendor"
+          name="Vendor"
           options={{
             title: "Business Profile",
 
             // ✅ commit: active/inactive handled automatically
             tabBarIcon: ({ color }) => (
               <Foundation name="torso-business" size={24} color={color} />
+            ),
+            headerRight: () => (
+              <TouchableOpacity onPress={handleLogOut}>
+                <MaterialIcons name="logout" size={20} color={colors.danger} />
+              </TouchableOpacity>
             ),
           }}
         />
