@@ -96,7 +96,6 @@ const PersonalProfile = () => {
 
             <Text style={styles.name}>{user?.username || "User"}</Text>
             <Text style={styles.role}>{displayRole}</Text>
-            <Text style={styles.balanceText}>Balance: {balance} KWD</Text>
 
             <View style={styles.statsRow}>
               <View style={styles.statBox}>
@@ -126,11 +125,12 @@ const PersonalProfile = () => {
             </View>
           </View>
 
-          <TouchableOpacity onPress={() => router.push("/mygiftcards")}>
-            <Text style={{ color: colors.secondary, fontWeight: "bold" }}>
-              My Gift Cards
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.giftCardHeader}>
+            <TouchableOpacity onPress={() => router.push("/mygiftcards")}>
+              <Text style={styles.giftTitle}>My Gift Cards</Text>
+            </TouchableOpacity>
+            <Text style={styles.balanceText}>Balance: {balance} KWD</Text>
+          </View>
 
           <View style={styles.actionsCard}>
             <TouchableOpacity
@@ -238,11 +238,23 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   divider: { height: StyleSheet.hairlineWidth, backgroundColor: "#eee" },
+
+  giftCardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  giftTitle: {
+    fontWeight: "700",
+    fontSize: 15,
+    color: colors.secondary,
+  },
   balanceText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
-    color: colors.primary,
-    marginTop: 8,
+    color: colors.secondary,
   },
 });
 
