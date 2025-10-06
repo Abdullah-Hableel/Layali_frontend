@@ -199,24 +199,58 @@ const HomePage = () => {
         </TouchableOpacity>
       </View>
 
-      {/* router.push("/mygiftcards") */}
-      <TouchableOpacity onPress={() => router.push("/creategiftcard")}>
-        <Text style={{ color: colors.secondary, fontWeight: "bold" }}>
-          Send a Gift?
-        </Text>
+      {/* Send a Gift Button (styled like Vendor's Gift Card button) */}
+      {/* Send a Gift Button */}
+      <TouchableOpacity
+        style={styles.giftCardCta}
+        activeOpacity={0.9}
+        onPress={() => router.push("/creategiftcard")}
+      >
+        {/* Left icon */}
+        <View style={styles.giftCardLeft}>
+          <Feather name="gift" size={20} color={colors.white} />
+        </View>
+
+        {/* Title + Subtitle */}
+        <View style={{ flexDirection: "column", flex: 1 }}>
+          <Text style={styles.giftCardTitle}>Send a Gift?</Text>
+          <Text style={{ color: colors.white, fontSize: 12, opacity: 0.9 }}>
+            Send a gift for your customers 🎁
+          </Text>
+        </View>
+
+        {/* Chevron right */}
+        <Feather name="chevron-right" size={20} color={colors.white} />
       </TouchableOpacity>
 
-      {/* ← 5-phase Budget Slider with aligned labels */}
-      <View style={{ marginHorizontal: 20, marginBottom: 10 }}>
-        <Text style={{ color: colors.text, marginBottom: 5 }}>
-          Budget:{" "}
-          {budgetStepIndex === budgetSteps.length - 1
-            ? "All"
-            : `${budgetSteps[budgetStepIndex]}-${
-                budgetStepIndex === budgetSteps.length - 2
-                  ? ""
-                  : budgetSteps[budgetStepIndex + 1]
-              } KD`}
+      {/* Selected Category & Price below the button */}
+      {/* Selected Category & Price in one row */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginHorizontal: 20,
+          marginBottom: 10,
+        }}
+      >
+        <Text style={styles.giftCardSubtitle}>
+          Category:{" "}
+          <Text style={{ fontWeight: "bold" }}>
+            {selectedCategory === "All" ? "All" : selectedCategory}
+          </Text>
+        </Text>
+
+        <Text style={styles.giftCardSubtitle}>
+          Price:{" "}
+          <Text style={{ fontWeight: "bold" }}>
+            {budgetStepIndex === budgetSteps.length - 1
+              ? "All"
+              : budgetStepIndex === budgetSteps.length - 2
+              ? `${budgetSteps[budgetStepIndex]}+ KD`
+              : `${budgetSteps[budgetStepIndex]}-${
+                  budgetSteps[budgetStepIndex + 1]
+                } KD`}
+          </Text>
         </Text>
       </View>
 
@@ -449,12 +483,13 @@ const HomePage = () => {
               <Text style={{ marginBottom: 5 }}>
                 {budgetStepIndex === budgetSteps.length - 1
                   ? "All"
+                  : budgetStepIndex === budgetSteps.length - 2
+                  ? `${budgetSteps[budgetStepIndex]}+ KD`
                   : `${budgetSteps[budgetStepIndex]}-${
-                      budgetStepIndex === budgetSteps.length - 2
-                        ? ""
-                        : budgetSteps[budgetStepIndex + 1]
+                      budgetSteps[budgetStepIndex + 1]
                     } KD`}
               </Text>
+
               <Slider
                 minimumValue={0}
                 maximumValue={budgetSteps.length - 1}
@@ -495,6 +530,7 @@ const HomePage = () => {
 
 export default HomePage;
 
+// ------------------------- STYLES -------------------------
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.backgroundMuted },
   searchWrapper: {
@@ -512,13 +548,42 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   searchInput: { flex: 1, marginLeft: 8, color: colors.text, fontSize: 16 },
-  appliedFilters: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+
+  // ----- Gift Card button style from Vendor component -----
+  giftCardCta: {
     marginHorizontal: 20,
+    marginTop: -8,
     marginBottom: 10,
+    backgroundColor: colors.backgroundPink,
+    borderRadius: 14,
+    borderColor: colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
   },
-  appliedFilterText: { color: colors.primary, fontWeight: "600" },
+  giftCardLeft: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: "#ffffff22",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 6,
+  },
+  giftCardTitle: {
+    color: colors.white,
+    fontWeight: "800",
+    fontSize: 15,
+    marginBottom: 2,
+  },
+  giftCardSubtitle: {
+    color: colors.secondary,
+    opacity: 0.95,
+    fontSize: 12,
+  },
+
   card: {
     backgroundColor: colors.white,
     borderRadius: 14,
@@ -559,87 +624,59 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   loaderContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  modalContent: {
-    backgroundColor: colors.white,
-    borderRadius: 15,
-    padding: 15,
-    shadowColor: colors.black,
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 6 },
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  modalTitle: { fontSize: 22, fontWeight: "bold", color: colors.text, flex: 1 },
-  modalType: { fontSize: 16, fontWeight: "600", color: colors.text },
-  modalPrice: {
-    backgroundColor: colors.accent,
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: "700",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    overflow: "hidden",
-    marginLeft: "auto",
-  },
-  modalImage: {
-    width: "100%",
-    height: 180,
-    borderRadius: 10,
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  modalVendorRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  modalVendorLogo: { width: 30, height: 30, borderRadius: 15, marginRight: 8 },
-  modalVendorName: { fontSize: 16, fontWeight: "600", color: colors.text },
-  modalTimeRow: {
-    fontSize: 14,
-    color: colors.text,
-    marginBottom: 10,
-    marginLeft: 38,
-  },
-  modalSection: { fontSize: 16, color: colors.text, fontWeight: "600" },
-  modalText: { fontSize: 14, color: colors.text },
-  modalDescription: {
-    fontSize: 16,
-    color: colors.text,
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  closeButton: {
-    backgroundColor: colors.accent,
-    paddingVertical: 12,
-    borderRadius: 10,
-    marginTop: 15,
-    alignItems: "center",
-  },
-  closeButtonText: { color: colors.white, fontWeight: "bold" },
   logoWrapper: { alignItems: "center", marginTop: -50, marginBottom: 10 },
   logo: { width: 150, height: 60 },
   imageSpinnerOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(255,255,255,0.6)",
+    ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
     alignItems: "center",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "#000000AA",
+    justifyContent: "center",
   },
   modalSpinnerOverlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 10,
+  },
+  modalContent: {
+    marginHorizontal: 20,
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    padding: 20,
+  },
+  modalTitle: { fontSize: 22, fontWeight: "bold", color: colors.text },
+  modalType: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: colors.text,
+    opacity: 0.7,
+  },
+  modalImage: { width: "100%", height: 220, marginTop: 10, borderRadius: 12 },
+  modalVendorRow: { flexDirection: "row", alignItems: "center", marginTop: 10 },
+  modalVendorLogo: { width: 30, height: 30, borderRadius: 15, marginRight: 8 },
+  modalVendorName: { fontSize: 14, fontWeight: "500", color: colors.text },
+  modalPrice: {
+    marginLeft: "auto",
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.accent,
+  },
+  modalTimeRow: { fontSize: 14, marginTop: 8 },
+  modalSection: { fontSize: 14, fontWeight: "600", marginTop: 10 },
+  modalText: { fontSize: 14, marginTop: 4 },
+  modalDescription: { fontSize: 14, marginTop: 10 },
+  closeButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+  },
+  closeButtonText: {
+    color: colors.white,
+    fontWeight: "600",
+    textAlign: "center",
   },
 });
