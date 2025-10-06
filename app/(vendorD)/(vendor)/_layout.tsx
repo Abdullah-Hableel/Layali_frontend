@@ -1,7 +1,11 @@
 import { deleteToken, getToken } from "@/api/storage";
 import AuthContext from "@/app/context/AuthContext";
 import colors from "@/components/Colors";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import {
+  FontAwesome5,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import Foundation from "@expo/vector-icons/Foundation";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { router, Tabs } from "expo-router";
@@ -45,10 +49,10 @@ export default function RootLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Home",
+            title: "Explore",
 
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name="home" size={24} color={color} />
+              <FontAwesome5 name="search" size={20} color={color} />
             ),
 
             headerRight: () => (

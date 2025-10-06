@@ -18,6 +18,7 @@ const colors = {
   danger: "#D32F2F",
   text: "#9D8189",
   placeholder: "#999999",
+  backgroundPink: "#E08A98",
 };
 
 export default colors;
