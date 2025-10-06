@@ -73,10 +73,10 @@ export default function RootLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Shop",
 
           tabBarIcon: ({ color }) => (
-            <MaterialIcons name="home" size={24} color={colors.secondary} />
+            <Entypo name="shop" size={24} color={colors.secondary} />
           ),
 
           headerRight: () => (
