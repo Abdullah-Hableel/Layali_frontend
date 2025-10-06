@@ -156,7 +156,7 @@ export default function RootLayout() {
           <Stack.Screen
             name="invitetemplate"
             options={{
-              title: "Choose your Template",
+              title: "Find Your Perfect Invite",
             }}
           />
           <Stack.Screen
