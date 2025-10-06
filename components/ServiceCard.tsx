@@ -24,7 +24,6 @@ export const ServiceCard = ({ item }: { item: Service }) => {
           color="#9a9a9a"
           style={styles.topIcon}
         />
-
         <View style={styles.cardBody}>
           <Text style={styles.cardTitle} numberOfLines={1}>
             {item.name}

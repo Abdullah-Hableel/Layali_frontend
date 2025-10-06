@@ -6,6 +6,7 @@ import EventDropdown from "@/components/DropdownEvent";
 import { Category } from "@/data/category";
 import { EventLite } from "@/data/events";
 import { SuggestionsResponse } from "@/data/gemini";
+import { buildImageUrl } from "@/Utils/buildImage";
 import { capitalizeWords } from "@/Utils/capitalize";
 import { fmtKWD } from "@/Utils/currencyFormatter";
 import { toGBDate } from "@/Utils/date";
@@ -14,6 +15,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -135,7 +137,6 @@ const SuggestionsScreen = () => {
       }
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={styles.title}>Get Event Suggestions</Text>
       <Text style={styles.subtitle}>
         Choose your event and let Layali find the perfect fit for your budget.
       </Text>
@@ -161,7 +162,9 @@ const SuggestionsScreen = () => {
       </View>
 
       <View style={{ marginTop: 16 }}>
-        <Text style={styles.label}>Categories</Text>
+        <Text style={styles.label}>
+          Pick what AI should include in your events:
+        </Text>
         {categoriesLoading ? (
           <ActivityIndicator color={colors.secondary} />
         ) : categoriesError ? (
@@ -290,43 +293,73 @@ const SuggestionsScreen = () => {
                     price?: number;
                     reason?: string;
                     categories?: string[];
+                    image?: string | null;
+                    type?: string | null;
+                    vendor?: {
+                      _id: string;
+                      business_name: string;
+                      logo?: string | null;
+                    } | null;
                   },
                   index: number
                 ) => {
-                  const categoryNames = getCategoryNames(
-                    suggestionItem.categories
-                  );
-
                   return (
                     <View key={index} style={styles.resultItem}>
                       <View style={styles.resultRow}>
-                        <Text style={styles.resultName}>
-                          {suggestionItem.name || `Service ${index + 1}`}
-                        </Text>
-                        <Text style={styles.resultPrice}>
-                          {suggestionItem.price != null
-                            ? fmtKWD(suggestionItem.price)
-                            : "—"}
-                        </Text>
-                      </View>
-
-                      {categoryNames.length > 0 && (
-                        <View style={styles.categoryChipsRow}>
-                          {categoryNames.map((name) => (
-                            <View key={name} style={styles.categoryChip}>
-                              <Text style={styles.categoryChipText}>
-                                {name}
+                        <View style={styles.vendorColumn}>
+                          {suggestionItem.vendor?.logo ? (
+                            <Image
+                              source={{
+                                uri: buildImageUrl(suggestionItem.vendor.logo),
+                              }}
+                              style={styles.vendorLogo}
+                              resizeMode="cover"
+                            />
+                          ) : (
+                            <View
+                              style={[
+                                styles.vendorLogo,
+                                styles.vendorLogoFallback,
+                              ]}
+                            >
+                              <Text style={styles.vendorLogoFallbackText}>
+                                V
                               </Text>
                             </View>
-                          ))}
+                          )}
+                          <Text style={styles.vendorName} numberOfLines={2}>
+                            {suggestionItem.vendor?.business_name
+                              ? capitalizeWords(
+                                  suggestionItem.vendor.business_name
+                                )
+                              : "—"}{" "}
+                          </Text>
                         </View>
-                      )}
 
-                      {!!suggestionItem.reason && (
-                        <Text style={styles.resultReason}>
-                          {suggestionItem.reason}
-                        </Text>
-                      )}
+                        <View style={styles.serviceInfo}>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <Text style={styles.resultName}>
+                              {suggestionItem.name || `Service ${index + 1}`}
+                            </Text>
+
+                            <Text style={styles.resultPrice}>
+                              {suggestionItem.price != null
+                                ? fmtKWD(suggestionItem.price)
+                                : "—"}
+                            </Text>
+                          </View>
+                          {!!suggestionItem.reason && (
+                            <Text style={styles.resultReason}>
+                              {suggestionItem.reason}
+                            </Text>
+                          )}
+                        </View>
+                      </View>
                     </View>
                   );
                 }
@@ -388,7 +421,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 6,
   },
-
   chip: {
     paddingVertical: 10,
     paddingHorizontal: 14,
@@ -400,7 +432,6 @@ const styles = StyleSheet.create({
   chipSelected: {
     backgroundColor: colors.primary,
   },
-
   preview: {
     marginTop: 20,
     backgroundColor: colors.white,
@@ -466,11 +497,12 @@ const styles = StyleSheet.create({
   },
   resultRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
   },
   resultName: { color: colors.text, fontWeight: "600" },
   resultPrice: { color: colors.text },
   resultReason: { color: colors.text, opacity: 0.7, marginTop: 2 },
+
   totalsBox: {
     marginTop: 10,
     borderTopWidth: 1,
@@ -484,23 +516,34 @@ const styles = StyleSheet.create({
   },
   totalsLabel: { color: colors.secondary, fontWeight: "bold" },
   totalsValue: { color: colors.text, fontWeight: "bold" },
-  categoryChipsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6,
-    marginTop: 6,
+  vendorColumn: {
+    width: 72,
+    alignItems: "center",
+    marginRight: 12,
   },
-  categoryChip: {
-    backgroundColor: colors.accent,
-    borderRadius: 999,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    marginRight: 6,
-    marginBottom: 6,
+  vendorLogo: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: "#eee",
+    marginBottom: 4,
   },
-  categoryChipText: {
-    color: colors.secondary,
-    fontWeight: "600",
+  vendorLogoFallback: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  vendorLogoFallbackText: {
+    color: "#777",
     fontSize: 12,
+  },
+  vendorName: {
+    color: colors.secondary,
+    fontSize: 12,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  serviceInfo: {
+    flex: 1,
+    justifyContent: "center",
   },
 });
