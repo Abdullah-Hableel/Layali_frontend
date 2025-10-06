@@ -32,11 +32,6 @@ export default function Service() {
     [key: string]: boolean;
   }>({});
 
-  // delete modal states
-  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [serviceToDelete, setServiceToDelete] = useState<any | null>(null);
-  const [deleting, setDeleting] = useState(false);
-
   const { data, isLoading, error } = useQuery<UserAttrs>({
     queryKey: ["user"],
     queryFn: getUserById,
@@ -252,8 +247,6 @@ export default function Service() {
           </View>
         </Modal>
       )}
-
-      {/* Delete Service Modal */}
 
       <TouchableOpacity
         style={styles.fab}
