@@ -127,7 +127,11 @@ export default function CreateService() {
       quality: 0.7,
     });
 
-    if (!result.canceled) setFieldValue("image", result.assets[0]);
+    if (!result.canceled) {
+      const image = result.assets[0];
+      console.log("📸 Selected image:", image); // 👈 this logs the picked image object
+      setFieldValue("image", image);
+    }
   };
 
   return (
