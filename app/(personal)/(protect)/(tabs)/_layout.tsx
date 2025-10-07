@@ -1,64 +1,84 @@
 import { deleteToken, getToken } from "@/api/storage";
 import AuthContext from "@/app/context/AuthContext";
 import colors from "@/components/Colors";
-import { MaterialIcons } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import type { BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
-import { router, Tabs } from "expo-router";
-import React, { useContext } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { Tabs } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
 
 const FloatingAIButton = ({
-  children,
   onPress,
-  accessibilityRole,
-  accessibilityState,
-  style,
-}: BottomTabBarButtonProps) => {
+  isActive,
+}: {
+  onPress?: any;
+  isActive?: boolean;
+}) => {
+  const scale = useState(new Animated.Value(1))[0];
+
+  useEffect(() => {
+    if (isActive) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(scale, {
+            toValue: 1.1,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scale, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    } else {
+      scale.setValue(1); // reset when inactive
+    }
+  }, [isActive]);
+
   return (
-    <View pointerEvents="box-none" style={styles.fabContainer}>
-      <TouchableOpacity
-        onPress={onPress}
-        accessibilityRole={accessibilityRole}
-        accessibilityState={accessibilityState}
-        activeOpacity={0.9}
-        style={[styles.fab, style]}
-      >
-        {children}
-      </TouchableOpacity>
+    <View style={styles.fabContainer}>
+      <Animated.View style={{ transform: [{ scale }] }}>
+        <TouchableOpacity
+          onPress={onPress}
+          activeOpacity={0.9}
+          style={[styles.fab, isActive && { backgroundColor: colors.accent }]}
+        >
+          <FontAwesome name="magic" size={28} color="white" />
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 };
 
 export default function RootLayout() {
   const { setIsAuthenticated } = useContext(AuthContext);
+  const [activeTab, setActiveTab] = useState<string>("");
 
   const handleLogOut = async () => {
     await deleteToken();
     const token = await getToken();
     console.log("After delete:", token);
     setIsAuthenticated(false);
-    router.dismissTo("/landingPage");
   };
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: colors.secondary,
-        animation: "shift",
         headerTintColor: colors.secondary,
-        headerStyle: {
-          backgroundColor: colors.backgroundMuted,
-        },
+        headerStyle: { backgroundColor: colors.backgroundMuted },
       }}
     >
+      {/* Events Tab */}
       <Tabs.Screen
         name="events"
         options={{
           title: "My Events",
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: () => (
             <MaterialCommunityIcons
               name="party-popper"
               size={24}
@@ -66,20 +86,22 @@ export default function RootLayout() {
             />
           ),
           headerRight: () => (
-            <React.Fragment>
-              <TouchableOpacity onPress={handleLogOut}>
-                <MaterialIcons name="logout" size={20} color={colors.danger} />
-              </TouchableOpacity>
-            </React.Fragment>
+            <TouchableOpacity onPress={handleLogOut}>
+              <MaterialIcons name="logout" size={20} color={colors.danger} />
+            </TouchableOpacity>
           ),
+        }}
+        listeners={{
+          focus: () => setActiveTab("events"),
         }}
       />
 
+      {/* Guest Tab */}
       <Tabs.Screen
         name="guest"
         options={{
           title: "Guest",
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: () => (
             <MaterialIcons
               name="people-alt"
               size={24}
@@ -87,92 +109,88 @@ export default function RootLayout() {
             />
           ),
           headerRight: () => (
-            <React.Fragment>
-              <TouchableOpacity onPress={handleLogOut}>
-                <MaterialIcons name="logout" size={20} color={colors.danger} />
-              </TouchableOpacity>
-            </React.Fragment>
+            <TouchableOpacity onPress={handleLogOut}>
+              <MaterialIcons name="logout" size={20} color={colors.danger} />
+            </TouchableOpacity>
           ),
+        }}
+        listeners={{
+          focus: () => setActiveTab("guest"),
         }}
       />
 
+      {/* AI Suggestion Tab */}
       <Tabs.Screen
         name="suggestion"
         options={{
-          title: "",
-          tabBarIcon: () => (
-            <FontAwesome name="magic" size={28} color={colors.secondary} />
+          title: "Ask me",
+          tabBarButton: (props) => (
+            <FloatingAIButton
+              {...props}
+              isActive={activeTab === "suggestion"}
+            />
           ),
-          tabBarButton: (props) => <FloatingAIButton {...props} />,
         }}
-      />
-      <Tabs.Screen
-        name="index"
-
-        options={{
-          title: "AI Suggestion",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="magic" size={24} color={colors.secondary} />
-          ),
-          headerRight: () => (
-            <React.Fragment>
-              <TouchableOpacity onPress={handleLogOut}>
-                <MaterialIcons name="logout" size={20} color={colors.danger} />
-              </TouchableOpacity>
-            </React.Fragment>
-          ),
+        listeners={{
+          focus: () => setActiveTab("suggestion"),
+          blur: () => setActiveTab(""),
         }}
       />
 
+      {/* Shop Tab */}
       <Tabs.Screen
         name="index"
         options={{
           title: "Shop",
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: () => (
             <Entypo name="shop" size={24} color={colors.secondary} />
           ),
           headerRight: () => (
-            <React.Fragment>
-              <TouchableOpacity onPress={handleLogOut}>
-                <MaterialIcons name="logout" size={20} color={colors.danger} />
-              </TouchableOpacity>
-            </React.Fragment>
+            <TouchableOpacity onPress={handleLogOut}>
+              <MaterialIcons name="logout" size={20} color={colors.danger} />
+            </TouchableOpacity>
           ),
+        }}
+        listeners={{
+          focus: () => setActiveTab("index"),
         }}
       />
 
-
+      {/* Vendor Tab */}
       <Tabs.Screen
         name="vendor"
         options={{
-          title: "Shop",
-          tabBarIcon: ({ color }) => (
+          title: "Vendor",
+          tabBarIcon: () => (
             <Entypo name="shop" size={24} color={colors.secondary} />
           ),
           headerRight: () => (
-            <React.Fragment>
-              <TouchableOpacity onPress={handleLogOut}>
-                <MaterialIcons name="logout" size={20} color={colors.danger} />
-              </TouchableOpacity>
-            </React.Fragment>
+            <TouchableOpacity onPress={handleLogOut}>
+              <MaterialIcons name="logout" size={20} color={colors.danger} />
+            </TouchableOpacity>
           ),
+        }}
+        listeners={{
+          focus: () => setActiveTab("vendor"),
         }}
       />
 
+      {/* Profile Tab */}
       <Tabs.Screen
         name="pprofile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: () => (
             <FontAwesome name="user" size={24} color={colors.secondary} />
           ),
           headerRight: () => (
-            <React.Fragment>
-              <TouchableOpacity onPress={handleLogOut}>
-                <MaterialIcons name="logout" size={20} color={colors.danger} />
-              </TouchableOpacity>
-            </React.Fragment>
+            <TouchableOpacity onPress={handleLogOut}>
+              <MaterialIcons name="logout" size={20} color={colors.danger} />
+            </TouchableOpacity>
           ),
+        }}
+        listeners={{
+          focus: () => setActiveTab("pprofile"),
         }}
       />
     </Tabs>
@@ -181,29 +199,24 @@ export default function RootLayout() {
 
 const styles = StyleSheet.create({
   fabContainer: {
-    backgroundColor: colors.white,
     position: "relative",
     top: -25,
     alignItems: "center",
     justifyContent: "center",
     width: 75,
     height: 75,
-    borderRadius: 40,
-    paddingTop: 10,
   },
   fab: {
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: colors.secondary,
-    width: 110,
-    height: 55,
-    borderRadius: 30,
+    width: 75,
+    height: 75,
+    borderRadius: 37,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 6,
-    flexDirection: "row",
-    gap: 8,
   },
 });
