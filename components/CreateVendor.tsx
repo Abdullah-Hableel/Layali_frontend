@@ -78,15 +78,15 @@ export default function CreateVendor() {
       queryClient.invalidateQueries({ queryKey: ["user", "vendor"] });
       Toast.show({
         type: "success",
-        text1: "Vendor created successfully!",
-        visibilityTime: 2000, // 2 seconds
+        text1: "Vendor created successfully🎉!",
+        visibilityTime: 2000,
       });
       router.back();
     },
     onError: (err: any) => {
       Toast.show({
         type: "error",
-        text1: err.message || "Something went wrong",
+        text1: err.message || "Something went wrong❌",
       });
     },
   });
@@ -123,6 +123,9 @@ export default function CreateVendor() {
         }}
         validationSchema={VendorSchema}
         onSubmit={(values) => {
+          console.log("Submitting values:", values); // debug
+          console.log("userId:", userId); // debug
+
           if (!userId) {
             Toast.show({ type: "error", text1: "User ID not loaded yet" });
             return;
@@ -272,7 +275,6 @@ export default function CreateVendor() {
           </ScrollView>
         )}
       </Formik>
-      <Toast />
     </SafeAreaView>
   );
 }
