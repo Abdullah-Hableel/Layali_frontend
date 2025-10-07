@@ -119,7 +119,7 @@ export default function RootLayout() {
           <Stack.Screen
             name="(vendorD)/[id]"
             options={{
-              title: "Vendor Details",
+              title: "Business Details",
               headerBackVisible: true,
               headerBackTitle: "Back",
             }}
@@ -162,6 +162,10 @@ export default function RootLayout() {
           <Stack.Screen
             name="(vendorD)/(serviceInfo)/[id]"
             options={{ title: "Service Info" }}
+          />
+          <Stack.Screen
+            name="createVendor"
+            options={{ title: "Setup Your Business" }}
           />
         </Stack>
       </AuthContext.Provider>
