@@ -2,6 +2,7 @@ import { baseURL } from "@/api";
 import { capitalizeWords } from "@/Utils/capitalize";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import LottieView from "lottie-react-native";
 import React, { useState } from "react";
 import {
   FlatList,
@@ -27,7 +28,17 @@ const InviteTemplateListScreen = () => {
 
   const [selectedTemplate, setSelectedTemplate] = useState<any | null>(null);
 
-  if (isLoading) return <Text>Loading templates...</Text>;
+  if (isLoading)
+    return (
+      <View style={styles.emptyWrap}>
+        <LottieView
+          source={require("../assets/lottie/fUotSZvXcr.json")}
+          autoPlay
+          loop
+          style={{ width: 140, height: 140 }}
+        />
+      </View>
+    );
 
   return (
     <SafeAreaView
@@ -107,6 +118,13 @@ const InviteTemplateListScreen = () => {
 export default InviteTemplateListScreen;
 
 const styles = StyleSheet.create({
+  emptyWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 24,
+    backgroundColor: colors.backgroundMuted,
+  },
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,

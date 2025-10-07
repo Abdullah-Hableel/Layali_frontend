@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
+import LottieView from "lottie-react-native";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
@@ -66,10 +67,12 @@ const ServiceInfo = () => {
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={{ marginTop: 10, color: colors.text }}>
-          Loading service...
-        </Text>
+        <LottieView
+          source={require("../../assets/lottie/fUotSZvXcr.json")}
+          autoPlay
+          loop
+          style={{ width: 140, height: 140 }}
+        />
       </View>
     );
   }

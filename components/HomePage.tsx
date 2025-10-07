@@ -3,6 +3,7 @@ import { Feather } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
+import LottieView from "lottie-react-native";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -98,7 +99,12 @@ const HomePage = () => {
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <LottieView
+          source={require("../assets/lottie/fUotSZvXcr.json")}
+          autoPlay
+          loop
+          style={{ width: 140, height: 140 }}
+        />{" "}
       </View>
     );
   }
@@ -644,7 +650,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: "center",
   },
-  loaderContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 24,
+  },
   logoWrapper: { alignItems: "center", marginTop: -50, marginBottom: 10 },
   logo: { width: 150, height: 60 },
   imageSpinnerOverlay: {

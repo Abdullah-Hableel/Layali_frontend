@@ -3,7 +3,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Image,
   RefreshControl,
@@ -17,6 +16,7 @@ import {
 import { baseURL } from "@/api";
 import { getUserById, UserAttrs } from "@/api/users";
 import { MaterialIcons } from "@expo/vector-icons";
+import LottieView from "lottie-react-native";
 import colors from "./Colors";
 
 const SERVER_URL = `${baseURL}/uploads/`;
@@ -54,10 +54,12 @@ export default function BusinessProfile() {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.center}>
-        <ActivityIndicator color={colors.secondary} />
-        <Text style={{ marginTop: 8, color: colors.text }}>
-          Loading profile...
-        </Text>
+        <LottieView
+          source={require("../assets/lottie/fUotSZvXcr.json")}
+          autoPlay
+          loop
+          style={{ width: 140, height: 140 }}
+        />
       </SafeAreaView>
     );
   }
