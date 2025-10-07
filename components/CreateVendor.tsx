@@ -214,7 +214,7 @@ export default function CreateVendor() {
             <TextInput
               style={styles.categorySearchInput}
               placeholder="Search category..."
-              placeholderTextColor="rgba(133,133,133,0.3)"
+              placeholderTextColor={colors.placeholder}
               value={categorySearch}
               onChangeText={setCategorySearch}
             />
@@ -264,9 +264,9 @@ export default function CreateVendor() {
             )}
 
             {/* Submit Button */}
-            <View style={{ alignItems: "center", marginTop: 20 }}>
+            <View style={{ alignItems: "center", marginTop: 120 }}>
               <CustomButton
-                text={mutation.isPending ? "Creating..." : "Create Vendor"}
+                text={mutation.isPending ? "Creating..." : "Create Business"}
                 onPress={() => handleSubmit()}
                 variant="primary"
                 disabled={mutation.isPending}
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     backgroundColor: "#fff",
   },
-  categorySeparator: { height: 1, backgroundColor: "#ccc", marginBottom: 8 },
+  categorySeparator: { height: 1, backgroundColor: "#ccc", margin: 15 },
   vendorButton: {
     padding: 10,
     borderRadius: 100,

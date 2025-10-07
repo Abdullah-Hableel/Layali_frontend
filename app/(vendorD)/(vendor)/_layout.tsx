@@ -100,7 +100,7 @@ export default function RootLayout() {
         />
 
         <Tabs.Screen
-          name="vendor"
+          name="Vendor"
           options={{
             title: "Business Profile",
             tabBarIcon: ({ color }) => (

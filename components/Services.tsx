@@ -1,4 +1,5 @@
 import { baseURL } from "@/api";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import LottieView from "lottie-react-native";
@@ -136,7 +137,8 @@ export default function Service() {
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       <Text style={styles.title}>
-        🛎️ number of your services: {services.length}
+        🛎️ You have {services?.length ?? 0}{" "}
+        {services?.length === 1 ? "service" : "services"}
       </Text>
 
       <FlatList
@@ -256,8 +258,9 @@ export default function Service() {
       <TouchableOpacity
         style={styles.fab}
         onPress={() => router.push("/createService")}
+        activeOpacity={0.85}
       >
-        <Text style={styles.fabText}>+</Text>
+        <MaterialIcons name="add" size={28} color="#fff" />
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -360,10 +363,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 17,
+    fontWeight: "800",
     marginTop: -30,
-    color: colors.primary,
+    color: colors.secondary,
     marginLeft: 23,
   },
   closeButtonWide: {
@@ -378,18 +381,16 @@ const styles = StyleSheet.create({
   closeButtonText: { color: colors.white, fontWeight: "bold", fontSize: 18 },
   fab: {
     position: "absolute",
-    bottom: 30,
-    right: 30,
+    right: 20,
+    bottom: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: colors.primary,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    justifyContent: "center",
     elevation: 6,
+    zIndex: 10,
   },
   fabText: { fontSize: 32, color: "#fff", fontWeight: "bold" },
   imageSpinnerOverlay: {

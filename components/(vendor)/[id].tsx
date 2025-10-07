@@ -102,13 +102,9 @@ const VendorDetail = () => {
         {/* 📄 Vendor Info Card */}
         <View style={styles.card}>
           <View style={styles.rowBetween}>
-            <Text style={styles.title}>Business Details</Text>
             {!isEditing && (
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={() => setIsEditing(true)}
-              >
-                <Text style={styles.editButtonText}>Edit ✏️</Text>
+              <TouchableOpacity onPress={() => setIsEditing(true)}>
+                <Text style={styles.editButtonText}>Edit </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -269,7 +265,7 @@ const VendorDetail = () => {
           <TouchableOpacity
             style={styles.deleteBtn}
             onPress={() =>
-              Alert.alert("Delete Vendor", "Are you sure?", [
+              Alert.alert("Delete Your Business", "Are you sure?", [
                 { text: "Cancel", style: "cancel" },
                 {
                   text: "Delete",
@@ -281,7 +277,7 @@ const VendorDetail = () => {
             disabled={deleting}
           >
             <Text style={styles.deleteText}>
-              {deleting ? "Deleting..." : "Delete Vendor"}
+              {deleting ? "Deleting..." : "Delete Your Business"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -357,21 +353,14 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   listItem: { fontSize: 15, color: colors.text, marginVertical: 3 },
-  placeholder: { fontSize: 14, color: "#999", marginVertical: 4 },
+  placeholder: { fontSize: 14, color: colors.placeholder, marginVertical: 4 },
 
   rowBetween: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    justifyContent: "flex-end",
   },
 
-  editButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 10,
-  },
-  editButtonText: { color: "#fff", fontWeight: "600" },
+  editButtonText: { color: colors.secondary, fontWeight: "600" },
 
   buttonRow: {
     flexDirection: "row",
