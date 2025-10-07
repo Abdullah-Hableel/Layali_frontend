@@ -302,7 +302,18 @@ const CustomizeInvitationScreen = () => {
             </View>
 
             <TouchableOpacity
-              style={[styles.button, { marginTop: 20, borderRadius: 30 }]}
+              style={[
+                styles.button,
+                {
+                  marginTop: 10,
+                  backgroundColor: colors.backgroundPink,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 30,
+                  width: 300,
+                },
+              ]}
               onPress={() => {
                 setModalVisible(false);
                 router.push("/guest");
@@ -321,6 +332,7 @@ const CustomizeInvitationScreen = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   borderRadius: 30,
+                  width: 300,
                 },
               ]}
               onPress={() => {

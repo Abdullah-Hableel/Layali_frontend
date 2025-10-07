@@ -104,7 +104,7 @@ const HomePage = () => {
           autoPlay
           loop
           style={{ width: 140, height: 140 }}
-        />{" "}
+        />
       </View>
     );
   }
@@ -175,9 +175,9 @@ const HomePage = () => {
 
   // Filtered and unique categories for the filter modal
   const uniqueCategories = Array.from(
-    new Set(services.flatMap((s) => s.categories.map((c) => c.name)))
+    new Set(services?.flatMap((s) => s.categories?.map((c) => c.name)) ?? [])
   ).filter((cat) =>
-    cat.toLowerCase().includes(categorySearchText.toLowerCase())
+    cat?.toLowerCase().includes(categorySearchText.toLowerCase())
   );
 
   return (

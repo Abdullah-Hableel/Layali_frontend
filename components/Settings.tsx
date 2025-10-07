@@ -33,13 +33,13 @@ const contactInfo = [
         )}&body=${encodeURIComponent("Hello,\n\nI’d like to ask about…")}`
       ),
   },
-  {
-    id: "3",
-    label: "Website",
-    value: "www.Layali.com",
-    icon: "globe",
-    onPress: () => Linking.openURL("https://www.Layali.com"),
-  },
+  // {
+  //   id: "3",
+  //   label: "Website",
+  //   value: "www.Layali.com",
+  //   icon: "globe",
+  //   onPress: () => Linking.openURL("https://www.Layali.com"),
+  // },
   {
     id: "4",
     label: "Instagram",

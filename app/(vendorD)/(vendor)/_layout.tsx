@@ -1,21 +1,34 @@
 import { deleteToken, getToken } from "@/api/storage";
 import AuthContext from "@/app/context/AuthContext";
 import colors from "@/components/Colors";
+import NotificationsScreen from "@/components/Notifications"; // ✅ unified notifications component
 import {
   FontAwesome5,
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import Foundation from "@expo/vector-icons/Foundation";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { router, Tabs } from "expo-router";
-import React, { useContext } from "react";
-import { TouchableOpacity } from "react-native";
+import { jwtDecode } from "jwt-decode";
+import React, { useContext, useEffect, useState } from "react";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const { setIsAuthenticated } = useContext(AuthContext);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // ✅ Get user ID from JWT
+  useEffect(() => {
+    (async () => {
+      const token = await getToken();
+      if (token) {
+        const decoded: any = jwtDecode(token);
+        setUserId(decoded?.userId || decoded?._id || null);
+      }
+    })();
+  }, []);
 
   const handleLogOut = async () => {
     await deleteToken();
@@ -29,32 +42,25 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <Tabs
         screenOptions={{
-          // ✅ commit: enable active/inactive tinting for icons & labels
           tabBarActiveTintColor: colors.secondary,
           tabBarInactiveTintColor: "#999",
-
-          // ✅ commit: make labels a bit bolder
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontWeight: "600",
-          },
-
+          tabBarLabelStyle: { fontSize: 12, fontWeight: "600" },
           animation: "shift",
           headerTintColor: colors.secondary,
-          headerStyle: {
-            backgroundColor: colors.backgroundMuted,
-          },
+          headerStyle: { backgroundColor: colors.backgroundMuted },
         }}
       >
+        {/* 🏠 Explore */}
         <Tabs.Screen
           name="index"
           options={{
             title: "Explore",
-
             tabBarIcon: ({ color }) => (
               <FontAwesome5 name="search" size={20} color={color} />
             ),
-
+            headerLeft: () => (
+              <NotificationsScreen headerMode /> // ✅ now showing icon with badge + auto refresh
+            ),
             headerRight: () => (
               <TouchableOpacity onPress={handleLogOut}>
                 <MaterialIcons name="logout" size={20} color={colors.danger} />
@@ -63,11 +69,11 @@ export default function RootLayout() {
           }}
         />
 
+        {/* 🛎 Services */}
         <Tabs.Screen
           name="services"
           options={{
             title: "Services",
-
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons
                 name="room-service"
@@ -75,6 +81,9 @@ export default function RootLayout() {
                 color={color}
               />
             ),
+            headerLeft: () => (
+              <NotificationsScreen headerMode /> // ✅ now showing icon with badge + auto refresh
+            ),
             headerRight: () => (
               <TouchableOpacity onPress={handleLogOut}>
                 <MaterialIcons name="logout" size={20} color={colors.danger} />
@@ -83,14 +92,13 @@ export default function RootLayout() {
           }}
         />
 
+        {/* 🏢 Business Profile */}
         <Tabs.Screen
-          name="Vendor"
+          name="vendor"
           options={{
             title: "Business Profile",
-
-            // ✅ commit: active/inactive handled automatically
-            tabBarIcon: ({ color }) => (
-              <Foundation name="torso-business" size={24} color={color} />
+            headerLeft: () => (
+              <NotificationsScreen headerMode /> // ✅ now showing icon with badge + auto refresh
             ),
             headerRight: () => (
               <TouchableOpacity onPress={handleLogOut}>
@@ -103,3 +111,23 @@ export default function RootLayout() {
     </QueryClientProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  badge: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: colors.danger,
+    borderRadius: 10,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    minWidth: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+});

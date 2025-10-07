@@ -318,20 +318,25 @@ const EventDetails = () => {
                 )}
 
                 <Text style={styles.label}>Budget</Text>
-                <Text style={styles.value}>{event.budget} KWD</Text>
-
-                {/* Redeem Gift Card Button
-                <View style={{ marginTop: 12, alignItems: "center" }}>
-                  <TouchableOpacity
-                    onPress={() => handleRedeem()}
-                    disabled={redeeming}
-                    style={[styles.redeemBtn, redeeming && { opacity: 0.5 }]}
-                  >
-                    <Text style={styles.redeemText}>
-                      {redeeming ? "Redeeming..." : "🎁 Redeem Gift Card"}
-                    </Text>
-                  </TouchableOpacity>
-                </View> */}
+                {isEditing ? (
+                  <>
+                    <TextInput
+                      style={styles.input}
+                      value={values.budget}
+                      onChangeText={handleChange("budget")}
+                      onBlur={handleBlur("budget")}
+                      keyboardType="numeric"
+                      placeholder="e.g. 500"
+                    />
+                    {touched.budget && errors.budget && (
+                      <Text style={styles.error}>
+                        {errors.budget as string}
+                      </Text>
+                    )}
+                  </>
+                ) : (
+                  <Text style={styles.value}>{event.budget} KD</Text>
+                )}
 
                 {/* Save & Cancel */}
                 {isEditing && (

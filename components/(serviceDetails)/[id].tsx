@@ -4,13 +4,16 @@ import {
   getEventServices,
   getMyEvents,
 } from "@/api/event";
+import { createNotification } from "@/api/notifications";
 import { getServiceById } from "@/api/service";
+import { getToken } from "@/api/storage";
 import { buildImageUrl } from "@/Utils/buildImage";
 import { isTodayOrFuture } from "@/Utils/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
+import { jwtDecode } from "jwt-decode";
 import LottieView from "lottie-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 import colors from "../Colors";
@@ -21,6 +24,18 @@ const ServiceDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const queryClient = useQueryClient();
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const token = await getToken();
+      if (token) {
+        const decoded: any = jwtDecode(token);
+        setUserId(decoded?.userId || decoded?._id || null);
+      }
+    })();
+  }, []);
+
   const {
     data: service,
     isLoading,
@@ -67,14 +82,30 @@ const ServiceDetails = () => {
       eventId: string;
       serviceId: string;
     }) => addServiceToEvent(eventId, serviceId),
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["Myevents"] });
       queryClient.invalidateQueries({ queryKey: ["eventServices"] });
+
+      // ✅ Create a notification for the vendor after successful booking
+      if (service?.vendor?._id && userId) {
+        await createNotification({
+          user: userId,
+          vendor: service.vendor._id,
+          title: "New Service Booked",
+          message: `A user just booked your service: ${service.name}`,
+          type: "success",
+        });
+
+        // ✅ Optional: refresh notifications list automatically
+        queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      }
+
       Toast.show({
         type: "success",
         text1: "Service added",
-        text2: "Service has been added successfully",
+        text2: "Service has been added successfully and vendor notified ✅",
       });
+
       router.dismissTo("/(personal)/(protect)/(tabs)/");
     },
     onError: () => {
