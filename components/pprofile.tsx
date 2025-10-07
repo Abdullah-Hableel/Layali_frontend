@@ -2,6 +2,7 @@ import { getMyEventStats } from "@/api/event";
 import { getAllGiftCards } from "@/api/giftCards";
 import { getUserById, UserAttrs } from "@/api/users";
 import { EventStats } from "@/data/events";
+import { buildImageUrl } from "@/Utils/buildImage";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
@@ -90,7 +91,10 @@ const PersonalProfile = () => {
         <>
           <View style={styles.headerCard}>
             <View style={styles.avatarWrapper}>
-              <Image source={{ uri: user?.image }} style={styles.avatar} />
+              <Image
+                source={{ uri: buildImageUrl(user?.image) }}
+                style={styles.avatar}
+              />
             </View>
 
             <Text style={styles.name}>{user?.username || "User"}</Text>
