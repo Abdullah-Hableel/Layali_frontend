@@ -4,7 +4,6 @@ import {
   getEventServices,
   getMyEvents,
 } from "@/api/event";
-import { createNotification } from "@/api/notifications";
 import { getServiceById } from "@/api/service";
 import { getToken } from "@/api/storage";
 import { buildImageUrl } from "@/Utils/buildImage";
@@ -85,20 +84,6 @@ const ServiceDetails = () => {
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["Myevents"] });
       queryClient.invalidateQueries({ queryKey: ["eventServices"] });
-
-      // ✅ Create a notification for the vendor after successful booking
-      if (service?.vendor?._id && userId) {
-        await createNotification({
-          user: userId,
-          vendor: service.vendor._id,
-          title: "New Service Booked",
-          message: `A user just booked your service: ${service.name}`,
-          type: "success",
-        });
-
-        // ✅ Optional: refresh notifications list automatically
-        queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      }
 
       Toast.show({
         type: "success",

@@ -94,7 +94,7 @@ export default function RootLayout() {
 
         {/* 🏢 Business Profile */}
         <Tabs.Screen
-          name="vendor"
+          name="Vendor"
           options={{
             title: "Business Profile",
             headerLeft: () => (
