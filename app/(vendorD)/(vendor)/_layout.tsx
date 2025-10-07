@@ -1,23 +1,17 @@
-import { getUserNotifications } from "@/api/notifications";
 import { deleteToken, getToken } from "@/api/storage";
 import AuthContext from "@/app/context/AuthContext";
 import colors from "@/components/Colors";
+import NotificationsScreen from "@/components/Notifications"; // ✅ unified notifications component
 import {
   FontAwesome5,
-  Ionicons,
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import Foundation from "@expo/vector-icons/Foundation";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { router, Tabs } from "expo-router";
 import { jwtDecode } from "jwt-decode";
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 const queryClient = new QueryClient();
 
@@ -44,15 +38,6 @@ export default function RootLayout() {
     router.dismissTo("/landingPage");
   };
 
-  // 📩 Fetch notifications for current user
-  const { data: notifications } = useQuery({
-    queryKey: ["notifications", userId],
-    queryFn: () => getUserNotifications(userId!),
-    enabled: !!userId,
-  });
-
-  const unreadCount = notifications?.filter((n: any) => !n.read)?.length || 0;
-
   return (
     <QueryClientProvider client={queryClient}>
       <Tabs
@@ -65,12 +50,16 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: colors.backgroundMuted },
         }}
       >
+        {/* 🏠 Explore */}
         <Tabs.Screen
           name="index"
           options={{
             title: "Explore",
             tabBarIcon: ({ color }) => (
               <FontAwesome5 name="search" size={20} color={color} />
+            ),
+            headerLeft: () => (
+              <NotificationsScreen headerMode /> // ✅ now showing icon with badge + auto refresh
             ),
             headerRight: () => (
               <TouchableOpacity onPress={handleLogOut}>
@@ -80,6 +69,7 @@ export default function RootLayout() {
           }}
         />
 
+        {/* 🛎 Services */}
         <Tabs.Screen
           name="services"
           options={{
@@ -91,6 +81,9 @@ export default function RootLayout() {
                 color={color}
               />
             ),
+            headerLeft: () => (
+              <NotificationsScreen headerMode /> // ✅ now showing icon with badge + auto refresh
+            ),
             headerRight: () => (
               <TouchableOpacity onPress={handleLogOut}>
                 <MaterialIcons name="logout" size={20} color={colors.danger} />
@@ -99,33 +92,14 @@ export default function RootLayout() {
           }}
         />
 
+        {/* 🏢 Business Profile */}
         <Tabs.Screen
           name="Vendor"
           options={{
             title: "Business Profile",
-            tabBarIcon: ({ color }) => (
-              <Foundation name="torso-business" size={24} color={color} />
+            headerLeft: () => (
+              <NotificationsScreen headerMode /> // ✅ now showing icon with badge + auto refresh
             ),
-            headerLeft: () =>
-              userId ? (
-                <TouchableOpacity
-                  style={{ marginLeft: 15 }}
-                  onPress={() => router.push("/notificationPage")}
-                >
-                  <View>
-                    <Ionicons
-                      name="notifications-outline"
-                      size={24}
-                      color={colors.secondary}
-                    />
-                    {unreadCount > 0 && (
-                      <View style={styles.badge}>
-                        <Text style={styles.badgeText}>{unreadCount}</Text>
-                      </View>
-                    )}
-                  </View>
-                </TouchableOpacity>
-              ) : null,
             headerRight: () => (
               <TouchableOpacity onPress={handleLogOut}>
                 <MaterialIcons name="logout" size={20} color={colors.danger} />
