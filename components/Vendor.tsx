@@ -6,9 +6,9 @@ import { capitalizeWords } from "@/Utils/capitalize";
 import { Feather } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
+import LottieView from "lottie-react-native";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Image,
   Modal,
@@ -65,7 +65,12 @@ const Vendor = () => {
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={colors.secondary} />
+        <LottieView
+          source={require("../assets/lottie/fUotSZvXcr.json")}
+          autoPlay
+          loop
+          style={{ width: 140, height: 140 }}
+        />
       </View>
     );
   }

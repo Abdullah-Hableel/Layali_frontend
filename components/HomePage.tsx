@@ -3,6 +3,7 @@ import { Feather } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
+import LottieView from "lottie-react-native";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -98,7 +99,12 @@ const HomePage = () => {
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <LottieView
+          source={require("../assets/lottie/fUotSZvXcr.json")}
+          autoPlay
+          loop
+          style={{ width: 140, height: 140 }}
+        />{" "}
       </View>
     );
   }
@@ -348,22 +354,36 @@ const HomePage = () => {
                   </View>
                 )}
 
+                {/* Duration */}
                 {selectedService.time && (
-                  <Text style={styles.modalTimeRow}>
+                  <Text
+                    style={{
+                      marginLeft: 38,
+                      marginTop: -1,
+                      color: colors.secondary,
+                    }}
+                  >
                     Duration: {selectedService.time}
                   </Text>
                 )}
 
-                <View style={{ marginLeft: 38 }}>
-                  <Text style={styles.modalSection}>Categories:</Text>
-                  <Text style={styles.modalText}>
+                {/* Categories */}
+                <Text
+                  style={{
+                    marginLeft: 38,
+                    marginTop: 4,
+                    color: colors.secondary,
+                  }}
+                >
+                  Categories: {"\n"}
+                  <Text style={{ fontWeight: "bold" }}>
                     {selectedService.categories
                       .map((cat) => cat.name)
                       .join(", ")}
                   </Text>
-                </View>
+                </Text>
 
-                <View style={{ flex: 1 }} />
+                {/* Separation line stays */}
                 <View
                   style={{
                     width: 200,
@@ -375,12 +395,19 @@ const HomePage = () => {
                   }}
                 />
 
+                {/* Description */}
                 {selectedService.description && (
-                  <Text style={styles.modalDescription}>
-                    {selectedService.description}
-                  </Text>
+                  <View style={{ alignItems: "center" }}>
+                    <Text
+                      style={[
+                        styles.modalDescription,
+                        { color: colors.secondary },
+                      ]}
+                    >
+                      {selectedService.description}
+                    </Text>
+                  </View>
                 )}
-
                 <TouchableOpacity
                   style={[
                     styles.closeButton,
@@ -623,7 +650,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: "center",
   },
-  loaderContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 24,
+  },
   logoWrapper: { alignItems: "center", marginTop: -50, marginBottom: 10 },
   logo: { width: 150, height: 60 },
   imageSpinnerOverlay: {
@@ -659,10 +691,15 @@ const styles = StyleSheet.create({
   modalVendorLogo: { width: 30, height: 30, borderRadius: 15, marginRight: 8 },
   modalVendorName: { fontSize: 14, fontWeight: "500", color: colors.text },
   modalPrice: {
-    marginLeft: "auto",
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.accent,
+    backgroundColor: colors.accent,
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: "700",
+    paddingVertical: 3,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    overflow: "hidden",
+    marginLeft: "auto", // pushes it to the right
   },
   modalTimeRow: { fontSize: 14, marginTop: 8 },
   modalSection: { fontSize: 14, fontWeight: "600", marginTop: 10 },

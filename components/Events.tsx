@@ -2,9 +2,9 @@ import { getMyEvents } from "@/api/event";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { router, useFocusEffect } from "expo-router";
+import LottieView from "lottie-react-native";
 import React, { useCallback } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -14,7 +14,6 @@ import {
 } from "react-native";
 import colors from "./Colors";
 import EventCard from "./EventCard";
-
 const Events = () => {
   const {
     data: events,
@@ -57,7 +56,12 @@ const Events = () => {
         ListEmptyComponent={
           <View style={styles.emptyWrap}>
             {isFetching ? (
-              <ActivityIndicator color={colors.secondary} size="small" />
+              <LottieView
+                source={require("../assets/lottie/fUotSZvXcr.json")}
+                autoPlay
+                loop
+                style={{ width: 140, height: 140 }}
+              />
             ) : isError ? (
               <Text style={styles.error}>
                 {error instanceof Error

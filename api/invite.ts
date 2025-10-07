@@ -17,8 +17,10 @@ export const createInvite = async (inviteData: {
     );
     return res.data;
   } catch (err: any) {
-    console.error("createInvite error:", err.response?.data || err.message);
-    throw err;
+    // console.error("createInvite error:", err.response?.data || err.message);
+    return (
+      err?.response?.data?.message || err.message || "Something went wrong."
+    );
   }
 };
 

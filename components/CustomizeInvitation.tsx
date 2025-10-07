@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { getAllEvents } from "../api/event";
 import { createInvite } from "../api/invite";
 import colors from "./Colors";
@@ -90,21 +91,29 @@ const CustomizeInvitationScreen = () => {
     };
     fetchEvent();
   }, [userId, eventId]);
+  const [loading, setLoading] = useState(false);
 
   const generateQrPreview = async () => {
-    try {
-      const res = await createInvite({
-        event: event?._id,
-        guestName,
-        guestEmail,
-        inviteTemplate: templateId,
-      });
-      setQrCodeImage(res.qrCodeImage);
-      setInviteLink(res.inviteLink);
-      setModalVisible(true);
-    } catch (err) {
-      console.log("Error generating QR preview:", err);
+    if (!canProceed) return;
+
+    setLoading(true);
+    const res = await createInvite({
+      event: event?._id,
+      guestName,
+      guestEmail,
+      inviteTemplate: templateId,
+    });
+    setLoading(false);
+
+    if (typeof res === "string") {
+      Toast.show({ type: "error", text1: "Invite failed", text2: res });
+      return;
     }
+
+    setQrCodeImage(res.qrCodeImage);
+    setInviteLink(res.inviteLink);
+    setModalVisible(true);
+    Toast.show({ type: "success", text1: "Invite ready 🎉" });
   };
 
   const handleCreateInvite = async () => {
@@ -121,7 +130,8 @@ const CustomizeInvitationScreen = () => {
       alert("Failed to save invite");
     }
   };
-
+  const isValidEmail = (s: string) => /^\S+@\S+\.\S+$/.test(s.trim());
+  const canProceed = Boolean(guestName.trim() && isValidEmail(guestEmail));
   return (
     <ScrollView style={styles.container}>
       {/* <Text style={styles.header}>Customize Invitation</Text> */}
@@ -154,9 +164,7 @@ const CustomizeInvitationScreen = () => {
           </>
         ) : null}
 
-        <Text style={styles.inviteTitle}>
-          {title || "You're Cordially Invited"}
-        </Text>
+        <Text style={styles.inviteTitle}>{"You're Cordially Invited"}</Text>
 
         <Text style={styles.inviteName}>{"Guest Name"}</Text>
         {/* {hostName || "Host Name"} */}
@@ -241,7 +249,11 @@ const CustomizeInvitationScreen = () => {
       </View>
 
       <View style={{ alignItems: "center", marginTop: 50 }}>
-        <CustomButton text="Save & Generate QR" onPress={generateQrPreview} />
+        <CustomButton
+          text="Send Your Invite"
+          onPress={generateQrPreview}
+          disabled={!canProceed}
+        />
       </View>
 
       <Modal
@@ -381,11 +393,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
     width: "100%",
+    height: 340,
+    justifyContent: "center",
   },
-  inviteTitle: { color: "#fff", fontSize: 16, marginBottom: 6 },
-  inviteName: { color: "#fff", fontSize: 20, fontWeight: "bold" },
-  inviteSubtitle: { color: "#eee", fontSize: 14, marginBottom: 16 },
-  qrImage: { width: 120, height: 120, marginTop: 10 },
+  inviteTitle: {
+    color: "#fff",
+    fontSize: 16,
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  inviteName: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  inviteSubtitle: {
+    color: "#eee",
+    fontSize: 16,
+    marginBottom: 19,
+    textAlign: "center",
+  },
+  qrImage: { width: 120, height: 120 },
   qrPlaceholder: {
     width: 120,
     height: 120,

@@ -7,15 +7,9 @@ import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
+import LottieView from "lottie-react-native";
 import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "./Colors";
 
 const PersonalProfile = () => {
@@ -79,7 +73,12 @@ const PersonalProfile = () => {
     <View style={styles.root}>
       {isLoading || statsLoading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={colors.secondary} />
+          <LottieView
+            source={require("../assets/lottie/fUotSZvXcr.json")}
+            autoPlay
+            loop
+            style={{ width: 140, height: 140 }}
+          />
         </View>
       ) : isError || statsError ? (
         <View style={styles.center}>

@@ -3,9 +3,9 @@ import colors from "@/components/Colors";
 import { Feather } from "@expo/vector-icons"; // 👈 import Feather icons
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
+import LottieView from "lottie-react-native";
 import React from "react";
 import {
-  ActivityIndicator,
   Alert,
   FlatList,
   StyleSheet,
@@ -44,7 +44,12 @@ const MyServices = () => {
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={colors.secondary} />
+        <LottieView
+          source={require("../../../assets/lottie/fUotSZvXcr.json")}
+          autoPlay
+          loop
+          style={{ width: 140, height: 140 }}
+        />
       </View>
     );
   }

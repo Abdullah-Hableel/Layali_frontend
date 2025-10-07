@@ -4,15 +4,9 @@ import { buildImageUrl } from "@/Utils/buildImage";
 import { capitalizeWords } from "@/Utils/capitalize";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
+import LottieView from "lottie-react-native";
 import React from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ServiceCard } from "..//ServiceCard";
 import colors from "../Colors";
@@ -53,7 +47,12 @@ const ShopDetails = () => {
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={colors.secondary} />
+        <LottieView
+          source={require("../../assets/lottie/fUotSZvXcr.json")}
+          autoPlay
+          loop
+          style={{ width: 100, height: 100 }}
+        />
       </View>
     );
   }
