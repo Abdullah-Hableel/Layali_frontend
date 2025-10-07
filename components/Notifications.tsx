@@ -1,12 +1,8 @@
-import {
-  deleteNotification,
-  getUserNotifications,
-  markNotificationAsRead,
-} from "@/api/notifications";
-import { getToken } from "@/api/storage";
+import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { router } from "expo-router";
 import { jwtDecode } from "jwt-decode";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -16,51 +12,92 @@ import {
   View,
 } from "react-native";
 
-export default function Notifications() {
-  const queryClient = useQueryClient();
-  const [userId, setUserId] = useState<string | null>(null);
+import {
+  deleteNotification,
+  getUserNotifications,
+  markNotificationAsRead,
+} from "@/api/notifications";
+import { getToken } from "@/api/storage";
+import colors from "./Colors";
 
-  // ✅ Get userId from JWT token
+export default function NotificationsScreen({ headerMode = false }) {
+  const [userId, setUserId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  // ✅ Decode userId from token
   useEffect(() => {
     (async () => {
       const token = await getToken();
       if (token) {
         const decoded: any = jwtDecode(token);
-        setUserId(decoded._id);
+        setUserId(decoded?.userId || decoded?._id || null);
       }
     })();
   }, []);
 
+  // ✅ Fetch notifications with auto refetch every 10s
   const {
-    data: notifications,
+    data: notifications = [],
     isLoading,
     isError,
   } = useQuery({
     queryKey: ["notifications", userId],
     queryFn: () => getUserNotifications(userId!),
-    enabled: !!userId, // only fetch when we have userId
+    enabled: !!userId,
+    refetchInterval: 7000, // 🔁 auto-refresh every 10s
+    refetchIntervalInBackground: true,
   });
 
+  // ✅ Mark as read
   const { mutate: markRead } = useMutation({
     mutationFn: (id: string) => markNotificationAsRead(id),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["notifications", userId] }),
   });
 
+  // ✅ Delete notification
   const { mutate: remove } = useMutation({
     mutationFn: (id: string) => deleteNotification(id),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["notifications", userId] }),
   });
 
-  if (!userId) {
-    return <Text style={styles.loading}>Getting user info...</Text>;
+  // 🧠 Count unread notifications
+  const unreadCount = notifications?.filter((n: any) => !n.read).length || 0;
+
+  // ✅ MODE 1: HEADER ICON ONLY
+  if (headerMode) {
+    return (
+      <TouchableOpacity
+        style={{ marginLeft: 15 }}
+        onPress={() => router.push("/notificationPage")}
+        disabled={!userId || isLoading}
+      >
+        <View>
+          <Ionicons
+            name="notifications-outline"
+            size={24}
+            color={colors.secondary}
+          />
+          {unreadCount > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+    );
   }
+
+  // ✅ MODE 2: FULL NOTIFICATIONS PAGE
+  if (!userId) return <Text style={styles.loading}>Getting user info...</Text>;
 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={colors.secondary} />
         <Text style={styles.loading}>Loading notifications...</Text>
       </View>
     );
@@ -99,6 +136,23 @@ export default function Notifications() {
 }
 
 const styles = StyleSheet.create({
+  badge: {
+    position: "absolute",
+    top: -4,
+    right: -6,
+    backgroundColor: colors.danger,
+    borderRadius: 8,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    minWidth: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "700",
+  },
   notification: {
     padding: 16,
     borderBottomWidth: 1,
