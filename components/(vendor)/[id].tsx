@@ -41,7 +41,7 @@ const VendorDetail = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       Toast.show({ type: "success", text1: "Vendor deleted 🎉" });
-      router.replace("/Vendor");
+      router.back();
     },
     onError: () => {
       Toast.show({ type: "error", text1: "Failed to delete vendor" });
