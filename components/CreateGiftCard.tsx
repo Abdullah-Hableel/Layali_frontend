@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 10,
+    marginTop: -10,
   },
   sendBtn: {
     backgroundColor: colors.secondary,
