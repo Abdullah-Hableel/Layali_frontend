@@ -9,15 +9,9 @@ import { buildImageUrl } from "@/Utils/buildImage";
 import { isTodayOrFuture } from "@/Utils/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
+import LottieView from "lottie-react-native";
 import React, { useState } from "react";
-import {
-  ActivityIndicator,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 import colors from "../Colors";
 import CustomButton from "../customButton";
@@ -144,7 +138,12 @@ const ServiceDetails = () => {
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={colors.secondary} />
+        <LottieView
+          source={require("../../assets/lottie/fUotSZvXcr.json")}
+          autoPlay
+          loop
+          style={{ width: 140, height: 140 }}
+        />
       </View>
     );
   }

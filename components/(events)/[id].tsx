@@ -12,9 +12,9 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
+import LottieView from "lottie-react-native";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   Platform,
   ScrollView,
@@ -137,7 +137,12 @@ const EventDetails = () => {
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={colors.secondary} />
+        <LottieView
+          source={require("../../assets/lottie/fUotSZvXcr.json")}
+          autoPlay
+          loop
+          style={{ width: 140, height: 140 }}
+        />
       </View>
     );
   }

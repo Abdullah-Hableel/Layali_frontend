@@ -1,6 +1,7 @@
 import { baseURL } from "@/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
+import LottieView from "lottie-react-native";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -46,8 +47,12 @@ export default function Service() {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={{ marginTop: 10, color: colors.text }}>Loading...</Text>
+        <LottieView
+          source={require("../assets/lottie/fUotSZvXcr.json")}
+          autoPlay
+          loop
+          style={{ width: 140, height: 140 }}
+        />
       </SafeAreaView>
     );
   }
