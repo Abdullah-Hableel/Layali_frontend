@@ -31,6 +31,7 @@ const FloatingAIButton = ({
     </View>
   );
 };
+
 export default function RootLayout() {
   const { setIsAuthenticated } = useContext(AuthContext);
 
@@ -41,6 +42,7 @@ export default function RootLayout() {
     setIsAuthenticated(false);
     router.dismissTo("/landingPage");
   };
+
   return (
     <Tabs
       screenOptions={{
@@ -93,6 +95,7 @@ export default function RootLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="suggestion"
         options={{
@@ -105,13 +108,12 @@ export default function RootLayout() {
       />
       <Tabs.Screen
         name="index"
+
         options={{
-          title: "Shop",
-
+          title: "AI Suggestion",
           tabBarIcon: ({ color }) => (
-            <Entypo name="shop" size={24} color={colors.secondary} />
+            <FontAwesome name="magic" size={24} color={colors.secondary} />
           ),
-
           headerRight: () => (
             <React.Fragment>
               <TouchableOpacity onPress={handleLogOut}>
@@ -121,6 +123,25 @@ export default function RootLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Shop",
+          tabBarIcon: ({ color }) => (
+            <Entypo name="shop" size={24} color={colors.secondary} />
+          ),
+          headerRight: () => (
+            <React.Fragment>
+              <TouchableOpacity onPress={handleLogOut}>
+                <MaterialIcons name="logout" size={20} color={colors.danger} />
+              </TouchableOpacity>
+            </React.Fragment>
+          ),
+        }}
+      />
+
+
       <Tabs.Screen
         name="vendor"
         options={{
