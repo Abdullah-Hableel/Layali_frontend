@@ -104,7 +104,7 @@ const HomePage = () => {
           autoPlay
           loop
           style={{ width: 140, height: 140 }}
-        />{" "}
+        />
       </View>
     );
   }
