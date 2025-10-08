@@ -5,7 +5,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
 
@@ -63,6 +63,7 @@ export default function RootLayout() {
     const token = await getToken();
     console.log("After delete:", token);
     setIsAuthenticated(false);
+    router.dismissTo("/landingPage");
   };
 
   return (
