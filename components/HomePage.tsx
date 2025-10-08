@@ -72,12 +72,12 @@ const HomePage = () => {
 
   const filteredServices = services.filter((service) => {
     const matchesSearch = service.name
-      .toLowerCase()
+      ?.toLowerCase()
       .includes(searchText.toLowerCase());
 
     const matchesCategory =
       selectedCategory && selectedCategory !== "All"
-        ? service.categories.some((c) => c.name === selectedCategory)
+        ? service.categories?.some((c) => c.name === selectedCategory)
         : true;
 
     const min = budgetSteps[budgetStepIndex];
