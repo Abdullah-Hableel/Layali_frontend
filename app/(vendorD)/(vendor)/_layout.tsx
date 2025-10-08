@@ -4,6 +4,7 @@ import colors from "@/components/Colors";
 import NotificationsScreen from "@/components/Notifications"; // ✅ unified notifications component
 import {
   FontAwesome5,
+  Foundation,
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
@@ -97,6 +98,9 @@ export default function RootLayout() {
           name="vendor"
           options={{
             title: "Business Profile",
+            tabBarIcon: ({ color }) => (
+              <Foundation name="torso-business" size={24} color={color} />
+            ),
             headerLeft: () => (
               <NotificationsScreen headerMode /> // ✅ now showing icon with badge + auto refresh
             ),
